@@ -2,8 +2,7 @@ function [state] = calibration2state ...
     (calibration, source_fix_pose_vec, sensor_fixture_pose_vec)
 % Create a calibration state vector from a calibration struct and fixture
 % poses.  The poses are represented as a 6 element "pose vector", as used
-% in the magnetic pose solution.  However the Z translation of the
-% sensor fixture is ignored.
+% in the magnetic pose solution.
 
     state_defs;
     % indices of the state vector came from the state_defs script

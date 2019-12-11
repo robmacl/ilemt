@@ -38,10 +38,20 @@
 % data: result of read_data.  Note: this still has all the invalid points in it.
 %
 function [res] = find_pose_errors(data_file, options)
-  data = read_data(data_file, options.data_format);
-  valid = data.valid;
-  vposes = data.poses;
+  data = getreal(data_file);
   
+  %   poses(point_ix, :, pose_ix) Each row is a "pose vector" 
+  %       [x y z Rx Ry Rz] (units mm/degree, see pvec2tr, tr2pvec)
+
+  vposes = pose_calculation(data);
+
+  load('../../cal_data/dipole_UR44/XZ_rotation_hr_cal');
+  state0 = calibration2state(hr_cal, hr_so_fix, hr_se_fix);
+  stage_poses = data(:, 1:6);
+  vposes = cat(3, fk_pose_calculation(stage_poses, state0), vposes);
+
+  % Leaving this here as placeholder for workspace enforcement.
+  valid = true(size(data,1), 1);
   % Drop out bad points.
   ndrop = sum(~valid);
   vposes(~valid, :, :) = [];

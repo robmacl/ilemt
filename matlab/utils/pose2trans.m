@@ -1,5 +1,6 @@
 function [ T ] = pose2trans( pose )
-% Turn pose into a homogeneous tranform matrix
+% Convert a pose [X Y Z Rx Ry Rz] into a homogeneous transform matrix. XYZ in
+% meters, RxRyRz a rotation vector in radians, not Euler angles.
 
     tX = pose(1);
     tY = pose(2);

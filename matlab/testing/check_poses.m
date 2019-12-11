@@ -21,8 +21,6 @@ options = check_poses_defaults();
 %options.sg_filt_F = 9;
 options.axis_limits(6, :) = [-13, 13];
 
-
-
   if (nargin < 2 || isempty(options))
      options = check_poses_defaults();
   end
@@ -34,10 +32,11 @@ options.axis_limits(6, :) = [-13, 13];
   %  perr_workspace_vol(perr, options);
 
   onax=perr_on_axis(perr, options);
-  % figures 3, 4
   perr_axis_plot(perr, onax, options);
 
-  % Write summary Excel file in data directory.  You can copy template from check_poses.xslx.
+  % Write summary Excel file in data directory.  You can copy template from
+  % check_poses.xslx.
+  % figure() 3, 4
   perr_axis_stats(data_file, perr, onax, options);
 
   % Single axis response to an individual axis.  Not done on all axes by
