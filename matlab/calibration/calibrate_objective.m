@@ -1,4 +1,4 @@
-function [residue] = calibrate_objective (state, stage_poses, couplings)
+function [residue, pred_coupling] = calibrate_objective (state, stage_poses, couplings)
 % The guts of the objective function for the calibration optimization.  
 % state:
 %    The current optimization state, passed in from the optimizer.
@@ -25,6 +25,7 @@ function [residue] = calibrate_objective (state, stage_poses, couplings)
     %initialize residue to a matrix of zeros with double dimention of the couplings
     %matrix
     residue = zeros(size(couplings));
+    pred_coupling = zeros(size(couplings));
     
     
     for i = 1:npoints
@@ -34,16 +35,16 @@ function [residue] = calibrate_objective (state, stage_poses, couplings)
         sensor_fixture = pose2trans([state(sensor_fixture_pos_slice), state(sensor_fixture_orientation_slice)]);
         
         %Convert stage_poses(i, :) to transform matrix st
-        st=vector2tr(stage_poses(i,:)); 
+        st = vector2tr(stage_poses(i,:)); 
         
         %transform matrix, sensor with respect to the source, of i pose
         P = source_fixture * st * sensor_fixture;
         
         %calculattion of predicted coupling matrix with the forward kinematic approach
-        pred_coupling = forward_kinematics(P, state2calibration(state, true));
+        pred_coupling(:,:,i) = forward_kinematics(P, state2calibration(state, true));
         
         %mismatch between measured coupling and predicted coupling
-        residue(:,:,i) = (couplings(:,:,i) - pred_coupling)/norm(couplings(:,:,i));
+        residue(:,:,i) = (couplings(:,:,i) - pred_coupling(:,:,i))/norm(couplings(:,:,i));
 
     end
 

@@ -6,6 +6,7 @@ k = 3;
 err = [];
 opt_poses_tr = [];
 
+%{
 for i = 1:n
   e = (poses_tr(i,1:3) - fk_poses_tr(i,1:3)) / norm(poses_tr(i,1:3) - fk_poses_tr(i,1:3));
   err = [err; e];
@@ -29,8 +30,9 @@ zlabel('Z')
 title('3D map of displacement error')
 
 legend('Error', 'FK pose')
+%}
 
-%{
+
 %dispacement error plot
 figure(2)
 for i = 1:n
@@ -48,7 +50,7 @@ zlabel('Z')
 title('3D map of displacement error')
 
 legend('Error', 'FK pose') 
-%}
+
 
 
 
@@ -88,7 +90,7 @@ title('Rotation error')
 
 figure(6)
 error = sqrt(sum(tr_err.^2, 2));
-scatter3(error, resnorms)
+scatter(error, resnorms)
 
 xlabel('Pose error')
 ylabel('Pose calculation residuals')

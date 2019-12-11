@@ -3,7 +3,7 @@ function [state] = initial_state (~)
 
 %dipole gains
 d_source_gains = [1 1 1];
-d_sensor_gains = [0.2, 0.2, 0.2]; %for the hr sensor gains are 0.2
+d_sensor_gains = [0.1, 0.1, 0.1]; %for the hr sensor gains are 0.2
 
 %quadrupole gains
 %q_source_gains = [0.1 0.1 0.1];

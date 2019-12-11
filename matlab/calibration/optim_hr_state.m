@@ -2,8 +2,7 @@
 %LabView output data file 
 
 %load the last high rate calibration values (positions, moments, source and sensor fixtures)
-%load('n_sensor_hr_cal.mat')
-load('new_fixture_hr_cal');
+load('onlydipole_XYZrot_hr_cal');
 %quadrupole_calibration
 %{
 hr_cal.d_source_moment = [
@@ -25,7 +24,7 @@ state0 = calibration2state(hr_cal, hr_so_fix, hr_se_fix);
 %state0 = initial_state();
 
 %cell of elements we want to exclude from the optimization 
-freeze = {'d_so_pos' 'd_so_mo' 'd_se_pos' 'd_se_mo' 'z_se_fix' 'd_so_y_co' 'd_se_y_co' 'q_so_dist' 'q_se_dist'};  
+freeze = {'d_so_pos' 'd_so_mo' 'd_se_pos' 'd_se_mo' 'q_se_pos' 'q_se_mo' 'd_so_y_co' 'd_se_y_co' 'q_so_dist' 'q_se_dist'}; %'q_so_pos' 'q_so_mo' 
 %freeze={}; 
 %set upper and lower bounds with initial state and freeze cell as input arguments
 bounds = state_bounds(state0, freeze); 
@@ -33,12 +32,13 @@ bounds = state_bounds(state0, freeze);
 %set the options for the optimization, including the "print_state" function
 %created to dispaly at each iteration positions, moments and fixture poses
 option = optimoptions(@lsqnonlin, 'Display', 'iter-detailed', ...
-  'PlotFcns', @optimplotresnorm, 'OutputFcn', @print_state, 'MaxFunctionEvaluations', 60000, 'MaxIterations', 1000, 'FunctionTolerance', 1e-06);
+  'PlotFcns', @optimplotresnorm, 'OutputFcn', @print_state, 'MaxFunctionEvaluations', 60000, 'MaxIterations', 1000, 'FunctionTolerance', 1e-06, 'OptimalityTolerance', 1e-06);
 
 %Signed magnitude of coupling data
-data = getreal('new_fixture_calibrate_out.dat');
+%data = getreal('middata_Zrot.dat');
 %data_subset;
-%data = data_combination('new_fixture_calibrate_out.dat', 'new_fixture_calibrate_X90_out.dat', 90);
+%data = XZrot_data_combination('middata_Zrot.dat', 'middata_XZrot.dat', 90);
+data = XYZrot_data_combination('smalldata_Zrot.dat', 'smalldata_XZrot.dat', 90, 'smalldata_XYZrot.dat', 90);
 
 %extract the stage poses from data file (first 6 columns of the file)
 stage_poses = data(:, 1:6); 
@@ -63,7 +63,7 @@ stage_poses = data(:, 1:6);
  hr_se_fix = state_new(32:37);
  
  %save in a .mat file all the optimazed values
- save('new_fixture_hr_cal', 'hr_cal', 'hr_so_fix', 'hr_se_fix');
+ save('new_XYZrot_hr_cal', 'hr_cal', 'hr_so_fix', 'hr_se_fix');
                       
   
                       

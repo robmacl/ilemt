@@ -24,3 +24,4 @@ function [coupling] = fk_coupling (P, so_pos, so_mo, se_pos, se_mo)
    
        end
      end
+end

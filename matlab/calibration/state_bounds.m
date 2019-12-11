@@ -39,17 +39,17 @@ if (any(strcmp('so_fix', freeze)))
 end
 
 if (any(strcmp('x_so_fix', freeze)))
-  % freeze source fixture
+  % freeze x component of source fixture
   freeze_ixs = [freeze_ixs source_fixture_pos_slice(1)];
 end
 
 if (any(strcmp('y_so_fix', freeze)))
-  % freeze source fixture
+  % freeze y component of source fixture
   freeze_ixs = [freeze_ixs source_fixture_pos_slice(2)];
 end
 
 if (any(strcmp('z_so_fix', freeze)))
-  % freeze source fixture
+  % freeze z component of source fixture
   freeze_ixs = [freeze_ixs source_fixture_pos_slice(3)];
 end
 
@@ -59,17 +59,17 @@ if (any(strcmp('se_fix', freeze)))
 end
 
 if (any(strcmp('x_se_fix', freeze)))
-  % freeze sensor fixture
+  % freeze x component of  sensor fixture
   freeze_ixs = [freeze_ixs sensor_fixture_pos_slice(1)];
 end
 
 if (any(strcmp('y_se_fix', freeze)))
-  % freeze sensor fixture
+  % freeze y component of sensor fixture
   freeze_ixs = [freeze_ixs sensor_fixture_pos_slice(2)];
 end
 
 if (any(strcmp('z_se_fix', freeze)))
-  % freeze sensor fixture
+  % freeze z component of sensor fixture
   freeze_ixs = [freeze_ixs sensor_fixture_pos_slice(3)];
 end
 
@@ -116,15 +116,6 @@ if (any(strcmp('q_se_dist', freeze)))
   freeze_ixs = [freeze_ixs qp_se_dist];
 end
 
-if (any(strcmp('q_so_y_co', freeze)))
-  % freeze source y component of x coil
-  freeze_ixs = [freeze_ixs qp_source_x_moment_slice(2)];
-end
-
-if (any(strcmp('q_se_y_co', freeze)))
-  % freeze sensor y component of x coil
-  freeze_ixs = [freeze_ixs qp_sensor_x_moment_slice(2)];
-end
  
   for ix = freeze_ixs
     bounds(:, ix) = state0(ix);
