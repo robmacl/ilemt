@@ -3,7 +3,7 @@ function [poses, resnorms] = pose_calculation(data)
 
     %high rate state
     %load('subset_hr_cal')
-    load('onlydipole_XYZrot_hr_cal');
+    load('new_XYZrot_hr_cal');
     state0 = calibration2state(hr_cal, hr_so_fix, hr_se_fix);
     
     %low rate state
@@ -25,7 +25,7 @@ function [poses, resnorms] = pose_calculation(data)
     exitflags = [];
    
     
-    option = optimset('Display','off', 'TolFun',1e-06, 'MaxIter', 1000, 'MaxFunEvals', 60000);
+    option = optimset('Display','off', 'TolFun',1e-09, 'MaxIter', 1000, 'MaxFunEvals', 60000);
     
     n=size(data,1);
      

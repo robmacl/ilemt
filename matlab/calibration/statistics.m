@@ -7,7 +7,7 @@
 stage_poses=data(:, 1:6);
 
 %load('subset_hr_cal')
-load('onlydipole_XYZrot_hr_cal');
+load('new_XYZrot_hr_cal');
 state0 = calibration2state(hr_cal, hr_so_fix, hr_se_fix);
 
 %load('q_pole_lr_cal');
