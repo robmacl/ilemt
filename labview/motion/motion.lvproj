@@ -38,7 +38,7 @@
 			<Property Name="NI.SortType" Type="Int">3</Property>
 			<Item Name="find_ref_test.vi" Type="VI" URL="../server/find_ref_test.vi"/>
 			<Item Name="forward_kinematics.vi" Type="VI" URL="../server/forward_kinematics.vi"/>
-			<Item Name="ideal_inverse_kinematics.vi" Type="VI" URL="../../utilities/labview/ideal_inverse_kinematics.vi"/>
+			<Item Name="ideal_inverse_kinematics.vi" Type="VI" URL="../../utilities/ideal_inverse_kinematics.vi"/>
 			<Item Name="inv_kin_test.vi" Type="VI" URL="../server/inv_kin_test.vi"/>
 			<Item Name="inv_kin_test_pose.vi" Type="VI" URL="../server/inv_kin_test_pose.vi"/>
 			<Item Name="inverse_kinematics.vi" Type="VI" URL="../server/inverse_kinematics.vi"/>
@@ -212,24 +212,10 @@
 				<Item Name="Details Display Dialog.vi" Type="VI" URL="/&lt;vilib&gt;/Utility/error.llb/Details Display Dialog.vi"/>
 				<Item Name="DialogType.ctl" Type="VI" URL="/&lt;vilib&gt;/Utility/error.llb/DialogType.ctl"/>
 				<Item Name="DialogTypeEnum.ctl" Type="VI" URL="/&lt;vilib&gt;/Utility/error.llb/DialogTypeEnum.ctl"/>
-				<Item Name="Dynamic To Waveform Array.vi" Type="VI" URL="/&lt;vilib&gt;/express/express shared/transition.llb/Dynamic To Waveform Array.vi"/>
 				<Item Name="Error Cluster From Error Code.vi" Type="VI" URL="/&lt;vilib&gt;/Utility/error.llb/Error Cluster From Error Code.vi"/>
 				<Item Name="Error Code Database.vi" Type="VI" URL="/&lt;vilib&gt;/Utility/error.llb/Error Code Database.vi"/>
 				<Item Name="ErrWarn.ctl" Type="VI" URL="/&lt;vilib&gt;/Utility/error.llb/ErrWarn.ctl"/>
 				<Item Name="eventvkey.ctl" Type="VI" URL="/&lt;vilib&gt;/event_ctls.llb/eventvkey.ctl"/>
-				<Item Name="ex_CorrectErrorChain.vi" Type="VI" URL="/&lt;vilib&gt;/express/express shared/ex_CorrectErrorChain.vi"/>
-				<Item Name="ex_Modify Signal Name.vi" Type="VI" URL="/&lt;vilib&gt;/express/express shared/ex_Modify Signal Name.vi"/>
-				<Item Name="ex_Modify Signals Names.vi" Type="VI" URL="/&lt;vilib&gt;/express/express shared/ex_Modify Signals Names.vi"/>
-				<Item Name="exnSpectralBlock clear array magnitudes.vi" Type="VI" URL="/&lt;vilib&gt;/express/express analysis/Spectral/Block/exnSpectralBlock clear array magnitudes.vi"/>
-				<Item Name="exnSpectralBlock clear DDT y array.vi" Type="VI" URL="/&lt;vilib&gt;/express/express analysis/Spectral/Block/exnSpectralBlock clear DDT y array.vi"/>
-				<Item Name="exnSpectralBlock clear magnitude.vi" Type="VI" URL="/&lt;vilib&gt;/express/express analysis/Spectral/Block/exnSpectralBlock clear magnitude.vi"/>
-				<Item Name="exnSpectralBlock mod exp dyn x attribs.vi" Type="VI" URL="/&lt;vilib&gt;/express/express analysis/Spectral/Block/exnSpectralBlock mod exp dyn x attribs.vi"/>
-				<Item Name="exnSpectralBlock spectral measurements PSD array WFM (CDB).vi" Type="VI" URL="/&lt;vilib&gt;/express/express analysis/Spectral/Block/exnSpectralBlock spectral measurements PSD array WFM (CDB).vi"/>
-				<Item Name="exnSpectralBlock spectral measurements PSD array WFM.vi" Type="VI" URL="/&lt;vilib&gt;/express/express analysis/Spectral/Block/exnSpectralBlock spectral measurements PSD array WFM.vi"/>
-				<Item Name="exnSpectralBlock spectral measurements PSD DDT.vi" Type="VI" URL="/&lt;vilib&gt;/express/express analysis/Spectral/Block/exnSpectralBlock spectral measurements PSD DDT.vi"/>
-				<Item Name="exnSpectralBlock spectral measurements PSD poly.vi" Type="VI" URL="/&lt;vilib&gt;/express/express analysis/Spectral/Block/exnSpectralBlock spectral measurements PSD poly.vi"/>
-				<Item Name="exnSpectralBlock spectral measurements PSD WFM (CDB).vi" Type="VI" URL="/&lt;vilib&gt;/express/express analysis/Spectral/Block/exnSpectralBlock spectral measurements PSD WFM (CDB).vi"/>
-				<Item Name="exnSpectralBlock spectral measurements PSD WFM.vi" Type="VI" URL="/&lt;vilib&gt;/express/express analysis/Spectral/Block/exnSpectralBlock spectral measurements PSD WFM.vi"/>
 				<Item Name="Find First Error.vi" Type="VI" URL="/&lt;vilib&gt;/Utility/error.llb/Find First Error.vi"/>
 				<Item Name="Find Reference.flx" Type="VI" URL="/&lt;vilib&gt;/Motion/FlexMotion/FunctionsVIs/FindReference.llb/Find Reference.flx"/>
 				<Item Name="Find Tag.vi" Type="VI" URL="/&lt;vilib&gt;/Utility/error.llb/Find Tag.vi"/>
@@ -253,8 +239,6 @@
 				<Item Name="NI_AALBase.lvlib" Type="Library" URL="/&lt;vilib&gt;/Analysis/NI_AALBase.lvlib"/>
 				<Item Name="NI_AALPro.lvlib" Type="Library" URL="/&lt;vilib&gt;/Analysis/NI_AALPro.lvlib"/>
 				<Item Name="NI_Gmath.lvlib" Type="Library" URL="/&lt;vilib&gt;/gmath/NI_Gmath.lvlib"/>
-				<Item Name="NI_MABase.lvlib" Type="Library" URL="/&lt;vilib&gt;/measure/NI_MABase.lvlib"/>
-				<Item Name="NI_MAPro.lvlib" Type="Library" URL="/&lt;vilib&gt;/measure/NI_MAPro.lvlib"/>
 				<Item Name="NI_Matrix.lvlib" Type="Library" URL="/&lt;vilib&gt;/Analysis/Matrix/NI_Matrix.lvlib"/>
 				<Item Name="Not Found Dialog.vi" Type="VI" URL="/&lt;vilib&gt;/Utility/error.llb/Not Found Dialog.vi"/>
 				<Item Name="Read Communication Status.flx" Type="VI" URL="/&lt;vilib&gt;/Motion/FlexMotion/FunctionsVIs/Advanced.llb/Read Communication Status.flx"/>
@@ -287,19 +271,18 @@
 				<Item Name="Wait for Move Complete (8 axes).flx" Type="VI" URL="/&lt;vilib&gt;/Motion/FlexMotion/FunctionsVIs/Trajectory.llb/Wait for Move Complete (8 axes).flx"/>
 				<Item Name="Wait for Move Complete.flx" Type="VI" URL="/&lt;vilib&gt;/Motion/FlexMotion/FunctionsVIs/Trajectory.llb/Wait for Move Complete.flx"/>
 				<Item Name="Wait Reference.flx" Type="VI" URL="/&lt;vilib&gt;/Motion/FlexMotion/FunctionsVIs/FindReference.llb/Wait Reference.flx"/>
-				<Item Name="Waveform Array To Dynamic.vi" Type="VI" URL="/&lt;vilib&gt;/express/express shared/transition.llb/Waveform Array To Dynamic.vi"/>
 				<Item Name="whitespace.ctl" Type="VI" URL="/&lt;vilib&gt;/Utility/error.llb/whitespace.ctl"/>
 			</Item>
 			<Item Name="constrain_axes.vi" Type="VI" URL="../server/constrain_axes.vi"/>
 			<Item Name="do_move.vi" Type="VI" URL="../server/do_move.vi"/>
-			<Item Name="euler_to_rotation.vi" Type="VI" URL="../../utilities/labview/euler_to_rotation.vi"/>
+			<Item Name="euler_to_rotation.vi" Type="VI" URL="../../utilities/euler_to_rotation.vi"/>
 			<Item Name="FlexMotion32.dll" Type="Document" URL="FlexMotion32.dll">
 				<Property Name="NI.PreserveRelativePath" Type="Bool">true</Property>
 			</Item>
 			<Item Name="inverse_kin_objective_fn.vi" Type="VI" URL="../server/inverse_kin_objective_fn.vi"/>
 			<Item Name="log_smoothing.vi" Type="VI" URL="../../micron/labview/testing/log_smoothing.vi"/>
 			<Item Name="lvanlys.dll" Type="Document" URL="/&lt;resource&gt;/lvanlys.dll"/>
-			<Item Name="make_trans_mat.vi" Type="VI" URL="../../utilities/labview/make_trans_mat.vi"/>
+			<Item Name="make_trans_mat.vi" Type="VI" URL="../../utilities/make_trans_mat.vi"/>
 			<Item Name="Motion command.vi" Type="VI" URL="../client/Motion command.vi"/>
 			<Item Name="motion_variables.ctl" Type="VI" URL="../client/motion_variables.ctl"/>
 			<Item Name="motion_variables.vi" Type="VI" URL="../client/motion_variables.vi"/>
@@ -314,11 +297,13 @@
 			<Item Name="nilvaiu.dll" Type="Document" URL="nilvaiu.dll">
 				<Property Name="NI.PreserveRelativePath" Type="Bool">true</Property>
 			</Item>
+			<Item Name="pose_to_vector.vi" Type="VI" URL="../../utilities/pose_to_vector.vi"/>
 			<Item Name="pose_to_vector.vi" Type="VI" URL="../../utilities/labview/pose_to_vector.vi"/>
-			<Item Name="rotation_to_euler.vi" Type="VI" URL="../../utilities/labview/rotation_to_euler.vi"/>
+			<Item Name="rotation_to_euler.vi" Type="VI" URL="../../utilities/rotation_to_euler.vi"/>
 			<Item Name="spectral_measurement.vi" Type="VI" URL="../../micron/labview/testing/spectral_measurement.vi"/>
 			<Item Name="transform_axis_positions.vi" Type="VI" URL="../server/transform_axis_positions.vi"/>
-			<Item Name="transform_inverse.vi" Type="VI" URL="../../utilities/labview/transform_inverse.vi"/>
+			<Item Name="transform_inverse.vi" Type="VI" URL="../../utilities/transform_inverse.vi"/>
+			<Item Name="vector_to_pose.vi" Type="VI" URL="../../utilities/vector_to_pose.vi"/>
 			<Item Name="vector_to_pose.vi" Type="VI" URL="../../utilities/labview/vector_to_pose.vi"/>
 		</Item>
 		<Item Name="Build Specifications" Type="Build"/>

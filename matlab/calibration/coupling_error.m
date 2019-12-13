@@ -1,6 +1,6 @@
 %Calculate the error used to run the pose optimization
 
-function error = coupling_error (state, pose, coupling)
+function [error] = coupling_error (state, pose, coupling)
         %pose converted in a transform matrix
         P = pose2trans(pose);
 
@@ -10,5 +10,4 @@ function error = coupling_error (state, pose, coupling)
         
         %difference between measured coupling and predicted coupling
         error = abs(coupling(:) - pred_coupling(:));
-
 end
