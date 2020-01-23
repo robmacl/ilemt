@@ -2,7 +2,7 @@
 %LabView output data file 
 
 %load the last high rate calibration values (positions, moments, source and sensor fixtures)
-load('middata_XZrot_hr_cal');
+load('onlydipole_middata_XYZrot_hr_cal');
 %quadrupole_calibration
 %{
 hr_cal.d_source_moment = [
@@ -24,7 +24,7 @@ state0 = calibration2state(hr_cal, hr_so_fix, hr_se_fix);
 %state0 = initial_state();
 
 %cell of elements we want to exclude from the optimization 
-freeze = {'q_se_pos' 'q_se_mo' 'd_so_y_co' 'd_se_y_co' 'q_so_dist' 'q_se_dist'}; %'q_so_pos' 'q_so_mo' 'd_so_pos' 'd_so_mo' 'd_se_pos' 'd_se_mo' 
+freeze = {'d_so_pos' 'd_so_mo' 'd_se_pos' 'd_se_mo' 'q_se_pos' 'q_se_mo' 'd_so_y_co' 'd_se_y_co' 'q_so_dist' 'q_se_dist'}; %'q_so_pos' 'q_so_mo' 
 %freeze={}; 
 %set upper and lower bounds with initial state and freeze cell as input arguments
 bounds = state_bounds(state0, freeze); 
@@ -37,8 +37,8 @@ option = optimoptions(@lsqnonlin, 'Display', 'iter-detailed', ...
 %Signed magnitude of coupling data
 %data = getreal('middata_Zrot.dat');
 %data_subset;
-data = XZrot_data_combination('middata_Zrot.dat', 'middata_XZrot.dat', 90);
-%data = XYZrot_data_combination('smalldata_Zrot.dat', 'smalldata_XZrot.dat', 90, 'smalldata_XYZrot.dat', 90);
+%data = XZrot_data_combination('middata_Zrot.dat', 'middata_XZrot.dat', 90);
+data = XYZrot_data_combination('middata_Zrot.dat', 'middata_XZrot.dat', 90, 'middata_XYZrot.dat', 90);
 
 %extract the stage poses from data file (first 6 columns of the file)
 stage_poses = data(:, 1:6); 
@@ -63,7 +63,7 @@ stage_poses = data(:, 1:6);
  hr_se_fix = state_new(32:37);
  
  %save in a .mat file all the optimazed values
- save('middata_XZrot_hr_cal', 'hr_cal', 'hr_so_fix', 'hr_se_fix');
+ save('middata_XYZrot_hr_cal', 'hr_cal', 'hr_so_fix', 'hr_se_fix');
                       
   
                       
