@@ -1,7 +1,7 @@
 % Find 3D rotation and translation (rigid transform) that maps the calibrated
 % points to the desired points.
 
-function [F, calibrated] = source_fixture_transform (measured, desired)
+function [F, calibrated] = source_fixture (measured, desired)
 
   F = (pinv(measured) * desired)';       %pinv--> pseudoinverse
   cpinv = cond(F(1:3, 1:3));  

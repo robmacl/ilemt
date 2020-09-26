@@ -39,13 +39,17 @@
 %
 function [res] = find_pose_errors(data_file, options)
   data = getreal(data_file);
-  
-  %   poses(point_ix, :, pose_ix) Each row is a "pose vector" 
-  %       [x y z Rx Ry Rz] (units mm/degree, see pvec2tr, tr2pvec)
 
+  % vposes(point_ix, :, pose_ix) 
+  % 
+  % Each row is [x y z Rx Ry Rz] (units m/radian), see pose2trans(),
+  % trans2pose(). 
+  %
+  % pose_ix=1 desired pose, from stage kinematics
+  % pose_ix=2 measured pose
   vposes = pose_calculation(data);
 
-  load('../../cal_data/dipole_UR44/XZ_rotation_hr_cal');
+  load('XZ_rotation_hr_cal');
   state0 = calibration2state(hr_cal, hr_so_fix, hr_se_fix);
   stage_poses = data(:, 1:6);
   vposes = cat(3, fk_pose_calculation(stage_poses, state0), vposes);
@@ -54,26 +58,41 @@ function [res] = find_pose_errors(data_file, options)
   valid = true(size(data,1), 1);
   % Drop out bad points.
   ndrop = sum(~valid);
-  vposes(~valid, :, :) = [];
+  vposes = vposes(valid, :, :);
   npoints = size(vposes, 1);
   if (ndrop)
     fprintf(1, 'Deleting %d invalid points, leaving %d.\n', ndrop, npoints);
   end
 
-  % Initial fixture transform based on pinv of translation
-  F_init = fixture_transform(pad_ones(vposes(:, 1:3, options.pose_ix) * 1e3), ...
-			     pad_ones(vposes(:, 1:3, 1) * 1e3), 1);
+  % Initial source fixture transform based on pinv of translation.
+  so_fix = trans2pose(source_fixture(pad_ones(vposes(:, 1:3, options.pose_ix)), ...
+                                     pad_ones(vposes(:, 1:3, 1)));
 
-  % State for minimization is: [C(1:3) pose(1:6)], mm X3, mm X3, degrees X3
-  % see check_poses_objective.m
-  %
-  % Intial value of x based on last run.  Initial initial value is all ones,
+  % State for minimization is: 
+  %    [so_fixture_off(1:6) se_fixture_off(1:6)]
+  % 
+  % These are offsets from the nominal source and sensor fixture poses.  see
+  % check_poses_objective.m.  This differs from the main calibration
+  % optimization in that we operate in *pose* space, and that we are searching
+  % for the source and sensor fixtures that minimize the *pose* error, not the
+  % *coupling* error.  We need the pose error to evaluate performance.
+  % 
+  % ### seems we could also solve for the sensor fixture offset (in
+  % rotation) using similar linear methods.  The only thing we don't get
+  % from that is if there is some displacement of the sensor center of
+  % rotation wrt the stage.  Probably could get even that by linear
+  % equation.  
+  % 
+  % Also, I did not end up actually using the optimization with ASAP because
+  % it did not help.
+
+  % Intial value of x based on last run.  Initial initial value is all 1e-3,
   % giving what is (in our scaling) a small initial value.  This makes
   % optimization run much faster than all zeros, presumably because it
   % establishes the correct order of magnitude.
   persistent x;
   if (isempty(x))
-    x = ones(1, 9);
+    x = ones(1, 12) * 1e-3;
   end
 
   ofun = @(vec) ...
@@ -91,7 +110,7 @@ function [res] = find_pose_errors(data_file, options)
     x
   else
     fprintf(1, 'Not doing optimization.\n');
-    x = zeros(1, 9);
+    x = zeros(1, 12);
   end
 
   [X_err, pose_err_pvec, desired_pvec, measured_pvec, F_opt] = ofun(x);

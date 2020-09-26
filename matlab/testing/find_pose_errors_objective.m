@@ -1,28 +1,41 @@
-function [X_err, pose_err, desired_pose, measured_pose, F_opt] = ...
-      find_pose_errors_objective(x, vposes, F, options)
-% State for minimization is: [C(1:3) pose(1:6)], where C is the position (in
-% mm) of the light in the fixture (test pattern) coordinates and "pose" is a
-% pose vector adjustment to F (fixture transform, pose of ASAP in fixture
-% coordinates.)
+function [X_err, pose_err, desired_pose, measured_pose, F_so_opt, F_se_opt] = ...
+      find_pose_errors_objective(x, vposes, F_so_init, F_se_init, options)
 %
-% X_err(9): The residual for optimization, scaled to mm. In X_err, we weight the
-%   rotation according to a moment, given angle in degrees and translation in
-%   mm. By default we use an unrealistically short moment, because rotation
-%   error dominates tip error, and rotation error can hardly be budged by this
-%   optimization.  With a realistic moment (50mm) what it does is make
-%   translation error a lot worse to bring it in line with the rotation error,
-%   buying only a tiny reduction in rotation error.
+% Arguments:
 %
-% pose_err(npoints, 6): the pose error, as a pose vector (stage end
-%   coordinates)
+% x: current state, additional transforms applied to F_so_init, F_se_init.
+%  [so_fix(1:6) se_fix(1:6)], where the source and sensor fixture are
+%   pos2trans() rotation vector poses (units m, rad).
+% 
+% vposes(n, 6, 2): pose2trans() poses, each row is one measurement point.
+%   vposes(:, :, 1) is the stage pose, vposes(:, :, options.pose_ix) is the pose
+%   solution being tested.
+% 
+% F_so_init, F_se_init:
+%   The initial source and sensor fixture transforms, as transform matrices.
+%  
+% options: the find_pose_errors options struct.  
+% 
+% Return values:
+% X_err(9): The residual for optimization, scaled to meters. In X_err, we
+%   weight the rotation according to a moment, an offset at which the
+%   angular error becomes a translation error. By default we use an
+%   unrealistically short moment, because rotation error dominates tip error,
+%   and rotation error can hardly be budged by this optimization.  With a
+%   realistic moment (50mm) what it does is make translation error a lot worse
+%   to bring it in line with the rotation error, buying only a tiny reduction
+%   in rotation error.
 %
-% desired_pose(npoints, 6): the desired pose, as a pose vector (stage end
+% pose_err(npoints, 6): the pose error, as a pose pose2trans() pose.
+%
+% desired_pose(npoints, 6): the desired pose2trans() pose, the pose of the
+%   sensor in source coordinates.  
 %   coordinates). This only differs from stage pose when X is nonzero, which
 %   isn't the case if we don't do optimization, and are just using this
 %   function to find the residuals. The measured pose is desired * pose_err.
 %
 % measured_pose(npoints, 6): the measured pose, as a pose vector.
-### 1e3 1e-3
+
 % Fixture transform F is what we are now calling the source fixture, the
 % light center C is a subset of the sensor fixture pose.  And maybe the
 % end_tf_offset has something to do with sensor fixture?  What we were
