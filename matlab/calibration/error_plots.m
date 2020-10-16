@@ -1,6 +1,7 @@
+%Generate plots usign the error between optimized poses and poses
+%calculated with forward kinematics method 
 
 n = size(poses,1);
-
 %exaggerated dispacement error plot
 %{
 k = 3;
@@ -36,12 +37,12 @@ legend('Error', 'FK pose')
 %dispacement error plot
 figure(2)
 for i = 1:n
-  x = [fk_poses_tr(i,1), poses_tr(i,1)];
-  y = [fk_poses_tr(i,2), poses_tr(i,2)];
-  z = [fk_poses_tr(i,3), poses_tr(i,3)];
+  x = [fk_poses(i,1), poses(i,1)];
+  y = [fk_poses(i,2), poses(i,2)];
+  z = [fk_poses(i,3), poses(i,3)];
   plot3(x,y,z, 'r')
   hold on
-  scatter3(fk_poses_tr(i,1), fk_poses_tr(i,2), fk_poses_tr(i,3), 'b*')
+  scatter3(fk_poses(i,1), fk_poses(i,2), fk_poses(i,3), 'b*')
 end
 
 xlabel('X')
@@ -61,11 +62,11 @@ histogram(sqrt(tr_err.^2))
 
 title('Translation error')
 
-savefig('D:\ilemt\cal_data\dipole_UR44\1Fix Quadrupole\Traslation histogram.fig')
+%savefig('D:\ilemt\cal_data\dipole_UR44\1Fix Quadrupole\Traslation histogram.fig')
 
 
 
-%rotatio error frequency across data points
+%rotation error frequency across data points
 figure(5)
 histogram(sqrt(rot_err.^2))
 

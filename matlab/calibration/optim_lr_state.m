@@ -3,14 +3,7 @@
 
 %load the last low rate calibration values (positions, moments, source and sensor fixtures)
 load('n_res_qpole_lr_cal'); 
-%{
-hr_cal.sensor_moment = [
-    0.015 0 0
-    0 0.015 0
-    0 0 0.015];
 
-hr_cal.sensor_pos = zeros(3, 3);
-%}
 state0 = calibration2state(lr_cal, lr_so_fix, lr_se_fix); %from the calibration values and old source and sensor fixture create an input state for the optimization
 %state0 = initial_state();
 

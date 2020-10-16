@@ -3,11 +3,7 @@ function [state] = initial_state (~)
 
 %dipole gains
 d_source_gains = [1 1 1];
-d_sensor_gains = [0.1, 0.1, 0.1]; %for the hr sensor gains are 0.2
-
-%quadrupole gains
-%q_source_gains = [0.1 0.1 0.1];
-%q_sensor_gains = [0.02 0.02 0.02]; %for the hr sensor gains are 0.02
+d_sensor_gains = [0.1, 0.1, 0.1]; 
 
 
 % Coil approximate measured positions for dipole approximating cube-corner
@@ -28,38 +24,22 @@ cal.d_source_pos = [
 % source is weaker.  It would be possible to calibrate the new source using
 % the old procedure, using data from just the three orthogonal positions.
 cal.d_source_moment = diag(d_source_gains);
-%cal.source_moment(2,2) = -cal.source_moment(2,2); %temporary to compare with old code
 
-%cal.d_sensor_pos = zeros(3, 3);
-
-cal.d_sensor_pos = [ %new sensor position
+cal.d_sensor_pos = [
     0.015 0 0
     0 0.015 0
     -0.015 -0.015 0];
   
 cal.d_sensor_moment = diag(d_sensor_gains); 
-%cal.sensor_moment(2,2) = -cal.sensor_moment(2,2); %temporary to compare with old code
 
 
-%quadrupole calibration
+%we start from quadrupole initial values of 0
 cal.q_source_pos = zeros(3, 3);
-%{
-cal.q_source_pos = [
-    0.044 0 0
-    0 0.044 0
-    -0.044 -0.044 0];
-%}
-%cal.q_source_moment = diag(q_source_gains);
+
 cal.q_source_moment = zeros(3,3);
 
 cal.q_sensor_pos = zeros(3, 3);
-%{
-cal.q_sensor_pos = [ 
-    0.015 0 0
-    0 0.015 0
-    -0.015 -0.015 0];
-%}
-%cal.q_sensor_moment = diag(q_sensor_gains); 
+
 cal.q_sensor_moment = zeros(3,3);
 
 cal.q_source_distance = 0.004;

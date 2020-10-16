@@ -116,7 +116,6 @@ if (any(strcmp('q_se_dist', freeze)))
   freeze_ixs = [freeze_ixs qp_se_dist];
 end
 
- 
   for ix = freeze_ixs
     bounds(:, ix) = state0(ix);
   end

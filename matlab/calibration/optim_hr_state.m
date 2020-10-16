@@ -3,21 +3,6 @@
 
 %load the last high rate calibration values (positions, moments, source and sensor fixtures)
 load('onlydipole_middata_XYZrot_hr_cal');
-%quadrupole_calibration
-%{
-hr_cal.d_source_moment = [
-    1 0 0
-    0 1 0
-    0 0 1];
-
-hr_cal.d_sensor_moment = [
-    0.2 0 0
-    0 0.2 0
-    0 0 0.2];
- %} 
-%hr_cal.q_source_distance = 0.004;
-
-%hr_cal.q_sensor_distance = 0.0005;
 
 %from the calibration values and source and sensor fixtures create an input state for the optimization
 state0 = calibration2state(hr_cal, hr_so_fix, hr_se_fix);

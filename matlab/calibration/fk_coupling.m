@@ -1,3 +1,4 @@
+%Coupling matrix calculated using dipole model
 function [coupling] = fk_coupling (P, so_pos, so_mo, se_pos, se_mo)
 
      for i = 1:3 %source index 

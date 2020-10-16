@@ -38,6 +38,7 @@ function [residue, pred_coupling] = calibrate_objective (state, stage_poses, cou
         st = vector2tr(stage_poses(i,:)); 
         
         %transform matrix, sensor with respect to the source, of i pose
+        %forward kinematics 
         P = source_fixture * st * sensor_fixture;
         
         %calculattion of predicted coupling matrix with the forward kinematic approach

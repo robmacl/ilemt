@@ -1,11 +1,13 @@
-function [poses, resnorms] = pose_calculation(data, state0)
 % pose optimization solving non linear leat-square problem
+function [poses, resnorms] = pose_calculation(data, state0)
     pose0 = [0.22,0,0,0,0,0];
-    bound_x_tr = repmat([0;0.4], 1, 1);
-    bounds_tr = repmat([-0.4;0.4], 1, 2);
-    bounds_rot = repmat([-3*pi;3*pi], 1, 3);
+    %set of pose bounds
+    bound_x_tr = repmat([0;0.4], 1, 1); %x traslation bound
+    %y and z traslation bounds
+    bounds_tr = repmat([-0.4;0.4], 1, 2); 
+    %rotation bounds
+    bounds_rot = repmat([-3*pi;3*pi], 1, 3); 
     bounds = [bound_x_tr, bounds_tr, bounds_rot];
-    %bounds = repmat([-Inf; Inf], 1, 6);
     
     
     counter = 0;
@@ -14,7 +16,7 @@ function [poses, resnorms] = pose_calculation(data, state0)
     residuals = [];
     exitflags = [];
    
-    
+    %set options for the pose optimization
     option = optimset('Display','off', 'TolFun',1e-09, 'MaxIter', 1000, 'MaxFunEvals', 60000);
     
     n=size(data,1);
@@ -26,7 +28,6 @@ function [poses, resnorms] = pose_calculation(data, state0)
         format long
         %pose0 = pose_new;
         opt_poses = [opt_poses; pose_new];
-        %norm_res = resnorm/norm(Cdes);
         resnorms = [resnorms; resnorm];
         residuals = [residuals; residual];
         exitflags = [exitflags; exitflag];
@@ -36,8 +37,10 @@ function [poses, resnorms] = pose_calculation(data, state0)
             counter = counter + 1;
         end
     end
+    %caconical rotation vectors
     [poses] = canonical_rot_vec(opt_poses);
    
+    %print th enumber of optimization failure
     if (counter > 0)
         fprintf(1, 'Optimization failed %d times.\n', counter);
     end

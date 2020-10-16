@@ -1,4 +1,6 @@
-        function [do_stop] = print_state(state,~,~)
+%This function print the calibration struct, source and sensor fixtures of
+%which is composed the state vector
+function [do_stop] = print_state(state,~,~)
 state_defs;
         cal = state2calibration(state, true);
         calibration.d_source_pos = cal.d_source_pos; 
@@ -10,6 +12,8 @@ state_defs;
         calibration.q_sensor_pos = cal.q_sensor_pos; 
         calibration.q_sensor_moment = cal.q_sensor_moment;
         ctab = struct2table(calibration);
+        %display in two separate rows dipole calibration and quadrupole
+        %calibration
         disp(ctab(:, 1:4));
         disp(ctab(:, 5:8));
         
@@ -22,14 +26,14 @@ state_defs;
         
         fprintf(1, 'Source fix: [');
         sf = [state(source_fixture_pos_slice), state(source_fixture_orientation_slice)];
-        for (ix = 1:length(sf))
+        for ix = 1:length(sf)
           fprintf(1, '%.5f ', sf(ix));
         end
         fprintf(1, ']\n');
 
         fprintf(1, 'Sensor fix: [');
         sf = [state(sensor_fixture_pos_slice), state(sensor_fixture_orientation_slice)];
-        for (ix = 1:length(sf))
+        for ix = 1:length(sf)
           fprintf(1, '%.5f ', sf(ix));
         end
         fprintf(1, ']\n');

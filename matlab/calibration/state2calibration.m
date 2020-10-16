@@ -67,7 +67,9 @@
         state(qp_sensor_y_moment_slice)' ...  
         state(qp_sensor_z_moment_slice)'];
      
+     %quadrupole source distance
      calibration.q_source_distance = state(qp_so_dist); 
-    
+     
+     %quadrupole sensor distance
      calibration.q_sensor_distance = state(qp_se_dist); 
 end

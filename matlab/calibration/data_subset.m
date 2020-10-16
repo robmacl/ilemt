@@ -1,4 +1,4 @@
-%create a subset of calibration data
+%Create a subset of calibration data in different ways
 %dat = getreal('bigdata_Zrot.dat');
 %dat = XZrot_data_combination('bigdata_Zrot.dat','bigdata_XZrot.dat', 90);
 dat = XYZrot_data_combination('bigdata_Zrot.dat','bigdata_XZrot.dat', 90, 'bigdata_XYZrot.dat', 90);
