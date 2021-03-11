@@ -29,6 +29,7 @@
 		<Item Name="ilemt_status.ctl" Type="VI" URL="../ilemt_status.ctl"/>
 		<Item Name="dac_test_pattern.vi" Type="VI" URL="../dac_test_pattern.vi"/>
 		<Item Name="ac_dc.ctl" Type="VI" URL="../ac_dc.ctl"/>
+		<Item Name="ilemt_test.vi" Type="VI" URL="../ilemt_test.vi"/>
 		<Item Name="Dependencies" Type="Dependencies">
 			<Item Name="vi.lib" Type="Folder">
 				<Item Name="BuildHelpPath.vi" Type="VI" URL="/&lt;vilib&gt;/Utility/error.llb/BuildHelpPath.vi"/>
