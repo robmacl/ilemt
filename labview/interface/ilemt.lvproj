@@ -30,6 +30,10 @@
 		<Item Name="dac_test_pattern.vi" Type="VI" URL="../dac_test_pattern.vi"/>
 		<Item Name="ac_dc.ctl" Type="VI" URL="../ac_dc.ctl"/>
 		<Item Name="ilemt_test.vi" Type="VI" URL="../ilemt_test.vi"/>
+		<Item Name="carrier_amplitudes.ctl" Type="VI" URL="../carrier_amplitudes.ctl"/>
+		<Item Name="IO_params.ctl" Type="VI" URL="../IO_params.ctl"/>
+		<Item Name="time_shift.vi" Type="VI" URL="../time_shift.vi"/>
+		<Item Name="gen_carrier_channels.vi" Type="VI" URL="../gen_carrier_channels.vi"/>
 		<Item Name="Dependencies" Type="Dependencies">
 			<Item Name="vi.lib" Type="Folder">
 				<Item Name="BuildHelpPath.vi" Type="VI" URL="/&lt;vilib&gt;/Utility/error.llb/BuildHelpPath.vi"/>
