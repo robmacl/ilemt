@@ -14,17 +14,12 @@
 		<Property Name="server.vi.propertiesEnabled" Type="Bool">true</Property>
 		<Property Name="specify.custom.address" Type="Bool">false</Property>
 		<Item Name="Shortcuts" Type="Folder">
-			<Item Name="ilemt_globals.vi" Type="VI" URL="../ilemt_globals.vi"/>
-			<Item Name="kf_demodulator.vi" Type="VI" URL="../kf_demodulator.vi"/>
-			<Item Name="demod_limiter.vi" Type="VI" URL="../demod_limiter.vi"/>
-			<Item Name="kf_demod_update.vi" Type="VI" URL="../kf_demod_update.vi"/>
-			<Item Name="ASIO_Input_Output.vi" Type="VI" URL="../waveio/ASIO_Input_Output.vi"/>
+			<Item Name="ilemt_globals.vi" Type="VI" URL="../main/ilemt_globals.vi"/>
 		</Item>
 		<Item Name="ilemt_ui.vi" Type="VI" URL="../ilemt_ui.vi"/>
 		<Item Name="stage_calibration.vi" Type="VI" URL="../../motion/client/stage_calibration.vi"/>
-		<Item Name="ilemt_vars.lvlib" Type="Library" URL="../ilemt_vars.lvlib"/>
-		<Item Name="dac_test_pattern.vi" Type="VI" URL="../dac_test_pattern.vi"/>
-		<Item Name="ilemt_test.vi" Type="VI" URL="../ilemt_test.vi"/>
+		<Item Name="ilemt_vars.lvlib" Type="Library" URL="../main/ilemt_vars.lvlib"/>
+		<Item Name="dac_test_pattern.vi" Type="VI" URL="../testing/dac_test_pattern.vi"/>
 		<Item Name="Dependencies" Type="Dependencies">
 			<Item Name="vi.lib" Type="Folder">
 				<Item Name="BuildHelpPath.vi" Type="VI" URL="/&lt;vilib&gt;/Utility/error.llb/BuildHelpPath.vi"/>
@@ -65,22 +60,6 @@
 				<Item Name="Three Button Dialog.vi" Type="VI" URL="/&lt;vilib&gt;/Utility/error.llb/Three Button Dialog.vi"/>
 				<Item Name="Trim Whitespace.vi" Type="VI" URL="/&lt;vilib&gt;/Utility/error.llb/Trim Whitespace.vi"/>
 				<Item Name="whitespace.ctl" Type="VI" URL="/&lt;vilib&gt;/Utility/error.llb/whitespace.ctl"/>
-				<Item Name="System Exec.vi" Type="VI" URL="/&lt;vilib&gt;/Platform/system.llb/System Exec.vi"/>
-				<Item Name="Registry Simplify Data Type.vi" Type="VI" URL="/&lt;vilib&gt;/registry/registry.llb/Registry Simplify Data Type.vi"/>
-				<Item Name="Registry WinErr-LVErr.vi" Type="VI" URL="/&lt;vilib&gt;/registry/registry.llb/Registry WinErr-LVErr.vi"/>
-				<Item Name="Registry refnum.ctl" Type="VI" URL="/&lt;vilib&gt;/registry/registry.llb/Registry refnum.ctl"/>
-				<Item Name="Registry Handle Master.vi" Type="VI" URL="/&lt;vilib&gt;/registry/registry.llb/Registry Handle Master.vi"/>
-				<Item Name="Read Registry Value STR.vi" Type="VI" URL="/&lt;vilib&gt;/registry/registry.llb/Read Registry Value STR.vi"/>
-				<Item Name="Read Registry Value DWORD.vi" Type="VI" URL="/&lt;vilib&gt;/registry/registry.llb/Read Registry Value DWORD.vi"/>
-				<Item Name="Read Registry Value.vi" Type="VI" URL="/&lt;vilib&gt;/registry/registry.llb/Read Registry Value.vi"/>
-				<Item Name="Read Registry Value Simple STR.vi" Type="VI" URL="/&lt;vilib&gt;/registry/registry.llb/Read Registry Value Simple STR.vi"/>
-				<Item Name="Read Registry Value Simple U32.vi" Type="VI" URL="/&lt;vilib&gt;/registry/registry.llb/Read Registry Value Simple U32.vi"/>
-				<Item Name="Read Registry Value Simple.vi" Type="VI" URL="/&lt;vilib&gt;/registry/registry.llb/Read Registry Value Simple.vi"/>
-				<Item Name="Registry SAM.ctl" Type="VI" URL="/&lt;vilib&gt;/registry/registry.llb/Registry SAM.ctl"/>
-				<Item Name="Registry RtKey.ctl" Type="VI" URL="/&lt;vilib&gt;/registry/registry.llb/Registry RtKey.ctl"/>
-				<Item Name="STR_ASCII-Unicode.vi" Type="VI" URL="/&lt;vilib&gt;/registry/registry.llb/STR_ASCII-Unicode.vi"/>
-				<Item Name="Registry View.ctl" Type="VI" URL="/&lt;vilib&gt;/registry/registry.llb/Registry View.ctl"/>
-				<Item Name="Open Registry Key.vi" Type="VI" URL="/&lt;vilib&gt;/registry/registry.llb/Open Registry Key.vi"/>
 				<Item Name="TCP Listen List Operations.ctl" Type="VI" URL="/&lt;vilib&gt;/Utility/tcp.llb/TCP Listen List Operations.ctl"/>
 				<Item Name="TCP Listen Internal List.vi" Type="VI" URL="/&lt;vilib&gt;/Utility/tcp.llb/TCP Listen Internal List.vi"/>
 				<Item Name="Internecine Avoider.vi" Type="VI" URL="/&lt;vilib&gt;/Utility/tcp.llb/Internecine Avoider.vi"/>
@@ -99,105 +78,81 @@
 				<Item Name="Read From Spreadsheet File (string).vi" Type="VI" URL="/&lt;vilib&gt;/Utility/file.llb/Read From Spreadsheet File (string).vi"/>
 				<Item Name="Space Constant.vi" Type="VI" URL="/&lt;vilib&gt;/dlg_ctls.llb/Space Constant.vi"/>
 			</Item>
-			<Item Name="apply_cal.vi" Type="VI" URL="../apply_cal.vi"/>
-			<Item Name="cal_error.vi" Type="VI" URL="../cal_error.vi"/>
-			<Item Name="cal_objective_fun.vi" Type="VI" URL="../cal_objective_fun.vi"/>
-			<Item Name="calibrate_ref.vi" Type="VI" URL="../calibrate_ref.vi"/>
-			<Item Name="calibration.ctl" Type="VI" URL="../calibration.ctl"/>
-			<Item Name="calibration_to_vector.vi" Type="VI" URL="../calibration_to_vector.vi"/>
-			<Item Name="carrier_waveforms.vi" Type="VI" URL="../carrier_waveforms.vi"/>
-			<Item Name="demod_low.vi" Type="VI" URL="../demod_low.vi"/>
-			<Item Name="display_source.ctl" Type="VI" URL="../display_source.ctl"/>
-			<Item Name="extract_carriers.vi" Type="VI" URL="../extract_carriers.vi"/>
-			<Item Name="filter_params.ctl" Type="VI" URL="../filter_params.ctl"/>
-			<Item Name="find_calibration.vi" Type="VI" URL="../find_calibration.vi"/>
-			<Item Name="get_averaging_params.vi" Type="VI" URL="../get_averaging_params.vi"/>
-			<Item Name="get_modulation_info.vi" Type="VI" URL="../get_modulation_info.vi"/>
-			<Item Name="distance_processing.vi" Type="VI" URL="../distance_processing.vi"/>
-			<Item Name="ilemt_config.ctl" Type="VI" URL="../ilemt_config.ctl"/>
-			<Item Name="io_config.ctl" Type="VI" URL="../io_config.ctl"/>
+			<Item Name="apply_cal.vi" Type="VI" URL="../calibration/apply_cal.vi"/>
+			<Item Name="cal_error.vi" Type="VI" URL="../calibration/cal_error.vi"/>
+			<Item Name="cal_objective_fun.vi" Type="VI" URL="../calibration/cal_objective_fun.vi"/>
+			<Item Name="calibrate_ref.vi" Type="VI" URL="../main/calibrate_ref.vi"/>
+			<Item Name="calibration.ctl" Type="VI" URL="../calibration/calibration.ctl"/>
+			<Item Name="calibration_to_vector.vi" Type="VI" URL="../calibration/calibration_to_vector.vi"/>
+			<Item Name="carrier_waveforms.vi" Type="VI" URL="../processing/carrier_waveforms.vi"/>
+			<Item Name="demod_low.vi" Type="VI" URL="../processing/demod_low.vi"/>
+			<Item Name="display_source.ctl" Type="VI" URL="../gui/display_source.ctl"/>
+			<Item Name="extract_carriers.vi" Type="VI" URL="../gui/extract_carriers.vi"/>
+			<Item Name="filter_params.ctl" Type="VI" URL="../processing/filter_params.ctl"/>
+			<Item Name="find_calibration.vi" Type="VI" URL="../calibration/find_calibration.vi"/>
+			<Item Name="get_modulation_info.vi" Type="VI" URL="../processing/get_modulation_info.vi"/>
+			<Item Name="distance_processing.vi" Type="VI" URL="../calibration/distance_processing.vi"/>
+			<Item Name="ilemt_config.ctl" Type="VI" URL="../processing/ilemt_config.ctl"/>
 			<Item Name="kalman_filter.ctl" Type="VI" URL="../../utilities/kalman_filter.ctl"/>
 			<Item Name="kf_init.vi" Type="VI" URL="../../utilities/kf_init.vi"/>
 			<Item Name="kf_set_params.vi" Type="VI" URL="../../utilities/kf_set_params.vi"/>
 			<Item Name="kf_update.vi" Type="VI" URL="../../utilities/kf_update.vi"/>
 			<Item Name="lvanlys.dll" Type="Document" URL="/&lt;resource&gt;/lvanlys.dll"/>
-			<Item Name="mag_globals.vi" Type="VI" URL="../mag_globals.vi"/>
-			<Item Name="measurements.ctl" Type="VI" URL="../measurements.ctl"/>
-			<Item Name="modulation_info.ctl" Type="VI" URL="../modulation_info.ctl"/>
-			<Item Name="my_spectrogram_display.vi" Type="VI" URL="../my_spectrogram_display.vi"/>
-			<Item Name="my_stft.vi" Type="VI" URL="../my_stft.vi"/>
-			<Item Name="noise_floor.vi" Type="VI" URL="../noise_floor.vi"/>
-			<Item Name="notch_and_cut.vi" Type="VI" URL="../notch_and_cut.vi"/>
-			<Item Name="predict_carriers.vi" Type="VI" URL="../predict_carriers.vi"/>
-			<Item Name="state_to_complex.vi" Type="VI" URL="../state_to_complex.vi"/>
-			<Item Name="stft_demodulate.vi" Type="VI" URL="../stft_demodulate.vi"/>
-			<Item Name="stft_demodulate_low.vi" Type="VI" URL="../stft_demodulate_low.vi"/>
-			<Item Name="stft_params.ctl" Type="VI" URL="../stft_params.ctl"/>
-			<Item Name="trace_display.vi" Type="VI" URL="../trace_display.vi"/>
-			<Item Name="vector_to_calibration.vi" Type="VI" URL="../vector_to_calibration.vi"/>
-			<Item Name="trace_stats.ctl" Type="VI" URL="../trace_stats.ctl"/>
-			<Item Name="averaging_filter_params.ctl" Type="VI" URL="../averaging_filter_params.ctl"/>
-			<Item Name="offline_options.ctl" Type="VI" URL="../offline_options.ctl"/>
-			<Item Name="Tc filter.vi" Type="VI" URL="../Tc filter.vi"/>
-			<Item Name="WaveIO_Play.vi" Type="VI" URL="../waveio/WaveIO.llb/WaveIO_Play.vi"/>
-			<Item Name="WaveIO_Open.vi" Type="VI" URL="../waveio/WaveIO.llb/WaveIO_Open.vi"/>
-			<Item Name="WaveIO_Start.vi" Type="VI" URL="../waveio/WaveIO.llb/WaveIO_Start.vi"/>
-			<Item Name="WaveIO_Stop.vi" Type="VI" URL="../waveio/WaveIO.llb/WaveIO_Stop.vi"/>
-			<Item Name="WaveIO_Close.vi" Type="VI" URL="../waveio/WaveIO.llb/WaveIO_Close.vi"/>
-			<Item Name="ASIO_Informations.ctl" Type="VI" URL="../waveio/WaveIO.llb/ASIO_Informations.ctl"/>
-			<Item Name="WaveIO_GetErrText.vi" Type="VI" URL="../waveio/WaveIO.llb/WaveIO_GetErrText.vi"/>
-			<Item Name="WaveIO_GetInfo_ASIO.vi" Type="VI" URL="../waveio/WaveIO.llb/WaveIO_GetInfo_ASIO.vi"/>
-			<Item Name="WaveIO_ASIO_ControlPanel.vi" Type="VI" URL="../waveio/WaveIO.llb/WaveIO_ASIO_ControlPanel.vi"/>
-			<Item Name="WindowsVersion.vi" Type="VI" URL="../waveio/WaveIO.llb/WindowsVersion.vi"/>
-			<Item Name="WaveIO_OpenControlPanel.vi" Type="VI" URL="../waveio/WaveIO.llb/WaveIO_OpenControlPanel.vi"/>
-			<Item Name="SoundHandle.ctl" Type="VI" URL="../waveio/WaveIO.llb/SoundHandle.ctl"/>
-			<Item Name="WaveIO_Record.vi" Type="VI" URL="../waveio/WaveIO.llb/WaveIO_Record.vi"/>
-			<Item Name="WaveIO_About.vi" Type="VI" URL="../waveio/WaveIO.llb/WaveIO_About.vi"/>
-			<Item Name="WaveIO.dll" Type="Document" URL="../waveio/WaveIO.dll"/>
-			<Item Name="Advapi32.dll" Type="Document" URL="Advapi32.dll">
-				<Property Name="NI.PreserveRelativePath" Type="Bool">true</Property>
-			</Item>
-			<Item Name="kernel32.dll" Type="Document" URL="kernel32.dll">
-				<Property Name="NI.PreserveRelativePath" Type="Bool">true</Property>
-			</Item>
-			<Item Name="trace_channel.ctl" Type="VI" URL="../trace_channel.ctl"/>
-			<Item Name="levels_selector.ctl" Type="VI" URL="../levels_selector.ctl"/>
-			<Item Name="Level selector 1.ctl" Type="VI" URL="../Level selector 1.ctl"/>
-			<Item Name="Level selector 2.ctl" Type="VI" URL="../Level selector 2.ctl"/>
-			<Item Name="Level selector 3.ctl" Type="VI" URL="../Level selector 3.ctl"/>
-			<Item Name="Level selector 4.ctl" Type="VI" URL="../Level selector 4.ctl"/>
-			<Item Name="demodulate_all.vi" Type="VI" URL="../demodulate_all.vi"/>
-			<Item Name="frequency_display_tabs.ctl" Type="VI" URL="../frequency_display_tabs.ctl"/>
-			<Item Name="axis_name.ctl" Type="VI" URL="../axis_name.ctl"/>
-			<Item Name="split_averaging_filter_nu.vi" Type="VI" URL="../split_averaging_filter_nu.vi"/>
-			<Item Name="my_fold_windowed_signal.vi" Type="VI" URL="../my_fold_windowed_signal.vi"/>
-			<Item Name="log_data.vi" Type="VI" URL="../log_data.vi"/>
-			<Item Name="get_input.vi" Type="VI" URL="../get_input.vi"/>
-			<Item Name="coupling_to_string.vi" Type="VI" URL="../coupling_to_string.vi"/>
-			<Item Name="complex_to_string.vi" Type="VI" URL="../complex_to_string.vi"/>
-			<Item Name="log_mode.ctl" Type="VI" URL="../log_mode.ctl"/>
-			<Item Name="phase_correct_coupling.vi" Type="VI" URL="../phase_correct_coupling.vi"/>
-			<Item Name="trace_info.ctl" Type="VI" URL="../trace_info.ctl"/>
-			<Item Name="extract_noise.vi" Type="VI" URL="../extract_noise.vi"/>
-			<Item Name="listen_tcp_data_conn.vi" Type="VI" URL="../listen_tcp_data_conn.vi"/>
-			<Item Name="read_input_data.vi" Type="VI" URL="../read_input_data.vi"/>
-			<Item Name="logger_queue.vi" Type="VI" URL="../logger_queue.vi"/>
-			<Item Name="spectrum_display.vi" Type="VI" URL="../spectrum_display.vi"/>
-			<Item Name="spectrum_parameters.ctl" Type="VI" URL="../spectrum_parameters.ctl"/>
-			<Item Name="coupling_selector.ctl" Type="VI" URL="../coupling_selector.ctl"/>
-			<Item Name="output_options.ctl" Type="VI" URL="../output_options.ctl"/>
-			<Item Name="selector_weights.vi" Type="VI" URL="../selector_weights.vi"/>
-			<Item Name="tcp_write_carriers.vi" Type="VI" URL="../tcp_write_carriers.vi"/>
-			<Item Name="fft_demodulator.vi" Type="VI" URL="../fft_demodulator.vi"/>
-			<Item Name="fft_demod_update.vi" Type="VI" URL="../fft_demod_update.vi"/>
-			<Item Name="get_averaging_params_fd.vi" Type="VI" URL="../get_averaging_params_fd.vi"/>
-			<Item Name="split_averaging_filter_cdb.vi" Type="VI" URL="../split_averaging_filter_cdb.vi"/>
-			<Item Name="split_averaging_filter_3cdb.vi" Type="VI" URL="../split_averaging_filter_3cdb.vi"/>
-			<Item Name="fft_kf_update.vi" Type="VI" URL="../fft_kf_update.vi"/>
-			<Item Name="detrend.vi" Type="VI" URL="../detrend.vi"/>
-			<Item Name="saf_cdb_update.vi" Type="VI" URL="../saf_cdb_update.vi"/>
-			<Item Name="detrend_mode.ctl" Type="VI" URL="../detrend_mode.ctl"/>
-			<Item Name="detrend_and_limit_cdb.vi" Type="VI" URL="../detrend_and_limit_cdb.vi"/>
+			<Item Name="mag_globals.vi" Type="VI" URL="../calibration/mag_globals.vi"/>
+			<Item Name="measurements.ctl" Type="VI" URL="../gui/measurements.ctl"/>
+			<Item Name="modulation_info.ctl" Type="VI" URL="../processing/modulation_info.ctl"/>
+			<Item Name="my_spectrogram_display.vi" Type="VI" URL="../gui/my_spectrogram_display.vi"/>
+			<Item Name="my_stft.vi" Type="VI" URL="../processing/my_stft.vi"/>
+			<Item Name="noise_floor.vi" Type="VI" URL="../gui/noise_floor.vi"/>
+			<Item Name="notch_and_cut.vi" Type="VI" URL="../processing/notch_and_cut.vi"/>
+			<Item Name="predict_carriers.vi" Type="VI" URL="../processing/predict_carriers.vi"/>
+			<Item Name="state_to_complex.vi" Type="VI" URL="../processing/state_to_complex.vi"/>
+			<Item Name="stft_demodulate.vi" Type="VI" URL="../processing/stft_demodulate.vi"/>
+			<Item Name="stft_demodulate_low.vi" Type="VI" URL="../processing/stft_demodulate_low.vi"/>
+			<Item Name="stft_params.ctl" Type="VI" URL="../processing/stft_params.ctl"/>
+			<Item Name="trace_display.vi" Type="VI" URL="../gui/trace_display.vi"/>
+			<Item Name="vector_to_calibration.vi" Type="VI" URL="../calibration/vector_to_calibration.vi"/>
+			<Item Name="trace_stats.ctl" Type="VI" URL="../gui/trace_stats.ctl"/>
+			<Item Name="averaging_filter_params.ctl" Type="VI" URL="../processing/averaging_filter_params.ctl"/>
+			<Item Name="offline_options.ctl" Type="VI" URL="../gui/offline_options.ctl"/>
+			<Item Name="Tc filter.vi" Type="VI" URL="../processing/Tc filter.vi"/>
+			<Item Name="trace_channel.ctl" Type="VI" URL="../gui/trace_channel.ctl"/>
+			<Item Name="levels_selector.ctl" Type="VI" URL="../gui/levels_selector.ctl"/>
+			<Item Name="Level selector 1.ctl" Type="VI" URL="../gui/Level selector 1.ctl"/>
+			<Item Name="Level selector 2.ctl" Type="VI" URL="../gui/Level selector 2.ctl"/>
+			<Item Name="Level selector 3.ctl" Type="VI" URL="../gui/Level selector 3.ctl"/>
+			<Item Name="Level selector 4.ctl" Type="VI" URL="../gui/Level selector 4.ctl"/>
+			<Item Name="demodulate_all.vi" Type="VI" URL="../processing/demodulate_all.vi"/>
+			<Item Name="frequency_display_tabs.ctl" Type="VI" URL="../gui/frequency_display_tabs.ctl"/>
+			<Item Name="axis_name.ctl" Type="VI" URL="../gui/axis_name.ctl"/>
+			<Item Name="my_fold_windowed_signal.vi" Type="VI" URL="../processing/my_fold_windowed_signal.vi"/>
+			<Item Name="log_data.vi" Type="VI" URL="../calibration/log_data.vi"/>
+			<Item Name="get_input.vi" Type="VI" URL="../system/get_input.vi"/>
+			<Item Name="coupling_to_string.vi" Type="VI" URL="../calibration/coupling_to_string.vi"/>
+			<Item Name="complex_to_string.vi" Type="VI" URL="../calibration/complex_to_string.vi"/>
+			<Item Name="log_mode.ctl" Type="VI" URL="../calibration/log_mode.ctl"/>
+			<Item Name="phase_correct_coupling.vi" Type="VI" URL="../processing/phase_correct_coupling.vi"/>
+			<Item Name="trace_info.ctl" Type="VI" URL="../gui/trace_info.ctl"/>
+			<Item Name="extract_noise.vi" Type="VI" URL="../gui/extract_noise.vi"/>
+			<Item Name="listen_tcp_data_conn.vi" Type="VI" URL="../system/listen_tcp_data_conn.vi"/>
+			<Item Name="read_input_data.vi" Type="VI" URL="../system/read_input_data.vi"/>
+			<Item Name="logger_queue.vi" Type="VI" URL="../calibration/logger_queue.vi"/>
+			<Item Name="spectrum_display.vi" Type="VI" URL="../gui/spectrum_display.vi"/>
+			<Item Name="spectrum_parameters.ctl" Type="VI" URL="../gui/spectrum_parameters.ctl"/>
+			<Item Name="coupling_selector.ctl" Type="VI" URL="../gui/coupling_selector.ctl"/>
+			<Item Name="output_options.ctl" Type="VI" URL="../gui/output_options.ctl"/>
+			<Item Name="selector_weights.vi" Type="VI" URL="../gui/selector_weights.vi"/>
+			<Item Name="tcp_write_carriers.vi" Type="VI" URL="../system/tcp_write_carriers.vi"/>
+			<Item Name="fft_demodulator.vi" Type="VI" URL="../processing/fft_demodulator.vi"/>
+			<Item Name="fft_demod_update.vi" Type="VI" URL="../processing/fft_demod_update.vi"/>
+			<Item Name="get_averaging_params_fd.vi" Type="VI" URL="../processing/get_averaging_params_fd.vi"/>
+			<Item Name="split_averaging_filter_cdb.vi" Type="VI" URL="../processing/split_averaging_filter_cdb.vi"/>
+			<Item Name="split_averaging_filter_3cdb.vi" Type="VI" URL="../processing/split_averaging_filter_3cdb.vi"/>
+			<Item Name="fft_kf_update.vi" Type="VI" URL="../processing/fft_kf_update.vi"/>
+			<Item Name="detrend.vi" Type="VI" URL="../processing/detrend.vi"/>
+			<Item Name="saf_cdb_update.vi" Type="VI" URL="../processing/saf_cdb_update.vi"/>
+			<Item Name="detrend_mode.ctl" Type="VI" URL="../processing/detrend_mode.ctl"/>
+			<Item Name="detrend_and_limit_cdb.vi" Type="VI" URL="../processing/detrend_and_limit_cdb.vi"/>
 			<Item Name="kf_update_p_k.vi" Type="VI" URL="../../utilities/kf_update_p_k.vi"/>
 			<Item Name="move_to.vi" Type="VI" URL="../../motion/client/move_to.vi"/>
 			<Item Name="motion_command.ctl" Type="VI" URL="../../motion/server/motion_command.ctl"/>
@@ -207,21 +162,22 @@
 			<Item Name="motion_variables.ctl" Type="VI" URL="../../motion/client/motion_variables.ctl"/>
 			<Item Name="Motion command.vi" Type="VI" URL="../../motion/client/Motion command.vi"/>
 			<Item Name="averaged_asap_signals.vi" Type="VI" URL="../../micron/labview/calibration/averaged_asap_signals.vi"/>
-			<Item Name="STFT Spectrogram Display.vi" Type="VI" URL="../STFT Spectrogram Display.vi"/>
-			<Item Name="high_carrier_amplitudes.ctl" Type="VI" URL="../high_carrier_amplitudes.ctl"/>
-			<Item Name="sub_distance_processing.vi" Type="VI" URL="../sub_distance_processing.vi"/>
-			<Item Name="sub_distance_processing1.vi" Type="VI" URL="../sub_distance_processing1.vi"/>
-			<Item Name="ilemt_status.ctl" Type="VI" URL="../ilemt_status.ctl"/>
-			<Item Name="IO_params.ctl" Type="VI" URL="../IO_params.ctl"/>
-			<Item Name="carrier_amplitudes.ctl" Type="VI" URL="../carrier_amplitudes.ctl"/>
-			<Item Name="time_shift.vi" Type="VI" URL="../time_shift.vi"/>
-			<Item Name="gen_carrier_channels.vi" Type="VI" URL="../gen_carrier_channels.vi"/>
-			<Item Name="demodulate_card.vi" Type="VI" URL="../demodulate_card.vi"/>
-			<Item Name="sense_amplitudes.vi" Type="VI" URL="../sense_amplitudes.vi"/>
-			<Item Name="coupling_magnitude.vi" Type="VI" URL="../coupling_magnitude.vi"/>
-			<Item Name="display_options.ctl" Type="VI" URL="../display_options.ctl"/>
-			<Item Name="card_carrier_amplitudes.ctl" Type="VI" URL="../card_carrier_amplitudes.ctl"/>
-			<Item Name="averaged_ilemt_data.vi" Type="VI" URL="../averaged_ilemt_data.vi"/>
+			<Item Name="STFT Spectrogram Display.vi" Type="VI" URL="../gui/STFT Spectrogram Display.vi"/>
+			<Item Name="high_carrier_amplitudes.ctl" Type="VI" URL="../processing/high_carrier_amplitudes.ctl"/>
+			<Item Name="sub_distance_processing.vi" Type="VI" URL="../calibration/sub_distance_processing.vi"/>
+			<Item Name="sub_distance_processing1.vi" Type="VI" URL="../calibration/sub_distance_processing1.vi"/>
+			<Item Name="ilemt_status.ctl" Type="VI" URL="../main/ilemt_status.ctl"/>
+			<Item Name="IO_params.ctl" Type="VI" URL="../system/IO_params.ctl"/>
+			<Item Name="carrier_amplitudes.ctl" Type="VI" URL="../processing/carrier_amplitudes.ctl"/>
+			<Item Name="time_shift.vi" Type="VI" URL="../processing/time_shift.vi"/>
+			<Item Name="gen_carrier_channels.vi" Type="VI" URL="../processing/gen_carrier_channels.vi"/>
+			<Item Name="demodulate_card.vi" Type="VI" URL="../processing/demodulate_card.vi"/>
+			<Item Name="sense_amplitudes.vi" Type="VI" URL="../processing/sense_amplitudes.vi"/>
+			<Item Name="coupling_magnitude.vi" Type="VI" URL="../calibration/coupling_magnitude.vi"/>
+			<Item Name="display_options.ctl" Type="VI" URL="../gui/display_options.ctl"/>
+			<Item Name="card_carrier_amplitudes.ctl" Type="VI" URL="../processing/card_carrier_amplitudes.ctl"/>
+			<Item Name="averaged_ilemt_data.vi" Type="VI" URL="../calibration/averaged_ilemt_data.vi"/>
+			<Item Name="ac_dc.ctl" Type="VI" URL="../gui/ac_dc.ctl"/>
 		</Item>
 		<Item Name="Build Specifications" Type="Build"/>
 	</Item>
