@@ -22,18 +22,9 @@
 		</Item>
 		<Item Name="ilemt_ui.vi" Type="VI" URL="../ilemt_ui.vi"/>
 		<Item Name="stage_calibration.vi" Type="VI" URL="../../motion/client/stage_calibration.vi"/>
-		<Item Name="averaged_ilemt_data.vi" Type="VI" URL="../averaged_ilemt_data.vi"/>
 		<Item Name="ilemt_vars.lvlib" Type="Library" URL="../ilemt_vars.lvlib"/>
-		<Item Name="sub_distance_processing.vi" Type="VI" URL="../sub_distance_processing.vi"/>
-		<Item Name="sub_distance_processing1.vi" Type="VI" URL="../sub_distance_processing1.vi"/>
-		<Item Name="ilemt_status.ctl" Type="VI" URL="../ilemt_status.ctl"/>
 		<Item Name="dac_test_pattern.vi" Type="VI" URL="../dac_test_pattern.vi"/>
-		<Item Name="ac_dc.ctl" Type="VI" URL="../ac_dc.ctl"/>
 		<Item Name="ilemt_test.vi" Type="VI" URL="../ilemt_test.vi"/>
-		<Item Name="carrier_amplitudes.ctl" Type="VI" URL="../carrier_amplitudes.ctl"/>
-		<Item Name="IO_params.ctl" Type="VI" URL="../IO_params.ctl"/>
-		<Item Name="time_shift.vi" Type="VI" URL="../time_shift.vi"/>
-		<Item Name="gen_carrier_channels.vi" Type="VI" URL="../gen_carrier_channels.vi"/>
 		<Item Name="Dependencies" Type="Dependencies">
 			<Item Name="vi.lib" Type="Folder">
 				<Item Name="BuildHelpPath.vi" Type="VI" URL="/&lt;vilib&gt;/Utility/error.llb/BuildHelpPath.vi"/>
@@ -169,7 +160,6 @@
 			<Item Name="kernel32.dll" Type="Document" URL="kernel32.dll">
 				<Property Name="NI.PreserveRelativePath" Type="Bool">true</Property>
 			</Item>
-			<Item Name="IIR Cascade Filter PtbyPt Vec.vi" Type="VI" URL="../../utilities/IIR Cascade Filter PtbyPt Vec.vi"/>
 			<Item Name="trace_channel.ctl" Type="VI" URL="../trace_channel.ctl"/>
 			<Item Name="levels_selector.ctl" Type="VI" URL="../levels_selector.ctl"/>
 			<Item Name="Level selector 1.ctl" Type="VI" URL="../Level selector 1.ctl"/>
@@ -218,6 +208,20 @@
 			<Item Name="Motion command.vi" Type="VI" URL="../../motion/client/Motion command.vi"/>
 			<Item Name="averaged_asap_signals.vi" Type="VI" URL="../../micron/labview/calibration/averaged_asap_signals.vi"/>
 			<Item Name="STFT Spectrogram Display.vi" Type="VI" URL="../STFT Spectrogram Display.vi"/>
+			<Item Name="high_carrier_amplitudes.ctl" Type="VI" URL="../high_carrier_amplitudes.ctl"/>
+			<Item Name="sub_distance_processing.vi" Type="VI" URL="../sub_distance_processing.vi"/>
+			<Item Name="sub_distance_processing1.vi" Type="VI" URL="../sub_distance_processing1.vi"/>
+			<Item Name="ilemt_status.ctl" Type="VI" URL="../ilemt_status.ctl"/>
+			<Item Name="IO_params.ctl" Type="VI" URL="../IO_params.ctl"/>
+			<Item Name="carrier_amplitudes.ctl" Type="VI" URL="../carrier_amplitudes.ctl"/>
+			<Item Name="time_shift.vi" Type="VI" URL="../time_shift.vi"/>
+			<Item Name="gen_carrier_channels.vi" Type="VI" URL="../gen_carrier_channels.vi"/>
+			<Item Name="demodulate_card.vi" Type="VI" URL="../demodulate_card.vi"/>
+			<Item Name="sense_amplitudes.vi" Type="VI" URL="../sense_amplitudes.vi"/>
+			<Item Name="coupling_magnitude.vi" Type="VI" URL="../coupling_magnitude.vi"/>
+			<Item Name="display_options.ctl" Type="VI" URL="../display_options.ctl"/>
+			<Item Name="card_carrier_amplitudes.ctl" Type="VI" URL="../card_carrier_amplitudes.ctl"/>
+			<Item Name="averaged_ilemt_data.vi" Type="VI" URL="../averaged_ilemt_data.vi"/>
 		</Item>
 		<Item Name="Build Specifications" Type="Build"/>
 	</Item>
