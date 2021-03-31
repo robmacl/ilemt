@@ -19,11 +19,14 @@
 			<Item Name="extract_carriers.vi" Type="VI" URL="../gui/extract_carriers.vi"/>
 			<Item Name="fft_demodulator.vi" Type="VI" URL="../processing/fft_demodulator.vi"/>
 			<Item Name="ilemt_globals.vi" Type="VI" URL="../main/ilemt_globals.vi"/>
+			<Item Name="tcp_io.vi" Type="VI" URL="../system/tcp_io.vi"/>
 		</Item>
 		<Item Name="ilemt_ui.vi" Type="VI" URL="../ilemt_ui.vi"/>
 		<Item Name="stage_calibration.vi" Type="VI" URL="../../motion/client/stage_calibration.vi"/>
 		<Item Name="ilemt_vars.lvlib" Type="Library" URL="../main/ilemt_vars.lvlib"/>
 		<Item Name="dac_test_pattern.vi" Type="VI" URL="../testing/dac_test_pattern.vi"/>
+		<Item Name="tcp_server_connect.vi" Type="VI" URL="../system/tcp_server_connect.vi"/>
+		<Item Name="input_fifos.vi" Type="VI" URL="../system/input_fifos.vi"/>
 		<Item Name="Dependencies" Type="Dependencies">
 			<Item Name="vi.lib" Type="Folder">
 				<Item Name="BuildHelpPath.vi" Type="VI" URL="/&lt;vilib&gt;/Utility/error.llb/BuildHelpPath.vi"/>
@@ -64,10 +67,6 @@
 				<Item Name="Three Button Dialog.vi" Type="VI" URL="/&lt;vilib&gt;/Utility/error.llb/Three Button Dialog.vi"/>
 				<Item Name="Trim Whitespace.vi" Type="VI" URL="/&lt;vilib&gt;/Utility/error.llb/Trim Whitespace.vi"/>
 				<Item Name="whitespace.ctl" Type="VI" URL="/&lt;vilib&gt;/Utility/error.llb/whitespace.ctl"/>
-				<Item Name="TCP Listen List Operations.ctl" Type="VI" URL="/&lt;vilib&gt;/Utility/tcp.llb/TCP Listen List Operations.ctl"/>
-				<Item Name="TCP Listen Internal List.vi" Type="VI" URL="/&lt;vilib&gt;/Utility/tcp.llb/TCP Listen Internal List.vi"/>
-				<Item Name="Internecine Avoider.vi" Type="VI" URL="/&lt;vilib&gt;/Utility/tcp.llb/Internecine Avoider.vi"/>
-				<Item Name="TCP Listen.vi" Type="VI" URL="/&lt;vilib&gt;/Utility/tcp.llb/TCP Listen.vi"/>
 				<Item Name="Check if File or Folder Exists.vi" Type="VI" URL="/&lt;vilib&gt;/Utility/libraryn.llb/Check if File or Folder Exists.vi"/>
 				<Item Name="NI_FileType.lvlib" Type="Library" URL="/&lt;vilib&gt;/Utility/lvfile.llb/NI_FileType.lvlib"/>
 				<Item Name="NI_PackedLibraryUtility.lvlib" Type="Library" URL="/&lt;vilib&gt;/Utility/LVLibp/NI_PackedLibraryUtility.lvlib"/>
@@ -133,7 +132,6 @@
 			<Item Name="phase_correct_coupling.vi" Type="VI" URL="../processing/phase_correct_coupling.vi"/>
 			<Item Name="trace_info.ctl" Type="VI" URL="../gui/trace_info.ctl"/>
 			<Item Name="extract_noise.vi" Type="VI" URL="../gui/extract_noise.vi"/>
-			<Item Name="listen_tcp_data_conn.vi" Type="VI" URL="../system/listen_tcp_data_conn.vi"/>
 			<Item Name="read_input_data.vi" Type="VI" URL="../system/read_input_data.vi"/>
 			<Item Name="logger_queue.vi" Type="VI" URL="../calibration/logger_queue.vi"/>
 			<Item Name="spectrum_display.vi" Type="VI" URL="../gui/spectrum_display.vi"/>
