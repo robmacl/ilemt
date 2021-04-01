@@ -42,16 +42,7 @@ function make_axis_sweep (out_file, ranges, xyz_step, Rxyz_step)
     res = [res; one_sweep(ranges, Rxyz_step, ix);];
   end
 
-  %plot the result
-  [points,xs,ys,zs] = workspace_volume();
-
-  % Scale to cm
-  xs = xs * 1e-4;
-  ys = ys * 1e-4;
-  zs = zs * 1e-4;
-
-  plot3(res(:,1)/10, res(:,2)/10, res(:,3)/10, 'r-*', ...
-	xs, ys, zs, 'b');
+  plot3(res(:,1)/10, res(:,2)/10, res(:,3)/10, 'r-*');
 
   grid on
   xlabel('x axis');

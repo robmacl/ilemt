@@ -177,7 +177,7 @@
 			<Item Name="sub_distance_processing1.vi" Type="VI" URL="../calibration/sub_distance_processing1.vi"/>
 			<Item Name="coupling_magnitude.vi" Type="VI" URL="../calibration/coupling_magnitude.vi"/>
 			<Item Name="card_high_carrier_amplitudes.ctl" Type="VI" URL="../processing/card_high_carrier_amplitudes.ctl"/>
-			<Item Name="get_display_data.vi" Type="VI" URL="../processing/get_display_data.vi"/>
+			<Item Name="get_display_data.vi" Type="VI" URL="../gui/get_display_data.vi"/>
 			<Item Name="trace_display.vi" Type="VI" URL="../gui/trace_display.vi"/>
 		</Item>
 		<Item Name="Build Specifications" Type="Build"/>
