@@ -205,8 +205,12 @@ void *read_loop (void *arg) {
   while (1) {
     if (!read_all(state->read_fd, read_buf, READ_SIZE))
       return NULL;
-    if (!write_all(state->client_fd, read_buf, READ_SIZE))
-      return NULL;
+    // ### hack: discard first read block, which is corrupted due to
+    // ### some sort of FPGA driver issues.
+    if (iter != 0) {
+      if (!write_all(state->client_fd, read_buf, READ_SIZE))
+	return NULL;
+    }
     if (io_trace)
       printf("%d %.03f: read %d\n", iter, ((double)(ms_time() - state->t0))/1000,
 	     read_buf[0]);
