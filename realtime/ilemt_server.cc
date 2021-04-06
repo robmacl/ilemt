@@ -11,14 +11,25 @@
 #include <sys/types.h> 
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <arpa/inet.h>
+#include <errno.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <sys/time.h>
+#include <pthread.h>
+#include <signal.h>
 
-void error(const char *msg)
-{
-    perror(msg);
-    exit(1);
+// If true, spew output about each IO
+int io_trace = 0;
+
+uint64_t ms_time () {
+  struct timeval time_now;
+  gettimeofday(&time_now, NULL);
+  return  (time_now.tv_sec * 1000) + (time_now.tv_usec / 1000);
 }
 
-const PORTNO_DEFAULT = 6666;
+
+const int PORTNO_DEFAULT = 6666;
 
 int accept_fd;
 
@@ -27,8 +38,10 @@ void init_listener (int portno) {
   // create a socket
   // socket(int domain, int type, int protocol)
   accept_fd = socket(AF_INET, SOCK_STREAM, 0);
-  if (accept_fd < 0) 
-    error("ERROR opening socket");
+  if (accept_fd < 0) {
+    perror("ERROR opening socket");
+    exit(1);
+  }
 
   // clear address structure
   bzero((char *) &serv_addr, sizeof(serv_addr));
@@ -49,8 +62,10 @@ void init_listener (int portno) {
   // address structure This bind() call will bind the socket to the current IP
   // address on port, portno
   if (bind(accept_fd, (struct sockaddr *) &serv_addr,
-	   sizeof(serv_addr)) < 0) 
-    error("ERROR on binding");
+	   sizeof(serv_addr)) < 0) {
+    perror("ERROR on binding");
+    exit(1);
+  }
 
   // This listen() call tells the socket to listen to the incoming
   // connections.  The listen() function places all incoming connection into a
@@ -60,10 +75,10 @@ void init_listener (int portno) {
 }
 
 
-int accept_fd () {
+int accept_connection () {
   struct sockaddr_in cli_addr;
   // The accept() call actually accepts an incoming connection
-  clilen = sizeof(cli_addr);
+  socklen_t clilen = sizeof(cli_addr);
 
   // This accept() function will write the connecting client's address info
   // into the the address structure and the size of that structure is clilen.
@@ -72,10 +87,12 @@ int accept_fd () {
   // used for accepting new connections while the new socker file descriptor
   // is used for communicating with the connected client.
   int newsockfd =
-    accept(sockfd, (struct sockaddr *) &cli;_addr, &clilen;);
+    accept(accept_fd, (struct sockaddr *) &cli_addr, &clilen);
 
-  if (newsockfd < 0) 
-    error("ERROR on accept");
+  if (newsockfd < 0) {
+    perror("ERROR on accept");
+    exit(1);
+  }
 
   printf("server: got connection from %s port %d\n",
 	 inet_ntoa(cli_addr.sin_addr), ntohs(cli_addr.sin_port));
@@ -164,24 +181,63 @@ const int WRITE_CHANNELS = 4;
 
 // Number of samples in each read/write block.  See "Modulation info"
 // "Read size" in Labview.
-const int READ_SAMPLES = 4096;
+const int IO_SAMPLES = 4096;
 
 // Size in bytes of read and write blocks.
-const int READ_SIZE = READ_SAMPLES * READ_CHANNELS * sizeof(int32);
-const int WRITE_SIZE = WRITE_SAMPLES * WRITE_CHANNELS * sizeof(int32);
+const int READ_SIZE = IO_SAMPLES * READ_CHANNELS * sizeof(int32_t);
+const int WRITE_SIZE = IO_SAMPLES * WRITE_CHANNELS * sizeof(int32_t);
 
 const char *read_fifo_name = "/dev/xillybus_read_32";
 const char *write_fifo_name = "/dev/xillybus_write_32";
 
+struct IOState {
+  int client_fd;
+  int read_fd;
+  int write_fd;
+  uint64_t t0;
+};
+
+void *read_loop (void *arg) {
+  unsigned char read_buf [READ_SIZE];
+  IOState *state = static_cast<IOState *>(arg);
+  int iter = 0;
+  printf("begin read_loop\n");
+  while (1) {
+    if (!read_all(state->read_fd, read_buf, READ_SIZE))
+      return NULL;
+    if (!write_all(state->client_fd, read_buf, READ_SIZE))
+      return NULL;
+    if (io_trace)
+      printf("%d %.03f: read %d\n", iter, ((double)(ms_time() - state->t0))/1000,
+	     read_buf[0]);
+    iter++;
+  }
+}
+
+void *write_loop (void *arg) {
+  unsigned char write_buf [WRITE_SIZE];
+  IOState *state = static_cast<IOState *>(arg);
+  int iter = 0;
+  printf("begin write_loop\n");
+  while (1) {
+    if (!read_all(state->client_fd, write_buf, WRITE_SIZE))
+      return NULL;
+    if (!write_all(state->write_fd, write_buf, WRITE_SIZE))
+      return NULL;
+    if (io_trace)
+      printf("%d %.03f: write %d\n", iter, ((double)(ms_time() - state->t0))/1000,
+	     write_buf[0]);
+    iter++;
+  }
+}
+
 // We want the DAC output to the source and the ADC input to stay in lock-step
-// synchronization, one DAC output buffer per ADC input block.  The simplest
-// way to do that is to just do all the IOs sequentially in a single loop.
+// synchronization, one DAC output block per ADC input block.
 // 
-// ### would be better to use two threads here.  On the client end the
-// alternate sequential write/read is good because it meters the output rate,
-// but here both the read and write are metered by the hardware
-// itself. The sequential write/read just creates unnecessary problems with
-// underrun/overrun and latency. 
+// On the client end we use an alternate sequential write/read because it
+// meters the output rate, but here both the read and write are metered by the
+// hardware itself.  So we have separate threads for reading and writing,
+// which keeps the hardware fed as well as possible and minimizes latency.
 // 
 // While there is a fixed alignment (phase relationship) between input and
 // output, we need to have considerable latency, with multiple buffers "in
@@ -213,34 +269,46 @@ const char *write_fifo_name = "/dev/xillybus_write_32";
 // the next (if at all).
 //
 void serve_client (int fd) {
-  char read_buf [READ_SIZE];
-  char write_buf [WRITE_SIZE];
-
+  IOState state;
+  
   int read_fd = open(read_fifo_name, O_RDONLY);
-  if (read_fd < 0) 
-    error("Failed to open %s", read_fifo_name);
-  int write_fd = open(write_fifo_name, O_WRONLY);
-  if (write_fd < 0) 
-    error("Failed to open %s", write_fifo_name);
-
-  while (1) {
-    if (!read_all(fd, &write_buf, WRITE_SIZE))
-      return;
-    if (!write_all(write_fd, &write_buf, WRITE_SIZE))
-      return;
-    if (!read_all(read_fd, &read_buf, READ_SIZE))
-      return;
-    if (!write_all(fd, &read_buf, READ_SIZE))
-      return;
+  if (read_fd < 0) {
+    perror("Failed to open for read");
+    exit(1);
   }
+  int write_fd = open(write_fifo_name, O_WRONLY);
+  if (write_fd < 0) {
+    perror("Failed to open for write");
+    exit(1);
+  } 
+  state.client_fd = fd;
+  state.read_fd = read_fd;
+  state.write_fd = write_fd;
+  state.t0 = ms_time();
+
+  pthread_t w_thread, r_thread;
+  pthread_create(&r_thread, NULL, read_loop, &state);
+  pthread_create(&w_thread, NULL, write_loop, &state);
+  pthread_join(r_thread, NULL);
+  pthread_join(w_thread, NULL);
+  close(read_fd);
+  close(write_fd);
 }
 
-int main(int argc, char *argv[])
-{
+
+int main(int argc, char *argv[]) {
+
+  // Don't terminate on write to closed pipe.
+  struct sigaction action;
+  action.sa_handler = SIG_IGN;
+  action.sa_flags = SA_SIGINFO;
+  sigaction(SIGPIPE, &action, NULL);
+  
   int portno;
   socklen_t clilen;
   char buffer[256];
   int n;
+
   if (argc >= 2) {
     portno = atoi(argv[1]);
   } else {
@@ -249,8 +317,10 @@ int main(int argc, char *argv[])
      
   init_listener(portno);
   while (true) {
-    int client_fd = accept_fd();
+    printf("Listening\n");
+    int client_fd = accept_connection();
     serve_client(client_fd);
+    printf("serve_clent returned\n");
     close(client_fd);
   }
   return 0; 
