@@ -25,8 +25,6 @@
 		<Item Name="stage_calibration.vi" Type="VI" URL="../../motion/client/stage_calibration.vi"/>
 		<Item Name="ilemt_vars.lvlib" Type="Library" URL="../main/ilemt_vars.lvlib"/>
 		<Item Name="dac_test_pattern.vi" Type="VI" URL="../testing/dac_test_pattern.vi"/>
-		<Item Name="tcp_server_connect.vi" Type="VI" URL="../system/tcp_server_connect.vi"/>
-		<Item Name="input_fifos.vi" Type="VI" URL="../system/input_fifos.vi"/>
 		<Item Name="Dependencies" Type="Dependencies">
 			<Item Name="vi.lib" Type="Folder">
 				<Item Name="BuildHelpPath.vi" Type="VI" URL="/&lt;vilib&gt;/Utility/error.llb/BuildHelpPath.vi"/>
@@ -179,6 +177,8 @@
 			<Item Name="card_high_carrier_amplitudes.ctl" Type="VI" URL="../processing/card_high_carrier_amplitudes.ctl"/>
 			<Item Name="get_display_data.vi" Type="VI" URL="../gui/get_display_data.vi"/>
 			<Item Name="trace_display.vi" Type="VI" URL="../gui/trace_display.vi"/>
+			<Item Name="input_fifos.vi" Type="VI" URL="../system/input_fifos.vi"/>
+			<Item Name="tcp_server_connect.vi" Type="VI" URL="../system/tcp_server_connect.vi"/>
 		</Item>
 		<Item Name="Build Specifications" Type="Build"/>
 	</Item>
