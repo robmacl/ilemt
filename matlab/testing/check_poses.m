@@ -13,21 +13,24 @@ function [perr, onax] = check_poses(data_file, options)
   end
 %}
 
-data_file='../cal_data\SN1\new_probe\axis_sweep_test_out_new_floc.dat'
+
 options = check_poses_defaults();
 %options.sg_filt_F = 9;
 %options.axis_limits(6, :) = [-13, 13];
+options.do_optimize = 1;
 
-calibration = ###
-so_fix = ###
-se_fix = ###
-  perr = find_pose_errors(data_file, calibration, so_fix, se_fix, options);
+data_file = {'Z_rot_ld.dat', 'X_rot_ld.dat', 'Y_rot_ld.dat'};
+%data_file = {'Z_rot_sd.dat', 'X_rot_sd.dat', 'Y_rot_sd.dat'};
+cal = load('Calibration_sayan dipole-only.mat');
 
-  perr_report_overall(perr);
+perr = find_pose_errors(data_file, cal.hr_cal, cal.hr_so_fix, cal.hr_se_fix, options);
 
-  % Useful mainly for grid patterns, not axis sweeps.
-  %perr_workspace_vol(perr, options);
+perr_report_overall(perr);
 
+% Useful mainly for grid patterns, not axis sweeps.
+perr_workspace_vol(perr, options);
+
+if (false)
   onax=perr_on_axis(perr, options);
   perr_axis_plot(perr, onax, options);
 
@@ -40,6 +43,4 @@ se_fix = ###
   % default because it's too much clutter.
   figure(5)
   perr_axis_response(perr,onax,6);
-
-
-  perr_workspace_vol(perr, options)
+end

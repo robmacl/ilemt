@@ -26,7 +26,7 @@ function [state_err, nres] = find_pose_errors_objective(state, res, options)
 
   nres = res;
   nres.so_fix = res.so_fix + state(1:6);
-  nres.se_fix = res.so_fix + state(7:12);
+  nres.se_fix = res.se_fix + state(7:12);
   nres.desired = fk_pose_calculation(res.stage_pos, nres.so_fix, nres.se_fix);
   npoints = size(nres.desired, 1);
   nres.errors = nres.measured - nres.desired;

@@ -1,6 +1,6 @@
 % pose optimization solving non linear least-square problem
 function [poses, resnorms, residuals] = ...
-      pose_calculation(data, calibration, ishigh)
+      pose_calculation(couplings, calibration)
   pose0 = [0.22, 1e-3, 1e-3, 1e-3, 1e-3, 1e-3];
 
   % Pose state limits:
@@ -26,14 +26,8 @@ function [poses, resnorms, residuals] = ...
   %set options for the pose optimization
   option = optimset('Display', 'off', 'TolFun', 1e-09, ...
                     'MaxIter', 1000, 'MaxFunEvals', 60000);
-  for (i = 1:size(data, 1))
-    if (ishigh)
-      %high rate couplings
-      Cdes = reshape(data(i, 7:15), 3, 3); 
-    else
-      %low rate couplings
-      Cdes = reshape(data(i, 16:24), 3, 3);
-    end
+  for (ix = 1:size(couplings, 3))
+    Cdes = couplings(:, :, ix);
     %1 and 2 row of bounds are respectively lower and upper bounds
     [pose_new,resnorm,residual,exitflag] = ...
         lsqnonlin(@(pose) coupling_error(calibration, pose, Cdes), ...

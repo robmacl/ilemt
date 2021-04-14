@@ -39,6 +39,8 @@
 %    The coupling matrices.
 %
 function [res] = find_pose_errors(data_files, calibration, so_fix, se_fix, options)
+  res.so_fix = so_fix;
+  res.se_fix = se_fix;
   [res.stage_pos, res.couplings] = read_cal_data(data_files, options.ishigh);
   res.measured = pose_calculation(res.couplings, calibration);
 
@@ -79,18 +81,6 @@ function [res] = find_pose_errors(data_files, calibration, so_fix, se_fix, optio
     x = zeros(1, 12);
   end
 
-  [X_err, pose_err_pvec, desired_pvec, measured_pvec, F_opt] = ofun(x);
-
-  pose_err = zeros(npoints, 6);
-  pose_err(:, 1:3) = pose_err_pvec(:, 1:3) * 1e3;
-  rot_emax = 5*pi/180;
-  for (ix = 1:npoints)
-    [theta, v] = tr2angvec(pvec2tr([0 0 0 pose_err_pvec(ix, 4:6)]));
-    if (abs(theta) > rot_emax)
-        fprintf(1, 'Large angular error: %f degrees at index %d\n', ...
-                theta*180/pi, ix);
-       theta = sign(theta)*rot_emax;
-    end
-    pose_err(ix, 4:6) = v * theta;
-  end
+  [X_err, nres] = ofun(x);
+  res = nres;
 end
