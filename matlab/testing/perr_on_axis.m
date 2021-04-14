@@ -27,6 +27,7 @@ function [res] = perr_on_axis (perr, options)
   % correction will create offsets of many microns.  We would need the
   % uncorrected stage pose.
   zero_tol = 1e-4;
+  ####
   zero_ax = abs(perr.desired_pvec) < zero_tol;
   pose_err = perr.pose_err;
 

@@ -42,7 +42,7 @@ function [residue, pred_coupling] = calibrate_objective (state, stage_poses, cou
         P = source_fixture * st * sensor_fixture;
         
         %calculattion of predicted coupling matrix with the forward kinematic approach
-        pred_coupling(:,:,i) = forward_kinematics(P, state2calibration(state, true));
+        pred_coupling(:,:,i) = forward_kinematics(P, state2calibration(state));
         
         %mismatch between measured coupling and predicted coupling
         residue(:,:,i) = (couplings(:,:,i) - pred_coupling(:,:,i))/norm(couplings(:,:,i));

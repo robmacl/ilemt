@@ -1,4 +1,4 @@
-%Convert rotation vector of pose solition into canonical rotation vectors
+%Convert rotation vector of pose solution into canonical rotation vectors
 function [poses] = canonical_rot_vec(opt_poses)
 poses = [];
 n = size(opt_poses,1);

@@ -2,7 +2,7 @@
 %which is composed the state vector
 function [do_stop] = print_state(state,~,~)
 state_defs;
-        cal = state2calibration(state, true);
+        cal = state2calibration(state);
         calibration.d_source_pos = cal.d_source_pos; 
         calibration.d_source_moment = cal.d_source_moment; 
         calibration.d_sensor_pos = cal.d_sensor_pos; 

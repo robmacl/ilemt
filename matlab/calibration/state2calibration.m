@@ -1,25 +1,22 @@
- function [calibration] = state2calibration (state, ishigh)
-% Given calibration optimizer state vector, return calibration struct for 
-% high or low carrier.  If ishigh is true, then this is the calibration
-% for the high carrier.
+ function [calibration] = state2calibration (state)
+% Given calibration optimizer state vector, return calibration struct.
 %
 % Source and sensor parameters are represented as a 3x3 matrix, where
 % columns are the coils (X, Y, Z), and rows are the vector/point XYZ
 % coordinates in the source or sensor coordinate system.
 % 
-% calibration.source_pos:
+% d_source_pos, q_source_pos:
 %     2D matrix of source coil positions (in source coordinates, in meters).
 %
-% calibration.source_moment:
+% d_source_moment, q_source_moment:
 %     Source moment vectors matrix.  The direction of the vector is the
 %     coil axis, and the magnitude is the coil gain.
 %
-% calibration.sensor_pos
-% calibration.sensor_moment:
+% d_sensor_pos, q_sensor_pos:
+% d_sensor_moment, q_sensor_moment:
 %     Offset and moment of sensor coils, in sensor coordinates.
 % 
- state_defs;
-    assert(ishigh);
+  state_defs;
     
    %DIPOLE
      % position and moment of X Y Z source coils in source coordinates

@@ -7,12 +7,12 @@ function [real_data] = getreal( filename )
 % shift.  
 % 
 % If the expected phase is calibrated correctly in ilemt_ui.vi (by
-% "Set ref"), then we expect that all coupling elements which are not too
-% small will have a phase angle of nearly 0 or nearly 180 degrees (+/-
-% perhaps 10 degrees, depending on how you define "too small").  So there
-% is no ambiguity in determining the sign from the real part.  As values
-% become small the phase becomes ill-defined, but getting the sign right
-% also becomes unimportant.
+% "Calibraton/"Ref cal"), then we expect that all coupling elements which are
+% not too small will have a phase angle of nearly 0 or nearly 180 degrees (+/-
+% perhaps 10 degrees, depending on how you define "too small").  So there is
+% no ambiguity in determining the sign from the real part.  As values become
+% small the phase becomes ill-defined, but getting the sign right also becomes
+% unimportant.
 % 
 % Each line in the file contains both the stage pose and the measured
 % couplings.  Since the pose is real (!) it does no harm also process the pose

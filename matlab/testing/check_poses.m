@@ -1,35 +1,32 @@
-% Check accuracy of poses (computed at runtime) according to calibration
-% data file (from asap_calibration.vi).
+% Check accuracy of pose measurements.
 % 
 % Arguments:
 % data_file: The measured pose data, from asap_calibration.vi
 %
 % options: a struct, see check_poses_defaults.m
 %
-%function [perr, onax] = check_poses(data_file, options)
-
-%data_file='../cal_data/SN1/check/'
-%data_file='../../research/papers/ASAP_13/axis_sweeps.dat'
-%data_file='../cal_data/SN1/new_probe/axis_sweep_out.dat'
-%data_file='../cal_data/SN1/new_probe/axis_sweep_snout_out.dat'
-%data_file='../cal_data/SN1/new_probe/axis_sweep_test.dat'
-%data_file='../cal_data/SN1/new_probe/axis_sweep_test_new_out.dat'
-%data_file='../cal_data\SN1\new_probe\axis_sweep_test_new2_out.dat'
-%data_file='../cal_data\SN1\new_probe\axis_sweep_test_new2_2x_out.dat'
-data_file='../cal_data\SN1\new_probe\axis_sweep_test_out_new_floc.dat'
-options = check_poses_defaults();
-%options.sg_filt_F = 9;
-options.axis_limits(6, :) = [-13, 13];
+%{
+function [perr, onax] = check_poses(data_file, options)
 
   if (nargin < 2 || isempty(options))
      options = check_poses_defaults();
   end
+%}
 
-  perr = find_pose_errors(data_file, options);
+data_file='../cal_data\SN1\new_probe\axis_sweep_test_out_new_floc.dat'
+options = check_poses_defaults();
+%options.sg_filt_F = 9;
+%options.axis_limits(6, :) = [-13, 13];
+
+calibration = ###
+so_fix = ###
+se_fix = ###
+  perr = find_pose_errors(data_file, calibration, so_fix, se_fix, options);
 
   perr_report_overall(perr);
 
-  %  perr_workspace_vol(perr, options);
+  % Useful mainly for grid patterns, not axis sweeps.
+  %perr_workspace_vol(perr, options);
 
   onax=perr_on_axis(perr, options);
   perr_axis_plot(perr, onax, options);
@@ -43,3 +40,6 @@ options.axis_limits(6, :) = [-13, 13];
   % default because it's too much clutter.
   figure(5)
   perr_axis_response(perr,onax,6);
+
+
+  perr_workspace_vol(perr, options)
