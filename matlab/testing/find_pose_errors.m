@@ -41,8 +41,11 @@
 function [res] = find_pose_errors(data_files, calibration, so_fix, se_fix, options)
   res.so_fix = so_fix;
   res.se_fix = se_fix;
-  [res.stage_pos, res.couplings] = read_cal_data(data_files, options.ishigh);
-  res.measured = pose_calculation(res.couplings, calibration);
+  [stage_pos, couplings] = read_cal_data(data_files, options.ishigh);
+  [measured, valid] = pose_calculation(couplings, calibration);
+  res.measured = measured(valid, :);
+  res.stage_pos = stage_pos(valid, :);
+  res.couplings = couplings(:, :, valid);
 
   % State for minimization is: 
   %    [so_fixture_off(1:6) se_fixture_off(1:6)]

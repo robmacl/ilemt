@@ -1,6 +1,11 @@
 % pose optimization solving non linear least-square problem
-function [poses, resnorms, residuals] = ...
+function [poses, valid, resnorms, exitflags] = ...
       pose_calculation(couplings, calibration)
+  
+  % drop point if residual is bigger than this
+  resnorm_threshold = 2e-5;
+
+  % Starting pose.
   pose0 = [0.22, 1e-3, 1e-3, 1e-3, 1e-3, 1e-3];
 
   % Pose state limits:
@@ -17,10 +22,8 @@ function [poses, resnorms, residuals] = ...
 
   bounds = [bound_x_tr, bounds_tr, bounds_rot];
   
-  counter = 0;
   opt_poses = [];
   resnorms = [];
-  residuals = [];
   exitflags = [];
   
   %set options for the pose optimization
@@ -29,7 +32,7 @@ function [poses, resnorms, residuals] = ...
   for (ix = 1:size(couplings, 3))
     Cdes = couplings(:, :, ix);
     %1 and 2 row of bounds are respectively lower and upper bounds
-    [pose_new,resnorm,residual,exitflag] = ...
+    [pose_new, resnorm, ~, exitflag] = ...
         lsqnonlin(@(pose) coupling_error(calibration, pose, Cdes), ...
                   pose0, bounds(1,:), bounds(2,:), option);
     % use last pose as initial value?  Doesn't work well with calibration
@@ -37,20 +40,18 @@ function [poses, resnorms, residuals] = ...
     %pose0 = pose_new;
     opt_poses = [opt_poses; pose_new];
     resnorms = [resnorms; resnorm];
-    residuals = [residuals; residual];
-
-    if exitflag <= 0
-      counter = counter + 1;
-    end
+    exitflags = [exitflags, exitflag];
   end
 
   % Convert to canonical rotation vectors, with magnitude ranging 0:pi.
   % This insures that the same orientation always has the same rotation
   % vector, and not a 2*pi multiple.
   poses = canonical_rot_vec(opt_poses);
-
-  % Print the number of optimization failure
-  if (counter > 0)
-    fprintf(1, 'Optimization failed %d times.\n', counter);
+  
+  valid = resnorms <= resnorm_threshold;
+  if (sum(~valid) > 0)
+    fprintf(1, '%d invalid points with residual > %g.\n', ...
+            sum(~valid), resnorm_threshold);
+    bad_points = find(~valid)'
   end
 end

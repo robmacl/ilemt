@@ -15,12 +15,14 @@ function [perr, onax] = check_poses(data_file, options)
 
 
 options = check_poses_defaults();
+options.xyz_exaggerate = 2;
+
 %options.sg_filt_F = 9;
 %options.axis_limits(6, :) = [-13, 13];
-options.do_optimize = 1;
+%options.do_optimize = 1;
 
-data_file = {'Z_rot_ld.dat', 'X_rot_ld.dat', 'Y_rot_ld.dat'};
-%data_file = {'Z_rot_sd.dat', 'X_rot_sd.dat', 'Y_rot_sd.dat'};
+%data_file = {'Z_rot_ld.dat', 'X_rot_ld.dat', 'Y_rot_ld.dat'};
+data_file = {'Z_rot_sd.dat', 'X_rot_sd.dat', 'Y_rot_sd.dat'};
 cal = load('Calibration_sayan dipole-only.mat');
 
 perr = find_pose_errors(data_file, cal.hr_cal, cal.hr_so_fix, cal.hr_se_fix, options);
