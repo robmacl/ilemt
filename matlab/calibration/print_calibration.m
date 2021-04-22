@@ -1,19 +1,35 @@
-function [ctab] = print_calibration (cal)
-calibration.d_source_pos = cal.d_source_pos; 
-calibration.d_source_moment = cal.d_source_moment; 
-calibration.d_sensor_pos = cal.d_sensor_pos; 
-calibration.d_sensor_moment = cal.d_sensor_moment; 
-calibration.q_source_pos = cal.q_source_pos; 
-calibration.q_source_moment = cal.q_source_moment; 
-calibration.q_sensor_pos = cal.q_sensor_pos; 
-calibration.q_sensor_moment = cal.q_sensor_moment;
+function [] = print_calibration (cal)
+% Print a calibration result struct in human readable format
 
-% Use a Matlab table for prettier display (and dumping to spreadsheet)
-ctab = struct2table(calibration);
+dipole.d_source_pos = cal.d_source_pos; 
+dipole.d_source_moment = cal.d_source_moment; 
+dipole.d_sensor_pos = cal.d_sensor_pos; 
+dipole.d_sensor_moment = cal.d_sensor_moment; 
+qpole.q_source_pos = cal.q_source_pos; 
+qpole.q_source_moment = cal.q_source_moment; 
+qpole.q_sensor_pos = cal.q_sensor_pos; 
+qpole.q_sensor_moment = cal.q_sensor_moment;
 
 % display dipole calibration and quadrupole calibration in two separate rows
-disp(ctab(:, 1:4));
-disp(ctab(:, 5:8));
+disp(struct2table(dipole));
+qpole_t = struct2table(qpole);
+if (~all(all(table2array(qpole_t) == 0)))
+  disp(qpole_t);
+end
+
+fprintf(1, 'Source fix: [');
+sf = cal.source_fixture;
+for ix = 1:length(sf)
+  fprintf(1, '%.5f ', sf(ix));
+end
+fprintf(1, ']\n');
+
+fprintf(1, 'Sensor fix: [');
+sf = cal.sensor_fixture;
+for ix = 1:length(sf)
+  fprintf(1, '%.5f ', sf(ix));
+end
+fprintf(1, ']\n');
 
 %{
 fprintf(1, 'Quadrupole source distance: ')

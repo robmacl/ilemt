@@ -1,9 +1,6 @@
-function [state] = calibration2state ...
-    (calibration, source_fix_pose_vec, sensor_fixture_pose_vec)
-% Create a calibration state vector from a calibration struct and fixture
-% poses.  The poses are represented as a 6 element "pose vector", as used
-% in the magnetic pose solution.  However the Z translation of the
-% sensor fixture is ignored.
+function [state] = calibration2state (calibration)
+% Create a calibration state vector from a calibration struct.  See also
+% state2calibration(). 
 
     state_defs;
     % indices of the state vector came from the state_defs script
@@ -26,12 +23,12 @@ function [state] = calibration2state ...
     state(sensor_z_gain) = calibration.d_sensor_moment(3, 3);
     
     % source fixture
-    state(source_fixture_pos_slice) = source_fix_pose_vec(1,1:3);
-    state(source_fixture_orientation_slice) = source_fix_pose_vec(1,4:6);
+    state(source_fixture_pos_slice) = calibration.source_fixture(1:3);
+    state(source_fixture_orientation_slice) = calibration.source_fixture(4:6);
     
     %sensor fixture
-    state(sensor_fixture_pos_slice) = sensor_fixture_pose_vec(1,1:3);
-    state(sensor_fixture_orientation_slice) = sensor_fixture_pose_vec(1,4:6); 
+    state(sensor_fixture_pos_slice) = calibration.sensor_fixture(1:3);
+    state(sensor_fixture_orientation_slice) = calibration.sensor_fixture(4:6);
     
     %quadupole source position
     state(qp_source_x_pos_slice) = calibration.q_source_pos(:, 1)';

@@ -59,3 +59,43 @@ qp_so_dist = 74;
 qp_se_dist = 75;
 
 
+% Cell array state_parts{n, 2}, a dictionary of state parts.  Each row is:
+%    {<string name> <state index vector>}
+%
+state_parts = {
+% Dipole:
+    'd_so_pos' [source_x_pos_slice source_y_pos_slice]
+    'd_so_mo' [source_x_moment_slice source_y_moment_slice]
+    'd_se_pos' [sensor_x_pos_slice sensor_y_pos_slice]
+    'd_se_mo' [sensor_x_moment_slice sensor_y_moment_slice sensor_z_gain]
+    
+    % Y component of source or sense X moment, used to fix Rz rotation
+    'd_so_y_co' [source_x_moment_slice(2)]
+    'd_se_y_co' [sensor_x_moment_slice(2)]
+
+
+% Fixture transforms, entire, and also X,Y,Z translation parts.  May need
+% to fix parts of the translation if they are not observable from the
+% calibration data, eg. when there is only Rz rotation (single fixturing).
+    'so_fix' [source_fixture_pos_slice source_fixture_orientation_slice]
+    'x_so_fix' [source_fixture_pos_slice(1)]
+    'y_so_fix' [source_fixture_pos_slice(2)]
+    'z_so_fix' [source_fixture_pos_slice(3)]
+
+    'se_fix' [sensor_fixture_pos_slice sensor_fixture_orientation_slice]
+    'x_se_fix' [sensor_fixture_pos_slice(1)]
+    'y_se_fix' [sensor_fixture_pos_slice(2)]
+    'z_se_fix' [sensor_fixture_pos_slice(3)]
+
+
+% Quadrupole:
+    'q_so_pos' [qp_source_x_pos_slice qp_source_y_pos_slice qp_source_z_pos_slice]
+    'q_so_mo', [qp_source_x_moment_slice qp_source_y_moment_slice qp_source_z_moment_slice]
+    'q_se_pos' [qp_sensor_x_pos_slice qp_sensor_y_pos_slice qp_sensor_z_pos_slice]
+    'q_se_mo' [qp_sensor_x_moment_slice qp_sensor_y_moment_slice qp_sensor_z_moment_slice]
+
+    % Distance between quadrupole component dipoles
+    'q_so_dist' [qp_so_dist]
+    'q_se_dist' [qp_se_dist]
+
+}; % end state_parts

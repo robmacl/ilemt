@@ -2,8 +2,14 @@ function [state] = initial_state (~)
 % Return an initial state for the calibration optimization.
 
 %dipole gains
-d_source_gains = [1 1 1];
-d_sensor_gains = [0.1, 0.1, 0.1]; 
+%d_source_gains = [1 1 1];
+%d_sensor_gains = [0.1, 0.1, 0.1]; 
+
+% sensor X seems to have a hardware sign flip, wires crossed in the sensor I
+% guess.  This causes the X phase calibration to be flipped also, negating
+% the X source moment.
+d_source_gains = [-0.45 0.6 1];
+d_sensor_gains = [-0.45 0.45 0.45];
 
 
 % Coil approximate measured positions for dipole approximating cube-corner
@@ -51,12 +57,12 @@ cal.q_sensor_distance = 0.0005;
 % source, but angularly aligned with the source.  This places us solidly in
 % the +x hemisphere.
 
-init_source_fix = [0.22, 0, -0.025, 0, 0, -pi/2]; %with the old sensor the Z dispacement was -0.035
+cal.source_fixture = [0.22, 0, -0.025, 0, 0, -pi/2];
 
 
 % We expect the sensor to be angularly aligned with the stage, when in the
 % null pose.
-init_sensor_fix = [zeros(1, 5), pi/2];
+cal.sensor_fixture = [zeros(1, 5), pi/2];
 
-state = calibration2state(cal, init_source_fix, init_sensor_fix);
-end
+state = calibration2state(cal);
+
