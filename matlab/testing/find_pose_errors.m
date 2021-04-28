@@ -33,16 +33,20 @@
 %    The source and sensor fixture transforms, possibly optimized.
 % 
 % stage_pos(npoints, 6):
-%    The stage axis positions (meters, degrees)
+%    The stage axis positions (mm, degrees)
 % 
 % couplings(npoints, 3, 3)
 %    The coupling matrices.
 %
-function [res] = find_pose_errors(data_files, calibration, so_fix, se_fix, options)
-  res.so_fix = so_fix;
-  res.se_fix = se_fix;
+function [res] = find_pose_errors(data_files, calibration, options)
+  res.so_fix = calibration.source_fixture;
+  res.se_fix = calibration.sensor_fixture;
   [stage_pos, couplings] = read_cal_data(data_files, options.ishigh);
-  [measured, valid] = pose_calculation(couplings, calibration);
+  [measured, valid, resnorms] = ...
+      pose_calculation(couplings, calibration, options.valid_threshold);
+figure(10)
+probplot(resnorms);
+title('Pose solution residual');
   res.measured = measured(valid, :);
   res.stage_pos = stage_pos(valid, :);
   res.couplings = couplings(:, :, valid);
@@ -70,15 +74,23 @@ function [res] = find_pose_errors(data_files, calibration, so_fix, se_fix, optio
     find_pose_errors_objective(state, res, options); 
 
   if (options.do_optimize)
-    opt_options = optimset('MaxFunEvals', 2000);
+%    'PlotFcns', @optimplotresnorm, ...
+%    'Display', 'iter-detailed', ...
+opt_options = optimoptions(...
+    @lsqnonlin, ...
+    'MaxFunctionEvaluations', 2000, 'MaxIterations', 50, ...
+    'FunctionTolerance', 1e-08, 'OptimalityTolerance', 1e-07);
+%opt_options = optimset('MaxFunEvals', 2000);
     %opt_options = optimset(options, 'PlotFcns', @optimplotresnorm);
-    x_max = [0.2 0.2 0.2 0.2 0.2 0.2];
+    %x_max = [0.2 0.2 0.2 0.2 0.2 0.2];
+    x_max = [ones(1,3) * 0.5, ones(1,3) * 3*pi];
     x_max = [x_max x_max];
 
     [x,resnorm,residual,exitflag,output] = ...
 	lsqnonlin(ofun, x, -x_max, x_max, opt_options);
   
-    x
+    source_fix_delta = x(1:6)
+    sensor_fix_delta = x(7:12)
   else
     fprintf(1, 'Not doing optimization.\n');
     x = zeros(1, 12);

@@ -1,9 +1,10 @@
 % pose optimization solving non linear least-square problem
+% Point is "invalid" if residual is bigger than resnorm_threshold.
 function [poses, valid, resnorms, exitflags] = ...
-      pose_calculation(couplings, calibration)
-  
-  % drop point if residual is bigger than this
-  resnorm_threshold = 2e-5;
+      pose_calculation(couplings, calibration, resnorm_threshold)
+  if (nargin < 3)
+    resnorm_threshold = Inf;
+  end
 
   % Starting pose.
   pose0 = [0.22, 1e-3, 1e-3, 1e-3, 1e-3, 1e-3];
@@ -18,7 +19,7 @@ function [poses, valid, resnorms, exitflags] = ...
   % rotation bounds.  We allow the rotation to go outside of the nominal
   % +/- pi range because the optimizer may want to converge to a
   % non-canonical angle.
-  bounds_rot = repmat([-3*pi; 3*pi], 1, 3);
+  bounds_rot = repmat([-6*pi; 6*pi], 1, 3);
 
   bounds = [bound_x_tr, bounds_tr, bounds_rot];
   

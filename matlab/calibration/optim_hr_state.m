@@ -34,13 +34,15 @@ freeze = {'d_so_y_co' 'd_se_y_co'};
 
 % ### overrides:
 
-% Z rotation only
-in_files = 'Z_rot_sd.dat'
-freeze = {freeze{:} 'z_se_fix'}
-out_file = 'Z_only_hr_cal'
-
-% XYZ cal based on Z only
-%base_calibration = 'Z_only_hr_cal'
+if (0)
+  % Z rotation only
+  in_files = 'Z_rot_sd.dat'
+  freeze = {freeze{:} 'z_se_fix'}
+  out_file = 'Z_only_hr_cal'
+else
+  % XYZ cal based on Z only
+  base_calibration = 'Z_only_hr_cal'
+end
 
 
 

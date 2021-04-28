@@ -7,6 +7,8 @@ function [poses, couplings] = read_cal_data (files, ishigh)
 % 
 % ishigh:
 %     If true, extract high rate couplings, otherwise low rate.
+%
+% poses is in pvec2tr format, units (mm, degree)
 
 if (iscell(files))
   assert(length(files) == 3);

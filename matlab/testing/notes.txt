@@ -1,3 +1,207 @@
+[27 Apri 21]
+
+I collected the small three-fixture cal data again, and now that is basically
+working also.  I must have goofed somehow with the cal_4_21 data.
+
+But... The pose accuracy is *not* better than what we were getting with the
+UR44, perhaps worse.  So far I have only tested with the "small" calibration,
+either Rz only, or RzRyRz (dipole only)( And evaluated with various data,
+either one of the "small" files, or an Rz big file.
+
+The story is roughly similar with different test data.  With the three-fixture
+calibration (vs Rz only), the error seems smoothed out more across the
+workspace, not so concentrated along the -Y -Z edge.  Also (at least using the
+Rz only big test data) it is clear that coupling from Rz to position is the
+big contributor to position error.  That is, there is relatively little
+tendency toward a general translation nonlinearity.  That is, the translation
+errors at different Rz but the same XYZ are splayed out in all directions
+(according to Rz), and not trending in a particular direction (independent of
+Rz).
+
+Y and Z error (from Rz cross coupling) are considerably larger than X.  Y
+coordinate induced effect creates Y dispersion by Rz, and likewise Z creates Z
+dispersion.
+
+I tried quantifying the error pattern as a function of the desired pose, using
+covariance, but it is not showing such a strong effect, I think perhaps
+because the errors are splaying out somewhat evenly in all directions,
+potentially cancelling out, and also the pattern of error magnitude increasing
+away from the workspace center is a U-shape relation of error to position, so
+is nonlinear.
+
+
+What could be causing the calibration problem?
+
+[A] Source side problems:
+  (1) Coil nonideality, either as-built, or the dipole approximation
+  (2) Coil interaction
+
+[B] Sensor side problems:
+  (1) Coil interaction
+  (2) Coil nonideality, either as-built, or the dipole approximation
+
+[C] Input issues:
+  (1) Input load causing sensor coil interaction
+  (2) Output -> input coupling inside the box
+  (3) Input nonlinearity of measurement
+
+[D] Environment:
+  (1) magnetic interference (other than from coils)  The steel box itself?
+
+[E] Ground truth problem:
+  (1) error in stage kinematics: our command is wrong, or our expected result
+      pose is wrong 
+  (2) hardware problem in stage (much less likely)
+  (3) motion_server problem
+
+[F] Code problem:
+  (1) Error in dipole forward kinematics (doesn't seem too likely)
+  (2) Error in pose utilities
+  (3) Labview signal processing or logging problem.  Is data stable during
+      point data averaging?  Synch problem, increase settling time
+
+[G] Physical/design:
+  (1) Does error increase in configurations which are somehow unfavorable for
+      the pose solution?  eg. something like singularity or observability.
+  (2) Are outlier or difficult measurements throwing off the calibration
+      process?
+       ==> How are calibration residuals affected by pose?
+
+[H] testing methods:
+  (1) Is fixture pose optimization having a non-obvious effect?
+       ==> Try using the original calibration fixture pose.
+
+
+Thoughts:
+
+[A](1), [B](2):
+It doesn't make sense that coil nonideality would cause error to increase with
+increasing source->sensor distance, since the dipole approximation improves
+with distance.  Coil nonideality would almost certainly be larger for the
+source, because the coils are larger.
+ ==> Does error increase with distance?  How can we characterize the error
+     variation? Magnitude of coupling or max coupling?
+(The X effect on Rz coupling to Y,Z does seem to increase at lower X, eg. closer)
+
+[C](2): coupling strength (distance) vs. error is also a test for inside-box
+coupling, which would be most significant when the actual coupling is quite
+small.
+
+[G](1): More generally, look for any pattern in the couplings associated with
+error.
+
+[A](2) source cross coupling:
+Not too keen on this because this seems to have been greatly reduced, and yet
+did not help.
+ ==> Take calibration and test data w/o source coupling compensation
+
+(FWIW, the sensor moment non-orthogonality is now about the same as for the
+source, a degree or so.  For the sensor, the moments trend away from the
+adjacent coils, which is what you would expect for a conductive interferer.)
+
+[B], [C]:
+The dominant contribution to error from Rz suggests a sensor referred problem.
+But we aren't rotating the source, so who knows what would happen then.
+ ==> Take test data with source moved/rotated.  Unlikely to help, except
+     perhaps for [D](1), but good to know, and we can do it now using
+     check_poses().
+ ==> Measure rotational response of coupling. eg. Z sensor coupling should not
+     change with Rz.  If it does, then this really looks like a sensor error
+     (like coil interaction).  But with off-axis moments, some variation is
+     expected.  Can also do this test on X, Y coils in the other fixturings
+     (but the sensor seems very symmetric).
+
+[C](2):
+Definitely investigate sensor coil interaction, which is one of the
+few things I can think of that could explain the ILEMT box being worse (if it
+is worse).
+ ==> What is the effect of an extra sensor coil moved near the sensor?  Open,
+     shorted, C load.
+ ==> Any effect on coupling of disconnecting the other sensor axes from the
+     input?
+ ==> How does C load impedance compare to sensor output impedance?
+
+[D](1):
+ ==> Try moving the source, the box, the whole setup across the room, ... 
+ ==> Check out low-rate calibration.  Is this better, worse, or the about the
+     same? 
+ ==> Sniff for interference using the old board test fixture.
+ ==> Would be nice to have ilemt_ui feature to visualize small changes in
+     field vector orientation.
+
+[E](1): ground truth kinematics error:
+ ==> Eyball desired pose
+ ==> Some sort of round-trip check on the desired pose kinematics
+ ==> We had that problem, with the new Corke toolbox not working, which we never
+     investigated.  There could be a problem in our utilities, as well as the
+     main code.
+ ==> Eyeball/test fk_pose_calculation() and vector2tr()
+
+[E](2) stage hardware:
+ ==> Test for any mechanical XY motion as Rz is changed, when off center in XY
+     plane.  (Already did this to some degree).
+ ==> Don't think motion server actually errors if goal pose is not reached,
+     though IIRC if there is a really big error then the labview API will error.
+
+[F](1) dipole forward kinematics:
+ ==> Test FK using synthetic data
+
+General investigation:
+ ==> Look at error visualizations directly incorporating rotation.  The
+     linearity test cross coupling may be useful.  Also scatter plots
+ ==> Try changing source/sensor fixture positioning so that we use only the
+     +X+Y+Z sector.
+ ==> Matlab code issues should not change between old and new hardware.
+ ==> Why does the X input seem inverted?  Might be a software problem.
+
+
+Specific actions/tests:
+
+High priority tests in lab:
+ -- Check sensor coil interaction with extra coil, loaded
+ -- Get data without source coupling compensation
+ -- Try moving the box, wire, etc, look for effect on ilemt_ui
+ -- Set up camera to monitor remote stage operation
+ -- Try taking data in only the +X+Y+Z sector.  Rotate source so that the
+    diagonal source coil symmetry axis is toward the workspace center.
+
+High priority investigation:
+ -- Is accuracy actually worse with new box, compared to Sayan's data?
+    Sensor load and box out->in coupling are the most obvious ways that things
+    could have gotten worse.  Or if source coupling compensation is actually
+    bad.  Current results seem broadly similar to what Claudia got.  The lower
+    error Claudia reported is at least partly explained by how we subsetted
+    the data, IIRC removing the outer -Y plane.
+ -- Look at pose error vs. coupling strength, or more generally, any coupling
+    pattern related to error.
+ -- Try low rate calibration
+
+Other:
+ ==> How are calibration residuals affected by pose?
+ ==> Try using the original calibration fixture pose. (in check_poses)
+ ==> Measure rotational response of coupling. eg. Z sensor coupling should not
+     change with Rz.
+[Not exhaustive, see all the ==> above]
+
+Error checks to add:
+ -- Propagate ilemt_ui errors (clip) into stage_calibration
+ -- Check for excess final position error in motion_server.
+ -- Add zero poses at beginning and end of test patterns for drift/bump
+    check. 
+
+
+
+
+re. working in the +X+Y+Z sector only.  I had thought of changing to the
+symmetric diagonal source orientation back when we had identified the -Y
+problem with Claudia, but then thought that this would create a problem with
+our optimization constraint (currently +X).  True that we wouldn't get a
+hemisphere anymore, only a 1/8 sphere.  But this is really fairly OK for our
+application, and certainly fine as a temporary measure.
+
+
+
+
 [24 Apr 21]
 
 Axis offsets:
@@ -45,3 +249,53 @@ above/below the XY plane.
 
 The same magnification would apply to any Rx Ry non-orthogonality (which so
 far I have assumed is negligible).
+
+
+[22 Apr 21]
+
+I got calibration sort of working with data from the ILEMT box.  There seems
+to be a sign flip on the sensor X, which is causing both the source and sensor
+X moments to be sign flipped.  I recall that this was true with the UR44 also,
+and I was negating the X signal in the UR44 settings.
+
+The result calibration is very "pretty", with the off-axis components in the
+source moments greatly reduced, and the source fixture also more nearly
+aligned in rotation.  The sensor moment magnitudes are almost exactly the same
+(because there are no gain knobs).
+
+This is so far only working with the single Z fixturing.  Also, with Sayan's
+cal_3_8 data using the UR44, I notice that using Z only gives a much lower
+residual.  I am suspicious that I did not do the stage Rz alignment correctly,
+since we restarted calibration work with Sayan.  Need to check that the Rz
+motion is nulled when moving the stage in "Pose" mode, I had forgotten about
+this distinction, and motion_ui defaults to "Absolute axis".
+
+
+[20 Apr 21]
+
+I did mechanical realignment of the stage.  For the stage vertical and Rz
+zero, we were within maybe 500 microns or better on the sweeps of 50-100 mm.
+The Rx XY position alignment, which I think is most critical, was off by
+around 350 microns.
+ ==> Getting the sensor mount zeroed wrt. Rz 0 does not matter at all, because
+     we can fold that into the sensor fixture.  Getting the mount vertical is
+     modestly important so that the Rz axis is orthogonal to Rx Ry.
+
+What are we depending on for the Rx Ry refixturing to work?  I think it's
+basically that the XYZ axes intersect and are orthogonal, where the X and Y
+axis location are defined by the center of rotation of the sensor fixture.
+Maybe the sensor fixture translation can absorb some of the XY offset of the
+Rz axis?  IDK I think there is a problem because of the sequential kinematic
+order, but we are simulating Rz being after translation in the kinematic
+chain.
+
+My feel is that we are lucky if our accuracy is 100 microns, and 200-300 is
+more likely.  The pole is just super easy to bump even 100 microns sideways,
+and during a Rz move the pole end tweaks by 10's of microns (though it seems
+to settle back).
+
+But at the level of error (mm max) we have gotten so far, I don't think the
+ground truth accuracy is limiting.
+ ==> With the revived test code with the fixture transform optimization, I can
+     try accuracy test with just one fixturing.  This will avoid any
+     refixturing error.

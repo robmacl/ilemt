@@ -1,6 +1,9 @@
 function [options] = check_poses_defaults ()
 % ishigh: if true, check high rate, otherwise low rate.
 % 
+% valid_threshold: if pose solution residue is greater than this, then
+%   discard the point as "invalid".
+% 
 % do_optimize: whether to do optimization of fixture transform to try to
 %   reduce error.  Default false.
 %    
@@ -17,6 +20,7 @@ function [options] = check_poses_defaults ()
 % xyz_exaggerate: exaggeration to use in 3D error views.
     
   options = struct('ishigh', true, ...
+                   'valid_threshold', 1e-4, ...
                    'do_optimize', false, ...
                    'moment', 0.05, ...
                    'axis_limits', repmat([-inf, inf], 6, 1), ...
