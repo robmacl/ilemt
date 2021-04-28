@@ -117,7 +117,7 @@ few things I can think of that could explain the ILEMT box being worse (if it
 is worse).
  ==> What is the effect of an extra sensor coil moved near the sensor?  Open,
      shorted, C load.
- ==> Any effect on coupling of disconnecting the other sensor axes from the
+ ==> Any effect on coupling if we disconnect the other sensor axes from the
      input?
  ==> How does C load impedance compare to sensor output impedance?
 
@@ -161,6 +161,8 @@ High priority tests in lab:
  -- Check sensor coil interaction with extra coil, loaded
  -- Get data without source coupling compensation
  -- Try moving the box, wire, etc, look for effect on ilemt_ui
+     ==> Effect of tipping box is nil, small effect when slid back off its
+         rear feet, down onto motion rack. 
  -- Set up camera to monitor remote stage operation
  -- Try taking data in only the +X+Y+Z sector.  Rotate source so that the
     diagonal source coil symmetry axis is toward the workspace center.
