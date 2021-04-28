@@ -151,6 +151,8 @@ General investigation:
      linearity test cross coupling may be useful.  Also scatter plots
  ==> Try changing source/sensor fixture positioning so that we use only the
      +X+Y+Z sector.
+ ==> Do we get substantially the same data on repeated identical collection
+     runs?  With and without refixturing?
  ==> Matlab code issues should not change between old and new hardware.
  ==> Why does the X input seem inverted?  Might be a software problem.
 
@@ -200,6 +202,19 @@ hemisphere anymore, only a 1/8 sphere.  But this is really fairly OK for our
 application, and certainly fine as a temporary measure.
 
 
+
+Results:
+
+The lowest norm of couplings in the large Rz data is 0.07 (-23 dB FS).  I had
+previous measured the box internal cross coupling at -100 to -110 dB, or
+1e-5.  This is about -77 dB wrt the min coupling magnitude, which would seem
+to be a pretty good margin, except that this is more like the strongest
+coupling in the matrix, rather than the weakest coupling that matters.  Given
+that, more investigation would be needed to decide whether internal coupling
+is a problem.  Our accuracy goal is around -60 dB (200 um @ 200 mm), so we
+would want an error significantly less than -83 dB (-60 + -23).  -17 dB would
+count as "significantly less", but given the very rough guess of what errors
+matter, this is not conclusive.
 
 
 [24 Apr 21]
