@@ -3,6 +3,9 @@
 
 %%% Parameters:
 
+% 'Z_only', 'XYZ', 'quadrupole', or 'all'
+cal_mode = 'all'
+
 % File name of calibration to use for initial state.  If [], then use the
 % 'save_calibration' variable.  But if 'save_calibration' does not exist, or
 % is empty, then use the default initial_state();
@@ -17,31 +20,42 @@ in_files = {'Z_rot_sd.dat', 'X_rot_sd.dat' 'Y_rot_sd.dat'};
 ishigh = true;
 
 % calibration output .mat file name
-out_file = 'XYZ_hr_cal';
-
+out_file = [cal_mode '_hr_cal'];
 
 % What to optimize: 'optimize' and 'freeze' arguments to state_bounds().
 
-% Source quadrupole and fixture
-%optimize = {'q_so_pos' 'q_so_mo' 'so_fix' 'se_fix'};};
-
-% 'dipole only', ie. dipole and fixture 
+% Default is 'dipole only', ie. dipole and fixture 
 optimize = {'d_so_pos' 'd_so_mo' 'd_se_pos' 'd_se_mo' 'so_fix' 'se_fix'};
 
-% Don't change these, even if they are otherwise enabled.
+% Portions of a component which is optimized, but that we don't actually want
+% to optimize.  If this is already not enabled for optimization, then no harm
+% done.
+% 
+% Specifically, If the XY axes are allowed to rotate in the XY plane then this
+% degree of freedom is redundant with the fixture Rz component.  Pinning
+% the Y component of the X moment to 0 prevents this.
 freeze = {'d_so_y_co' 'd_se_y_co'};
 
 
 % ### overrides:
 
-if (0)
-  % Z rotation only
+if (strcmp(cal_mode, 'Z_only'))
+  % Z rotation only, use defaults instead of base calibration,
   in_files = 'Z_rot_sd.dat'
+  % If we only have Rz data, then we can't identify the Z component of the
+  % sensor fixture (as distinct from the source Z fixture).
   freeze = {freeze{:} 'z_se_fix'}
-  out_file = 'Z_only_hr_cal'
-else
+elseif (strcmp(cal_mode, 'XYZ'))
   % XYZ cal based on Z only
   base_calibration = 'Z_only_hr_cal'
+elseif (strcmp(cal_mode, 'quadrupole'))
+  base_calibration = 'XYZ_hr_cal'
+  optimize = {'q_so_pos' 'q_so_mo' 'so_fix' 'se_fix'}
+elseif (strcmp(cal_mode, 'all')) 
+  base_calibration = 'quadrupole_hr_cal'
+  optimize = cat(2, {'q_so_pos' 'q_so_mo'}, optimize)
+else
+  error('Unknown cal_mode: %s', cal_mode);
 end
 
 
@@ -76,10 +90,14 @@ option = optimoptions(...
 % Read input data as poses and coupling matrices
 [stage_poses, c_des] = read_cal_data(in_files, ishigh);
 
+ofun = @(state)calibrate_objective(state, stage_poses, c_des);
+
 % optimization of the state solving non linear least-square problem
 % row 1 and 2 of bounds are respectively lower and upper bounds
-state_new = lsqnonlin(@(state)calibrate_objective(state, stage_poses, c_des),...
-                      state0,bounds(1,:),bounds(2,:),option);
+state_new = lsqnonlin(ofun,state0,bounds(1,:),bounds(2,:),option);
+
+[norm_residue, pred_coupling] = feval(ofun, state_new);
+raw_residue = pred_coupling - c_des;
  
 %create a calibration struct using the optimazed state_new                     
 hr_cal = state2calibration(state_new);

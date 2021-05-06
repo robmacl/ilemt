@@ -15,12 +15,11 @@ function [real_data] = getreal( filename )
 % unimportant.
 % 
 % Each line in the file contains both the stage pose and the measured
-% couplings.  Since the pose is real (!) it does no harm also process the pose
-% the same way.
+% couplings.  Since the pose is real (!) it does no harm to also process the
+% pose the same way.
 
     raw_data = dlmread(filename);
     signs = ones(size(raw_data));
     signs(real(raw_data) < 0) = -1;
     real_data = signs .* abs(raw_data);
 end
-

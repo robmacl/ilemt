@@ -15,7 +15,7 @@ function [perr, onax] = check_poses(data_file, options)
 
 
 options = check_poses_defaults();
-options.xyz_exaggerate = 2;
+options.xyz_exaggerate = 10;
 
 %options.sg_filt_F = 9;
 %options.axis_limits(6, :) = [-13, 13];
@@ -25,9 +25,15 @@ options.do_optimize = 1;
 %data_file = {'Z_rot_sd.dat', 'X_rot_sd.dat', 'Y_rot_sd.dat'};
 data_file = 'Z_rot_ld.dat';
 %data_file = 'axis_sweep_out.dat';
-cal = load('XYZ_hr_cal.mat');
-%cal = load('Z_only_hr_cal.mat');
+%cal_file = 'XYZ_hr_cal.mat';
+%cal_file = 'Z_only_hr_cal.mat';
+%cal_file = 'quadrupole_hr_cal.mat';
+cal_file = 'all_hr_cal.mat';
 
+data_file
+cal_file
+
+cal = load(cal_file);
 perr = find_pose_errors(data_file, cal, options);
 
 perr_report_overall(perr);
@@ -36,7 +42,7 @@ perr_report_correlation(perr);
 % Useful mainly for grid patterns, not axis sweeps.
 perr_workspace_vol(perr, options);
 
-if (true)
+if (false)
   onax=perr_on_axis(perr, options);
   perr_axis_plot(perr, onax, options);
 
