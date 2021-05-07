@@ -23,7 +23,7 @@ options.do_optimize = 1;
 
 %data_file = {'Z_rot_ld.dat', 'X_rot_ld.dat', 'Y_rot_ld.dat'};
 %data_file = {'Z_rot_sd.dat', 'X_rot_sd.dat', 'Y_rot_sd.dat'};
-%data_file = 'Z_rot_ld.dat';
+data_file = 'Z_rot_ld.dat';
 %data_file = 'axis_sweep_out.dat';
 cal = load('XYZ_hr_cal.mat');
 %cal = load('Z_only_hr_cal.mat');

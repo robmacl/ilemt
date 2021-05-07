@@ -37,6 +37,9 @@
 % 
 % couplings(npoints, 3, 3)
 %    The coupling matrices.
+% 
+% coupling_norms(npoints)
+%    norm() of each coupling matrix
 %
 function [res] = find_pose_errors(data_files, calibration, options)
   res.so_fix = calibration.source_fixture;
@@ -50,6 +53,10 @@ title('Pose solution residual');
   res.measured = measured(valid, :);
   res.stage_pos = stage_pos(valid, :);
   res.couplings = couplings(:, :, valid);
+  for (ix = 1:size(res.couplings, 3))
+    norms(ix) = norm(res.couplings(:,:,ix));
+  end
+  res.coupling_norms = norms;
 
   % State for minimization is: 
   %    [so_fixture_off(1:6) se_fixture_off(1:6)]
