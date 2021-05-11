@@ -6,7 +6,7 @@
 % options: a struct, see check_poses_defaults.m
 %
 %{
-function [perr, onax] = check_poses(data_file, options)
+function [perr, onax] = check_poses(data_file, options)n
 
   if (nargin < 2 || isempty(options))
      options = check_poses_defaults();
@@ -28,14 +28,17 @@ data_file = 'Z_rot_ld.dat';
 %cal_file = 'XYZ_hr_cal.mat';
 %cal_file = 'Z_only_hr_cal.mat';
 %cal_file = 'quadrupole_hr_cal.mat';
-%cal_file = 'all_hr_cal.mat';
-%cal_file = 'all_hr_cal.mat';
-cal_file = 'debias_XYZ_hr_cal.mat';
+cal_file = 'all_hr_cal.mat';
+
+
 
 data_file
 cal_file
 
 cal = load(cal_file);
+if (~isfield(cal, 'bias'))
+  cal.bias = zeros(3);
+end
 perr = find_pose_errors(data_file, cal, options);
 
 perr_report_overall(perr);

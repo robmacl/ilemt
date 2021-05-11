@@ -57,8 +57,6 @@ a problem).  The obvious fix is to invert the input signal, and this would
 work.  But the inversion only matters insofar as it affects the sign
 determination, so this could also be done during phase correction.
 
-
-
 
 [10 May 21]
 
