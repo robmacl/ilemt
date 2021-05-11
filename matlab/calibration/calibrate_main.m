@@ -1,10 +1,10 @@
-%Optimizes the state using high rate coupling matrices extracted from
-%LabView output data file 
+% Use optimization to find a calibration using the coupling matrices and poses
+% extracted from stage_calibration.vi output data file.
 
 %%% Parameters:
 
 % 'Z_only', 'XYZ', 'quadrupole', or 'all'
-cal_mode = 'all'
+cal_mode = 'Z_only'
 
 % File name of calibration to use for initial state.  If [], then use the
 % 'save_calibration' variable.  But if 'save_calibration' does not exist, or
@@ -14,10 +14,17 @@ base_calibration = [];
 % Input data files, from stage_calibration.vi.  If a cell vector of three,
 % then they are in the three standard sensor rotation fixturings.  If only
 % one, then it is not rotated.
-in_files = {'Z_rot_sd.dat', 'X_rot_sd.dat' 'Y_rot_sd.dat'};
+%in_files = {'Z_rot_sd.dat', 'X_rot_sd.dat' 'Y_rot_sd.dat'};
+in_files = {'Z_rot_md.dat', 'X_rot_md.dat' 'Y_rot_md.dat'};
 
 % Is this for high rate calibration?
-ishigh = true;
+options.ishigh = true;
+
+% Estimate and subtract coupling bias?  Seems to hurt, not help.
+options.debias = false;
+
+% Normalize residue by coupling magnitude?
+options.normalize = true;
 
 % calibration output .mat file name
 out_file = [cal_mode '_hr_cal'];
@@ -41,7 +48,8 @@ freeze = {'d_so_y_co' 'd_se_y_co'};
 
 if (strcmp(cal_mode, 'Z_only'))
   % Z rotation only, use defaults instead of base calibration,
-  in_files = 'Z_rot_sd.dat'
+%  in_files = 'Z_rot_sd.dat'
+  in_files = 'Z_rot_md.dat'
   % If we only have Rz data, then we can't identify the Z component of the
   % sensor fixture (as distinct from the source Z fixture).
   freeze = {freeze{:} 'z_se_fix'}
@@ -57,6 +65,22 @@ elseif (strcmp(cal_mode, 'all'))
 else
   error('Unknown cal_mode: %s', cal_mode);
 end
+
+base_calibration = '../cal_5_3/XYZ_hr_cal'
+
+%{
+% premo
+optimize = {'se_fix'}
+base_calibration = 'base_hr_cal'
+freeze = {'d_so_y_co' 'd_se_y_co'}
+
+optimize = {'se_fix' 'd_se_mo'}
+base_calibration = 'se_fix_hr_cal'
+freeze = {'d_so_y_co' 'd_se_y_co'}
+out_file = 'se_fix_mo_hr_cal'
+%}
+
+optimize = {'d_se_mo' 'se_fix'}
 
 
 
@@ -81,26 +105,26 @@ bounds = state_bounds(state0, optimize, freeze);
 
 %set the options for the optimization, including the "print_state" function
 %created to dispaly at each iteration positions, moments and fixture poses
-option = optimoptions(...
+opt_option = optimoptions(...
     @lsqnonlin, 'Display', 'iter-detailed', ...
     'PlotFcns', @optimplotresnorm, 'OutputFcn', @print_state, ...
     'MaxFunctionEvaluations', 60000, 'MaxIterations', 1000, ...
     'FunctionTolerance', 1e-08, 'OptimalityTolerance', 1e-07);
 
 % Read input data as poses and coupling matrices
-[stage_poses, c_des] = read_cal_data(in_files, ishigh);
+[stage_poses, c_des] = read_cal_data(in_files, options.ishigh);
 
-ofun = @(state)calibrate_objective(state, stage_poses, c_des);
+ofun = @(state)calibrate_objective(state, stage_poses, c_des, options);
 
 % optimization of the state solving non linear least-square problem
 % row 1 and 2 of bounds are respectively lower and upper bounds
-state_new = lsqnonlin(ofun,state0,bounds(1,:),bounds(2,:),option);
+state_new = lsqnonlin(ofun,state0,bounds(1,:),bounds(2,:), opt_option);
 
-[norm_residue, pred_coupling] = feval(ofun, state_new);
-raw_residue = pred_coupling - c_des;
+[norm_residue, pred_coupling, bias] = feval(ofun, state_new);
  
-%create a calibration struct using the optimazed state_new                     
+%create a calibration struct using the optimized state_new                     
 hr_cal = state2calibration(state_new);
+hr_cal.bias = bias;
 
 if (~isempty(out_file))
   %save in a .mat file all the optimized values

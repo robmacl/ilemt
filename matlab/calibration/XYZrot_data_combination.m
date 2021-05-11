@@ -9,14 +9,14 @@ data1 = [];
 data2 = [];
 data3 = [];
 
-dat1 = getreal(filename1);
+dat1 = dlmread(filename1);
 n1 = size(dat1);
 for i = 1:n1
   data1 = [data1; dat1(i,:)];
 end
 
 
-dat2 = getreal(filename2);
+dat2 = dlmread(filename2);
 n2 = size(dat2);
 
 %rotation along the X axis of the stage reference system
@@ -25,7 +25,7 @@ n2 = size(dat2);
     data2 = [data2; dat2(i,:)];
   end
 
-dat3 = getreal(filename3);
+dat3 = dlmread(filename3);
 n3 = size(dat3);
 %rotation along the X axis and along the Y axis of the stage reference system
   for i = 1:n3
@@ -35,4 +35,4 @@ n3 = size(dat3);
   end
 
 data = [data1; data2; data3];
-end
+

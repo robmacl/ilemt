@@ -28,7 +28,9 @@ data_file = 'Z_rot_ld.dat';
 %cal_file = 'XYZ_hr_cal.mat';
 %cal_file = 'Z_only_hr_cal.mat';
 %cal_file = 'quadrupole_hr_cal.mat';
-cal_file = 'all_hr_cal.mat';
+%cal_file = 'all_hr_cal.mat';
+%cal_file = 'all_hr_cal.mat';
+cal_file = 'debias_XYZ_hr_cal.mat';
 
 data_file
 cal_file

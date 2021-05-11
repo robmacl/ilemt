@@ -44,7 +44,7 @@
 function [res] = find_pose_errors(data_files, calibration, options)
   res.so_fix = calibration.source_fixture;
   res.se_fix = calibration.sensor_fixture;
-  [stage_pos, couplings] = read_cal_data(data_files, options.ishigh);
+  [stage_pos, couplings] = read_cal_data(data_files, options.ishigh, calibration.bias);
   [measured, valid, resnorms] = ...
       pose_calculation(couplings, calibration, options.valid_threshold);
 figure(10)
