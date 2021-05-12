@@ -31,7 +31,6 @@ data_file = 'Z_rot_ld.dat';
 cal_file = 'all_hr_cal.mat';
 
 
-
 data_file
 cal_file
 
@@ -42,7 +41,7 @@ end
 perr = find_pose_errors(data_file, cal, options);
 
 perr_report_overall(perr);
-perr_report_correlation(perr);
+%perr_report_correlation(perr);
 
 % Useful mainly for grid patterns, not axis sweeps.
 perr_workspace_vol(perr, options);

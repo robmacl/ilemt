@@ -8,8 +8,10 @@ function [state] = initial_state (~)
 % sensor X seems to have a hardware sign flip, wires crossed in the sensor I
 % guess.  This causes the X phase calibration to be flipped also, negating
 % the X source moment.
-d_source_gains = [-0.45 0.6 1];
-d_sensor_gains = [-0.45 0.45 0.45];
+%d_source_gains = [-0.45 0.6 1];
+%d_sensor_gains = [-0.45 0.45 0.45];
+d_source_gains = [0.9 0.9 1];
+d_sensor_gains = [0.2 0.2 0.2];
 
 
 % Coil approximate measured positions for dipole approximating cube-corner

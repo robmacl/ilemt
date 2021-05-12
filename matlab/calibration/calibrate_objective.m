@@ -103,5 +103,4 @@ function [residue, pred_coupling, bias] = calibrate_objective ...
     end
     residue(:, :, ix) = (coupling1 - pred_coupling(:, :, ix)) / da_norm;
   end
-
 end

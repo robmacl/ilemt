@@ -1,10 +1,17 @@
 % Use optimization to find a calibration using the coupling matrices and poses
 % extracted from stage_calibration.vi output data file.
 
+
 %%% Parameters:
 
 % 'Z_only', 'XYZ', 'quadrupole', or 'all'
 cal_mode = 'Z_only'
+
+% 'dipole' or 'premo'
+sensor = 'premo'
+
+
+%%% Defaults:
 
 % File name of calibration to use for initial state.  If [], then use the
 % 'save_calibration' variable.  But if 'save_calibration' does not exist, or
@@ -44,12 +51,14 @@ optimize = {'d_so_pos' 'd_so_mo' 'd_se_pos' 'd_se_mo' 'so_fix' 'se_fix'};
 freeze = {'d_so_y_co' 'd_se_y_co'};
 
 
-% ### overrides:
+%%% mode/sensor effects:
+% 
+% Settings conditional on mode/sensor
 
 if (strcmp(cal_mode, 'Z_only'))
   % Z rotation only, use defaults instead of base calibration,
-%  in_files = 'Z_rot_sd.dat'
-  in_files = 'Z_rot_md.dat'
+  in_files = 'Z_rot_sd.dat'
+%  in_files = 'Z_rot_md.dat'
   % If we only have Rz data, then we can't identify the Z component of the
   % sensor fixture (as distinct from the source Z fixture).
   freeze = {freeze{:} 'z_se_fix'}
@@ -58,34 +67,37 @@ elseif (strcmp(cal_mode, 'XYZ'))
   base_calibration = 'Z_only_hr_cal'
 elseif (strcmp(cal_mode, 'quadrupole'))
   base_calibration = 'XYZ_hr_cal'
-  optimize = {'q_so_pos' 'q_so_mo' 'so_fix' 'se_fix'}
+  optimize = {'q_so_pos' 'q_so_mo' 'so_fix' 'd_so_mo'}
 elseif (strcmp(cal_mode, 'all')) 
   base_calibration = 'quadrupole_hr_cal'
   optimize = cat(2, {'q_so_pos' 'q_so_mo'}, optimize)
+elseif (strcmp(cal_mode, 'premo')) 
 else
   error('Unknown cal_mode: %s', cal_mode);
 end
 
-base_calibration = '../cal_5_3/XYZ_hr_cal'
 
-%{
-% premo
-optimize = {'se_fix'}
-base_calibration = 'base_hr_cal'
-freeze = {'d_so_y_co' 'd_se_y_co'}
+if (strcmp(sensor, 'premo'))
+  %optimize = {'se_fix'}
+  %  base_calibration = 'initial_hr_cal'
+  base_calibration = 'so_fix_hr_cal'
+  optimize = {'se_fix', 'd_se_mo'}
+  freeze = {'d_so_y_co' 'd_se_y_co'}
+elseif (strcmp(sensor, 'dipole'))
+else
+  error('Unknown sensor: %s', sensor);
+end
 
-optimize = {'se_fix' 'd_se_mo'}
-base_calibration = 'se_fix_hr_cal'
-freeze = {'d_so_y_co' 'd_se_y_co'}
-out_file = 'se_fix_mo_hr_cal'
-%}
 
-optimize = {'d_se_mo' 'se_fix'}
-
+%%% overrides:
+% 
+% Extra hacks here
 
 
 %%% Body of script:
+
 format short g
+disp(pwd())
 
 if (isempty(base_calibration))
   if (exist('save_calibration', 'var') && ~isempty(save_calibration))
@@ -97,6 +109,12 @@ else
   % create an input state for the optimization from the calibration values and
   % source and sensor fixtures
   cal = load(base_calibration);
+  % If there is no quadrupole, then we need to kick ourselves out of the
+  % zero/near-zero special case.  Giving a significant magnitude also
+  % usually helps optimization to take a more aggressive initial step.
+  if (strcmp(cal_mode, 'quadrupole'))
+    cal.q_source_moment = eye(3) .* -0.01;
+  end
   state0 = calibration2state(cal);
 end
 

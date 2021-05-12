@@ -7,6 +7,8 @@ function [coupling] = forward_kinematics (P, calibration)
   
   % Quadrupole source and sensor moments.  Axes are forced to zero if they are
   % very small.
+  % ### the near-zero special case is preventing optimization from ever
+  % moving from a zero initial state.
   q_so_mo = calibration.q_source_moment;
   q_se_mo = calibration.q_sensor_moment;
 
@@ -23,7 +25,8 @@ function [coupling] = forward_kinematics (P, calibration)
   % the "component", where 1 is dipole, 2 is +quadrupole and 3 is -quadrupole.
   
   % Component dipole positions.  If moment is effectively zero, then the
-  % position is placed at the origin, with moment 0.
+  % position is placed at the origin, with moment 0.  
+  %
   so_pos = zeros(3, 3, 3);
   se_pos = zeros(3, 3, 3);
 
