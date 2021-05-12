@@ -5,7 +5,7 @@
 %%% Parameters:
 
 % 'Z_only', 'XYZ', 'quadrupole', or 'all'
-cal_mode = 'Z_only'
+cal_mode = 'XYZ'
 
 % 'dipole' or 'premo'
 sensor = 'premo'
@@ -21,8 +21,8 @@ base_calibration = [];
 % Input data files, from stage_calibration.vi.  If a cell vector of three,
 % then they are in the three standard sensor rotation fixturings.  If only
 % one, then it is not rotated.
-%in_files = {'Z_rot_sd.dat', 'X_rot_sd.dat' 'Y_rot_sd.dat'};
-in_files = {'Z_rot_md.dat', 'X_rot_md.dat' 'Y_rot_md.dat'};
+in_files = {'Z_rot_sd.dat', 'X_rot_sd.dat' 'Y_rot_sd.dat'};
+%in_files = {'Z_rot_md.dat', 'X_rot_md.dat' 'Y_rot_md.dat'};
 
 % Is this for high rate calibration?
 options.ishigh = true;
@@ -80,9 +80,10 @@ end
 if (strcmp(sensor, 'premo'))
   %optimize = {'se_fix'}
   %  base_calibration = 'initial_hr_cal'
-  base_calibration = 'so_fix_hr_cal'
-  optimize = {'se_fix', 'd_se_mo'}
-  freeze = {'d_so_y_co' 'd_se_y_co'}
+  %base_calibration = '../cal_5_11_premo/so_fix_hr_cal'
+  %optimize = {'se_fix', 'd_se_mo'}
+  %freeze = {'d_so_y_co' 'd_se_y_co'}
+  %base_calibration = 'Z_only_hr_cal'
 elseif (strcmp(sensor, 'dipole'))
 else
   error('Unknown sensor: %s', sensor);

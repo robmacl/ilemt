@@ -146,7 +146,92 @@ Z quadrupole.  Not only is the moment small, the position has run away to a
 silly degree.
 
 
+Is there a testing procedure for identifying the coupling signs and sensor
+sign flips?  It's hard to get this right, especially when there is any
+possible confusion about the sensor fixture.
 
+ -- First, make sure the axis assignment is right, which (if the source axis
+    assigment is right) we can do by checking for the strong couplings on the
+    diagonal.
+
+We need to drive the strong coupling off the diagonal to disambiguate
+
+If flips and signs are correct, then:
+ -- If you align each sensor axis the same way wrt. a single source axis, then
+    the signs will all be the same, eg. + for aligned out the source axis.
+ -- If you repeat this on the other source axes, then the signs will all be +
+    also. 
+
+
+I got the Premo sensor working, though there is a sign flip on the Z moment.
+________________________________________________________________
+>> calibrate_main
+
+cal_mode = 'XYZ'
+sensor = 'premo'
+base_calibration = 'Z_only_hr_cal'
+
+D:\ilemt\cal_data\cal_5_12_premo
+
+                d_source_pos                          d_source_moment                            d_sensor_pos                              d_sensor_moment           
+    _____________________________________    __________________________________    _________________________________________    _____________________________________
+
+     0.045963    -0.0011718             0     0.93181    0.0015271            0     0.00018147     0.00015695              0      0.15856    0.00011797             0
+    0.0024399       0.04613             0           0      0.94817            0     6.7801e-05     0.00011691              0            0        0.1579             0
+    -0.044607     -0.042704             0    -0.02722     0.011294            1    -0.00013145     -2.515e-05              0    0.0020626     0.0017512      -0.16185
+
+Source fix: [0.24982 0.02828 -0.03736 0.01360 0.01848 -1.56050 ]
+Sensor fix: [-0.00023 0.00014 -0.00011 -2.20229 -2.23307 0.00189 ]
+
+>> check_poses
+
+data_file = {'Z_rot_sd.dat'}    {'X_rot_sd.dat'}    {'Y_rot_sd.dat'}
+cal_file = 'XYZ_hr_cal.mat'
+
+source_fix_delta =
+   9.1768e-05  -5.0925e-05   0.00013758   -0.0013059   -0.0013746    0.0017815
+
+sensor_fix_delta =
+  -7.4656e-05  -0.00012261   4.0865e-05   -0.0012663    0.0031979    -0.001031
+
+Position error (m): 5.65e-04 RMS, 1.45e-03 max.
+Orientation error (radians): 7.40e-03 RMS, 1.92e-02 max
+
+trans_err_rms =
+   0.00019547   0.00034563   0.00040232
+
+rot_err_rms =
+    0.0039798    0.0042419    0.0045678
+
+>> check_poses
+data_file = 'Z_rot_sd.dat'
+cal_file = 'XYZ_hr_cal.mat'
+
+source_fix_delta =
+   1.7233e-05  -3.3147e-05    0.0001601  -0.00072513  -0.00082492    0.0027424
+
+sensor_fix_delta =
+   3.9896e-05   1.9547e-05   6.1865e-05   -0.0031723    0.0051423   0.00031039
+
+Position error (m): 5.11e-04 RMS, 1.23e-03 max.
+Orientation error (radians): 7.07e-03 RMS, 1.87e-02 max
+
+trans_err_rms =
+    0.0001923   0.00029532    0.0003704
+
+rot_err_rms =
+    0.0024773    0.0044266    0.0049271
+________________________________________________________________
+
+Error is somewhat worse RMS than what we are getting with the dipole sensor, but
+the sensor calibration is extremely "pretty": good symmetry, orthogonality and
+alignment.
+ ==> This suggests that source error may dominate. Possibly worse dipole
+     conformance is having an effect, need to try quadrupole.  *sensor*
+     quadrupole? 
+
+But that it does work is basically good news because it means we can get
+reasonable results with a commerical sensor.
 
 
 
