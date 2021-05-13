@@ -4,8 +4,8 @@
 
 %%% Parameters:
 
-% 'Z_only', 'XYZ', 'quadrupole', or 'all'
-cal_mode = 'XYZ'
+% 'Z_only', 'XYZ', 'so_quadrupole', 'so_quadrupole_all', 'se_quadrupole'
+cal_mode = 'Z_only'
 
 % 'dipole' or 'premo'
 sensor = 'premo'
@@ -57,21 +57,26 @@ freeze = {'d_so_y_co' 'd_se_y_co'};
 
 if (strcmp(cal_mode, 'Z_only'))
   % Z rotation only, use defaults instead of base calibration,
-  in_files = 'Z_rot_sd.dat'
-%  in_files = 'Z_rot_md.dat'
+%  in_files = 'Z_rot_sd.dat'
+  in_files = 'Z_rot_md.dat'
   % If we only have Rz data, then we can't identify the Z component of the
   % sensor fixture (as distinct from the source Z fixture).
   freeze = {freeze{:} 'z_se_fix'}
 elseif (strcmp(cal_mode, 'XYZ'))
   % XYZ cal based on Z only
   base_calibration = 'Z_only_hr_cal'
-elseif (strcmp(cal_mode, 'quadrupole'))
+elseif (strcmp(cal_mode, 'so_quadrupole'))
   base_calibration = 'XYZ_hr_cal'
   optimize = {'q_so_pos' 'q_so_mo' 'so_fix' 'd_so_mo'}
-elseif (strcmp(cal_mode, 'all')) 
-  base_calibration = 'quadrupole_hr_cal'
+elseif (strcmp(cal_mode, 'so_quadrupole_all')) 
+  base_calibration = 'so_quadrupole_hr_cal'
   optimize = cat(2, {'q_so_pos' 'q_so_mo'}, optimize)
-elseif (strcmp(cal_mode, 'premo')) 
+elseif (strcmp(cal_mode, 'se_quadrupole'))
+  base_calibration = 'XYZ_hr_cal'
+  optimize = {'q_se_pos' 'q_se_mo' 'se_fix' 'd_se_mo'}
+elseif (strcmp(cal_mode, 'se_quadrupole_all')) 
+  base_calibration = 'se_quadrupole_hr_cal'
+  optimize = cat(2, {'q_se_pos' 'q_se_mo'}, optimize)
 else
   error('Unknown cal_mode: %s', cal_mode);
 end
@@ -94,6 +99,10 @@ end
 % 
 % Extra hacks here
 
+%base_calibration = 'Z_only_hr_cal'
+%in_files = 'Z_rot_sd.dat'
+  
+  
 
 %%% Body of script:
 
@@ -113,8 +122,10 @@ else
   % If there is no quadrupole, then we need to kick ourselves out of the
   % zero/near-zero special case.  Giving a significant magnitude also
   % usually helps optimization to take a more aggressive initial step.
-  if (strcmp(cal_mode, 'quadrupole'))
+  if (strcmp(cal_mode, 'so_quadrupole'))
     cal.q_source_moment = eye(3) .* -0.01;
+  elseif (strcmp(cal_mode, 'se_quadrupole'))
+    cal.q_sensor_moment = eye(3) .* -0.01;
   end
   state0 = calibration2state(cal);
 end
@@ -137,7 +148,8 @@ ofun = @(state)calibrate_objective(state, stage_poses, c_des, options);
 
 % optimization of the state solving non linear least-square problem
 % row 1 and 2 of bounds are respectively lower and upper bounds
-state_new = lsqnonlin(ofun,state0,bounds(1,:),bounds(2,:), opt_option);
+[state_new, cal_residue] = lsqnonlin(ofun,state0,bounds(1,:),bounds(2,:), opt_option);
+cal_residue
 
 [norm_residue, pred_coupling, bias] = feval(ofun, state_new);
  
