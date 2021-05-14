@@ -102,11 +102,73 @@ search.  three-axis magnetometer calibration
   Description and performance of high/low eddy current rejection.  Possible
   ferromagnetic compensation, or at least detection.
 
+
+[14 May 21]
+
+Seems perhaps we are not primarily limited by source or sensor cross coupling
+currently?  Because our tested accuracy is roughly similar between the various
+concentric and non-concentric sources and sensors.
+
+Something I did notice is that there seems to be less rotation-translation
+coupling in the error vectors with the CMU-concentric/corner-dipole setup:
+they splay out less across the rotations.  I would think that translation
+error due to sensor rotation would mainly be due to sensor effects, but this
+is the same sensor that we started out with, the only thing nominally
+different is the source.
+
+It also does seem that with recent data, eg. using the CMU-concentric source,
+that the tendency for errors to be specifically associated with -Z and -Y is
+reduced, so that error more generally increases away from the workspace center
+in all directions.
+
+There is the general pattern of U-shaped error as you move away from the
+center.  While broadly, a tendency for error to get worse away from the center
+is somewhat reasonable, this would be more the case as you go outside of the
+calibrated region.  An insufficient model could cause this sort of thing; the
+optimization is doing its best to minimize the error by splitting the
+difference. 
+
+
+I need to more consistently compare the different configurations, using the
+same calibration and test data input types, eg. calibrate with medium, test
+with large, or whatever.
+
+Also, it is possible there is non-reproducibility in our procedure.  Worth
+taking some data that is supposed to be the same, and seeing if the results
+differ, and perhaps directly compare the data.
+
+
+"funny things" to follow up on:
+ -- Is premo sensor with CMU concentric source really much better than with
+    corner-dipole source?  Then why, with corner-dipole source is it much
+    worse than corner-dipole sensor with that source?  And premo /
+    CMU-concentric is not better?
+ -- Why does Premo sensor quadrupole calibration make error so much worse? Big
+    difference between optimizing residue vs. pose error.
+
+
+I'd like to look at the coupling error vs. the pose error in poses with bad
+pose error.  I guess, more generally, can scatter coupling error vs. pose
+error.
+
+
+I'd kind of been thinking that the calibration fit was getting worse as I
+added the three rotations, but the residual is not normalized by the number
+calibration points, and is expected to increase linearly.  Getting a residual
+of 6e-3 with three-angle medium data is entirely in line with a residual of
+1e-3 for single-angle small data.  We are getting a bit lower in that case,
+but not a lot lower, something like 0.85e-3.
+
+If we take the per-point squared residual, and take the sqrt(), then the
+per-point RMS residual is something like 4e-3.
+
+
 
 
 [13 May 21]
 
-The CMU concentric coil seems to work pretty well, based on Rz only calibration and testing.
+The CMU concentric coil seems to work pretty well, based on Rz only
+calibration and testing.
 
 With cal_5_12_premo_cmu, the CMU coil and Premo sensor, I get:
 ________________________________________________________________
@@ -158,6 +220,9 @@ off-axis compensation converges much faster with the CMU-concentric source
 than with the corner-dipole.  The concentricity according to the d_source_pos
 (~2mm) is also pretty good, considering the core is made from glued E-cores
 (with holes) rather than an actual cube, and is also hand-wound.
+
+The Y source moment being flipped seems to be a Premo sensor interaction,
+because it doesn't happen with the CMU-concentric/corner-dipole.
 
 
 What to do next?
@@ -332,6 +397,11 @@ To look at this systematically:
 
 A somewhat different thing to consider is sensitivity to perturbations in the
 calibration.
+
+And another question is: what is the sensitivity to fixture pose error?  I
+guess rotation of the sensor is similar to rotation of the coupling matrix, so
+sensitivity should be similar.  And if there is stage runout, then that
+directly contributes to translation error.
 
 
 
