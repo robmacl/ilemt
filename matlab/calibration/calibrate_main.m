@@ -5,10 +5,10 @@
 %%% Parameters:
 
 % 'Z_only', 'XYZ', 'so_quadrupole', 'so_quadrupole_all', 'se_quadrupole'
-cal_mode = 'Z_only'
+cal_mode = 'so_quadrupole_all'
 
 % 'dipole' or 'premo'
-sensor = 'premo'
+sensor = 'dipole'
 
 
 %%% Defaults:
@@ -21,8 +21,8 @@ base_calibration = [];
 % Input data files, from stage_calibration.vi.  If a cell vector of three,
 % then they are in the three standard sensor rotation fixturings.  If only
 % one, then it is not rotated.
-in_files = {'Z_rot_sd.dat', 'X_rot_sd.dat' 'Y_rot_sd.dat'};
-%in_files = {'Z_rot_md.dat', 'X_rot_md.dat' 'Y_rot_md.dat'};
+%in_files = {'Z_rot_sd.dat', 'X_rot_sd.dat' 'Y_rot_sd.dat'};
+in_files = {'Z_rot_md.dat', 'X_rot_md.dat' 'Y_rot_md.dat'};
 
 % Is this for high rate calibration?
 options.ishigh = true;
@@ -99,7 +99,7 @@ end
 % 
 % Extra hacks here
 
-%base_calibration = 'Z_only_hr_cal'
+%base_calibration = 'base_hr_cal'
 %in_files = 'Z_rot_sd.dat'
   
   
