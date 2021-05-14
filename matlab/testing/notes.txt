@@ -1,4 +1,5 @@
 Todo:
+ -- Full data for CMU-concentric/Premo
 
 Accuracy:
  -- Try variations of source and sensor coil and fixture
@@ -105,6 +106,20 @@ search.  three-axis magnetometer calibration
 
 [14 May 21]
 
+Summary:
+ -- Got a pretty good calibration result with CMU-concentric cube source and
+    corner-dipole sensor, using source quadrupole.  344 um RMS translation,
+    1090 um max.
+ -- The cube source seems to have significantly higher quadrupole, resulting
+    in more benefit and less silly fit results.
+ -- The sensor fixture transform and sensor dipole positions (for corner
+    dipole) are quite similar between this data and
+    cal_data/cal_11_5/XYZ_hr_cal, despite being taken on different days.
+ -- When we are looking at error differences of 10's of percent, and
+    quadrupole calibration, we need to be running comparisons with the same data
+    size: medium three-fixture calibration and large three-fixture test.
+
+
 Seems perhaps we are not primarily limited by source or sensor cross coupling
 currently?  Because our tested accuracy is roughly similar between the various
 concentric and non-concentric sources and sensors.
@@ -163,9 +178,220 @@ If we take the per-point squared residual, and take the sqrt(), then the
 per-point RMS residual is something like 4e-3.
 
 
+Calibration and test with CMU concentric/corner-dipole
+________________________________________________________________
+
+>> calibrate_main
+
+cal_mode = 'so_quadrupole_all'
+sensor = 'dipole'
+base_calibration = 'so_quadrupole_hr_cal'
+
+optimize =
+    {'q_so_pos'}    {'q_so_mo'}    {'d_so_pos'}    {'d_so_mo'}    {'d_se_pos'}    {'d_se_mo'}    {'so_fix'}    {'se_fix'}
+
+D:\ilemt\cal_data\cal_5_13_dipole_cmu
+
+                 d_source_pos                            d_source_moment                             d_sensor_pos                             d_sensor_moment            
+    ______________________________________    _____________________________________    ________________________________________    ______________________________________
+
+    -0.0015945     0.0002228             0    0.75286       0.024297              0      0.013822    -0.00039809              0       0.45147    -0.0072535             0
+    0.00048023     -0.001007             0          0        0.89164              0    0.00020174       0.013526              0             0       0.44989             0
+     0.0013637     0.0013192             0    0.03679    -0.00037367              1     -0.013897      -0.013594              0    -0.0078329     0.0029856       0.44925
+
+                  q_source_pos                             q_source_moment              q_sensor_pos    q_sensor_moment
+    _________________________________________    ___________________________________    ____________    _______________
+
+      -0.086413       0.089725       0.024497    -3.7817      0.016741      0.046714    0    0    0       0    0    0  
+       0.014707      -0.076931       0.050617     1.0026     -0.021661    -0.0018915    0    0    0       0    0    0  
+    -0.00042169       0.015891       -0.03218     1.2733    0.00091775       0.12646    0    0    0       0    0    0  
+
+Source fix: [0.27578 0.00975 0.01608 0.02747 0.04873 -1.62545 ]
+Sensor fix: [0.00008 0.00002 0.01369 0.00861 -0.00708 1.55802 ]
+
+[...]
+
+                 d_source_pos                             d_source_moment                              d_sensor_pos                             d_sensor_moment            
+    ______________________________________    _______________________________________    ________________________________________    ______________________________________
+
+    -0.0057893      0.003941             0      0.75418     -0.0014229              0      0.013809    -0.00038436              0        0.4613    -0.0074053             0
+     0.0014537     -0.003928             0            0        0.88095              0    0.00019665       0.013505              0             0       0.45973             0
+     0.0091378     0.0040576             0    0.0011875    -0.00039658              1     -0.013853      -0.013554              0    -0.0079653     0.0031078       0.45913
+
+                 q_source_pos                         q_source_moment             q_sensor_pos    q_sensor_moment
+    ______________________________________    ________________________________    ____________    _______________
+
+      -0.01904          0.02      0.031624     -3.0917     0.16369     0.17474    0    0    0       0    0    0  
+    5.8061e-05     -0.039867      0.004036    0.067844    -0.57296    0.021343    0    0    0       0    0    0  
+    -0.0013582     0.0093377     -0.015955     0.47724    0.001119     0.64964    0    0    0       0    0    0  
+
+Source fix: [0.27964 0.01760 0.01840 0.02454 0.05009 -1.59651 ]
+Sensor fix: [0.00008 0.00001 0.01366 0.00855 -0.00704 1.55804 ]
+
+cal_residue = 0.010199
+
+>> check_poses
+
+data_file =
+    {'Z_rot_md.dat'}    {'X_rot_md.dat'}    {'Y_rot_md.dat'}
+
+cal_file =
+    'so_quadrupole_all_hr_cal.mat'
+
+source_fix_delta =
+   2.2173e-05  -2.3391e-05   2.3427e-05  -0.00027248   2.3054e-05   0.00038264
+
+sensor_fix_delta =
+  -1.3913e-05  -2.8525e-05   8.0935e-06   0.00079409   3.4519e-05  -0.00029946
+
+Position error (m): 3.89e-04 RMS, 1.14e-03 max.
+Orientation error (radians): 4.51e-03 RMS, 8.06e-03 max
+
+trans_err_rms =
+   0.00014895   0.00021533   0.00028725
+
+rot_err_rms =
+    0.0035583    0.0022521    0.0016126
+
+% Same, but with large data
+>> check_poses
+
+data_file =
+    {'Z_rot_ld.dat'}    {'X_rot_ld.dat'}    {'Y_rot_ld.dat'}
+
+cal_file =
+    'so_quadrupole_all_hr_cal.mat'
+
+source_fix_delta =
+  -2.2122e-05  -8.5111e-05   6.5347e-05    0.0010534   0.00088409   0.00048733
+
+sensor_fix_delta =
+  -2.4131e-05   3.7302e-06  -1.4635e-05   0.00057019  -2.8876e-05   -0.0012298
+
+Position error (m): 3.44e-04 RMS, 1.09e-03 max.
+Orientation error (radians): 3.67e-03 RMS, 6.69e-03 max
+
+trans_err_rms =
+   0.00013137   0.00018341   0.00025958
+
+rot_err_rms =
+    0.0025425     0.002018    0.0017047
+________________________________________________________________
+
+
+This is a reasonable result; it sort of meets my goal of <400um RMS <1mm max.
+We are pretty solidly below 400um RMS.  Note that testing with the large data
+actually helped both RMS and max.  The RMS kind of makes sense because we add
+more interior points which have lower error.  So it does not seem to hurt to
+test with the large three-fixture data, which is good.  And testing with
+Z-only data is also worse, I think because error seems somewhat concentrated
+in that fixturing.
+
+This is with the source quadrupole calibration, which this time has behaved
+rather more sensibly with this source/sensor and cal data.  The error vectors
+seem more balanced across the workspace, and the quadrupole seems more
+physically plausible, with smallish position offsets and somewhat diagonal
+moments.  With my cube coil it is fairly plausible that there is off-center
+stuff, because it is hand wound with incomplete layers on an asymmetrical
+core.  It is even plausible that the pattern varies across the axes, because
+of the layering.  But my suspicion is that there are still big problems with
+observability of the YZ quadrupole.
+
+This is what we get with the dipole-only calibration:
+________________________________________________________________
+
+>> check_poses
+data_file =
+    {'Z_rot_ld.dat'}    {'X_rot_ld.dat'}    {'Y_rot_ld.dat'}
+
+cal_file =
+    'XYZ_hr_cal.mat'
+
+source_fix_delta =
+  -1.1261e-05   -6.851e-05   0.00010669    0.0011229   0.00097337    0.0012774
+
+sensor_fix_delta =
+  -1.6821e-05  -2.0314e-05  -2.5248e-05   0.00061534  -0.00046382   -0.0013291
+
+Position error (m): 4.48e-04 RMS, 1.35e-03 max.
+Orientation error (radians): 4.54e-03 RMS, 1.18e-02 max
+
+trans_err_rms =
+   0.00015124   0.00027042    0.0003237
+
+rot_err_rms =
+    0.0030417    0.0023825    0.0023823
+
+
+>> print_calibration(cal)
+                 d_source_pos                             d_source_moment                               d_sensor_pos                             d_sensor_moment            
+    ______________________________________    ________________________________________    ________________________________________    ______________________________________
+
+    -0.0015945     0.0002228             0       0.79611     -0.0034907              0      0.013822    -0.00039809              0       0.45147    -0.0072535             0
+    0.00048023     -0.001007             0             0        0.88548              0    0.00020174       0.013526              0             0       0.44989             0
+     0.0013637     0.0013192             0    0.00042184    -0.00067026              1     -0.013897      -0.013594              0    -0.0078329     0.0029856       0.44925
+
+Source fix: [0.27474 0.01807 0.01581 0.02561 0.04943 -1.59268 ]
+Sensor fix: [0.00008 0.00002 0.01369 0.00861 -0.00708 1.55802 ]
+________________________________________________________________
+
+
+With this configuration we are getting a fairly significant 23% reduction in
+RMS translation and 19% max from the quadrupole.  It seems that the dipole
+error of this source may be better approximated by a quadrupole than is the
+case for the corner-dipole source.  This supported by the X quadrupole
+magnitude from cal_5_11/all_hr_cal being about 5x smaller.
+
+Comparing the quadrupole to dipole-only calibration, what is different?  The
+dipole source positions have moved quite a bit off-center.  And the dipole
+moment decreased.  Also, the sensor gain has increased about 2% (surely
+actually a source referred effect).
+
+The d_sensor_pos and sensor fixture really have not changed.  The source
+fixture X has moved 5mm, but this is probably related to the mm motions of the
+dipole positions.  Because we are forcing the Z dipole to zero position, if
+the Z dipole has moved (eg. due to the Z quadrupole) then it will drag the
+source fixture pose.  Likewise, when the Z quadrupole adds to the Z dipole
+(unit moment) then this changes the gain, and so the d_sensor_moment.  It's
+not great that the origin is moving off the presumed mechanical center of the
+source, but if we really care about that, then we should mechanically center
+the calibration, such as by adding source rotations.
+
+Note that the quadrupole that we got from optimizing only the source
+quadrupole (position and moment) and the source dipole (moment only) really do
+not agree very well at all with what we ended up with after the full
+optimization.  I'll add the source dipole positions to the initial quadrupole
+optimization.
+
+FWIW, comparing this calibration to cal_data/cal_11_5/XYZ_hr_cal, the sensor
+dipole positions and sensor fixture are very similar, within 10's of um and a
+mrad or so.  This is encouraging about the repeatability of the sensor
+fixturing.  (The sensor moment magnitude is quite different because the CMU
+concentric source seems about 2x stronger, but the off-axis is kind of
+similar, though one sign flip.)
 
 
 [13 May 21]
+
+Summary:
+ -- CMU concentric cube coil is working fairly well.
+ -- Cube source axis orthogonality is much better (20x) than the corner-dipole
+    source.
+ -- Failure of coupling bias estimation strongly suggests other error sources
+    are dominant (though reducing cal residue has not always improved pose
+    error).
+ -- If current error is due to magnetic interference, then the real issue is
+    what would happen in a more realistic environment.  But we are probably
+    not seeing much magnetic interference, based on the radial motion due to
+    interferers.
+ -- Trying sensor quadrupole with small three fixture data on Premo sensor did
+    not end well, which is not surprising.  But odd how terrible the error was
+    when tested on the same data as used for cal.  Minimizing coupling residue
+    clearly does not always minimize pose error.
+ -- A bit of testing of the sensitivity of pose solution to coupling
+    perturbations.  It seems to be in the ballpark of delta*r, though
+    usually 2-3x better.  Ideas for systematic sensitivity test.
+ 
 
 The CMU concentric coil seems to work pretty well, based on Rz only
 calibration and testing.
@@ -257,6 +483,7 @@ General comments on calibration/test data:
  -- Error is worse with three fixtures (which makes sense), and IIRC
     calibrating with three fixtures helps the three fixture test results
     (which also makes sense).
+ ==> [13 May 21] Not clear this is true, cal residual is larger because more points.
  -- Three fixture medium data does seem to make the source quadrupole term
     more observable.
 
@@ -373,7 +600,6 @@ overfitting to the particular test data.  But this only actually applies if we
 were weighting the pose error, which we are not.
 
 
-
 Thoughts on sensitivity:
 
 Some exploratory probes suggest that the sensitivity is about what you would
@@ -403,11 +629,16 @@ guess rotation of the sensor is similar to rotation of the coupling matrix, so
 sensitivity should be similar.  And if there is stage runout, then that
 directly contributes to translation error.
 
-
-
 
 [12 May 21]
 
+Summary:
+ -- Concerns about fixturing accuracy and Rz runout
+ -- Dipole and quadrupole calibrations with the dipole-approximating source
+    and sensor.  Quadrupole helps a bit.
+ -- Thoughts on how to check for input sign flips or wrong coupling signs.
+ -- Premo sensor is now working ok, but error is rather worse than with the
+    corner dipole sensor (Z-only test data).
 
 I reworked forward_kinematics.m, without changing what it computes.  It is
 clearer now, and also significantly faster.  I am now pretty sure it is doing
@@ -430,7 +661,7 @@ not on the diagonal.
 The dipole data is "medium" size, and is working, without the X sign flip (now
 cancelled in ilemt_ui).
 
-cal_data/cal_11_5/XYZ_hr_cal, residual 6.4e-3
+cal_data/cal_5_11/XYZ_hr_cal, residual 6.4e-3
 ________________________________________________________________
 
                  d_source_pos                            d_source_moment                            d_sensor_pos                             d_sensor_moment            
@@ -508,7 +739,6 @@ Orientation error (radians): 3.75e-03 RMS, 1.20e-02 max
 
 trans_err_rms =
    0.00016714    0.0002468    0.0003184
-
 
 rot_err_rms =
     0.0012487    0.0019432    0.0029527
@@ -625,6 +855,10 @@ reasonable results with a commerical sensor.
 
 [11 May 21]
 
+Summary:
+ -- Phase calibration and sign issues in Labview
+
+
 Seems we need more generality than is in the current ilemt_ui phase
 calibration, to deal with different sensor fixtures, perhaps input sign
 flips or even XYZ permutations.
@@ -673,6 +907,13 @@ determination, so this could also be done during phase correction.
 
 
 [10 May 21]
+
+Summary:
+ -- Premo coil data has tangled signs
+ -- Coupling bias as measured by shorted input is way less than what we were
+    estimating during calibration optimization.
+ -- CAT6 cable sheild does not seem to cause metal interference
+
 
 I took data with the Premo coil, and also got the midsize data with the dipole
 coil.
@@ -744,8 +985,6 @@ vs. non-concentric, effects of sensor load and source impedance, etc.  We
 could roll this into one paper with dipole effects, or perhaps publish this
 first.  
 
-
-
 
 [7 May 21]
 
@@ -758,6 +997,13 @@ bias would be by measuring with the shorted input.
 
 
 [6 May 21]
+
+Summary:
+ -- Thoughts on minimizing possible fixture error.  Fixture error can be
+    thought of as inaccurate stage kinematics.
+ -- Mutual inductance measured with inductance bridge on the CMU cube source
+    and the biggest Premo source are all quite low, < 1e-3.
+
 
 I got one of the Premo sensors wired up, and getting the fixture post
 fabricated.
@@ -831,6 +1077,16 @@ noticeable deflection with the premo coils.
 
 
 [4 May 21]
+
+Summary:
+ -- Removing input capacitors on ILEMT box greatly improved accuracy.
+ -- Worry about stage and fixturing accuracy.  Could be significant.
+ -- Fixed the forward kinematics so that the quadrupole actually is a
+    quadrupole.  Showing some benefit now, but the fit is not physically
+    plausible.  More data needed.
+ -- Idea for coupling bias calibration (eg. for within-box out->in cross coupling).
+
+
 
 cal_5_3, ILEMT box, with capacitors ripped out.  Cal residue 3-e3.  Was like 4e-4 with Z-only.
 ________________________________________________________________

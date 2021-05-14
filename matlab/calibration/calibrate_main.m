@@ -67,7 +67,7 @@ elseif (strcmp(cal_mode, 'XYZ'))
   base_calibration = 'Z_only_hr_cal'
 elseif (strcmp(cal_mode, 'so_quadrupole'))
   base_calibration = 'XYZ_hr_cal'
-  optimize = {'q_so_pos' 'q_so_mo' 'so_fix' 'd_so_mo'}
+  optimize = {'q_so_pos' 'q_so_mo' 'so_fix' 'd_so_pos' 'd_so_mo'}
 elseif (strcmp(cal_mode, 'so_quadrupole_all')) 
   base_calibration = 'so_quadrupole_hr_cal'
   optimize = cat(2, {'q_so_pos' 'q_so_mo'}, optimize)
