@@ -11,24 +11,10 @@ function make_axis_sweep (out_file, ranges, xyz_step, Rxyz_step)
 %
 % Example:
   if (0)
-    ranges = [[-5 5]; [-5 5]; [-5 5]
-              [-10 10]; [-10 10]; [-17 17]]; % concentrating on Rz
-
-    make_axis_sweep('axis_sweep_test.dat', ranges, 0.1, 0.25);
-    
-    ranges = [[-21 21]; [-33 48]; [-16 16]
-	      [-33 25]; [-52 52]; [-20 20]]; % w/o snout
-
-    ranges = [[-21 21]; [-33 48]; [-16 16]
-	      [-23 11]; [-31 31]; [-17 17]]; % with snout
-
-    ranges = [[-21 21]; [-33 48]; [-16 16]
-	      [-22 11]; [-22 22]; [-12 12]]; % with flat mask
+    ranges = [[-50 50]; [-50 50]; [-50 50]; 
+	      [0 0]; [0 0]; [-90 90]];
   
-    make_axis_sweep('axis_sweep.dat', ranges, 0.1, 0.1);
-
-    %    make_axis_sweep('axis_sweep.dat', ranges, 0.2, 0.5);
-    
+    make_axis_sweep('axis_sweep_1_1.dat', ranges, 1, 1);
   end
 
   % Zero pose at beginning for drift check.  Others at the end of each axis.
