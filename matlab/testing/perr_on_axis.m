@@ -21,24 +21,27 @@ function [res] = perr_on_axis (perr, options)
   %     Indices in the perr input data for the points corresponding to this
   %     axis sweep.  This allows you to dig in the input data for this axis.
   %
+  % Note that the axis sweeps are defined in the stage coordinates, so we
+  % map the errors back into those coordinates.
   res = struct([]);
 
-  % This isn't really right if do_optimize is true, since the moment
-  % correction will create offsets of many microns.  We would need the
-  % uncorrected stage pose.
+  % Mask for zero elements in the stage position, used to separate out the
+  % different axis sweeps.
   zero_tol = 1e-4;
-  ####
-  zero_ax = abs(perr.desired_pvec) < zero_tol;
-  pose_err = perr.pose_err;
+  zero_ax = abs(perr.stage_pos) < zero_tol;
 
-  % Convert position errors to mm, angle errors to degrees, for sanity in
-  % looking at derivitives, since these are the corresponding X units.
-  pose_err(:, 1:3) = pose_err(:, 1:3) * 1e-3;
-  pose_err(:, 4:6) = pose_err(:, 4:6) * 180/pi;
+  pose_err = perr.stage_pos_errors;
 
   for (ax = 1:6)
+    % Is there any sweep on this axis?
+    if (all(zero_ax(:, ax)))
+      continue;
+    end
+    
     zero_copy = zero_ax;
     zero_copy(:, ax) = 0;
+    % on_ax_ix is the indices of poses (rows) where all of the off-axis
+    % positions are zero.
     on_ax_ix = find(sum(zero_copy, 2) == 5);
 
     % We need to pick out the uniform step sweep part, dropping out leading
@@ -64,7 +67,7 @@ function [res] = perr_on_axis (perr, options)
     end
 
     lims = options.axis_limits(ax, :);
-    clip = perr.desired_pvec(:, ax) < lims(1) | perr.desired_pvec(:, ax) > lims(2);
+    clip = perr.stage_pos(:, ax) < lims(1) | perr.stage_pos(:, ax) > lims(2);
     clip = clip(on_ax_ix);
     on_ax_ix(clip) = [];
 
@@ -89,7 +92,7 @@ function [res] = perr_on_axis (perr, options)
     Rz_ax = [6];
     
     res(ax).on_ax_ix = on_ax_ix;
-    x = perr.desired_pvec(on_ax_ix, ax);
+    x = perr.stage_pos(on_ax_ix, ax);
     [on_ax_err, res(ax).x] = perr_filt_onax(x, pose_err(on_ax_ix, ax), options);
     res(ax).err = ...
       [shiftdim(on_ax_err, -1)

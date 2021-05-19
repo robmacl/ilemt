@@ -9,6 +9,10 @@ function perr_axis_plot (perr, onax, options)
   max_abs_y = zeros(2, 3, 2);
 
   for (ax = 1:6)
+    if (isempty(onax(ax).on_ax_ix))
+      continue;
+    end
+
     if (ax > 3)
       unit = 'degrees';
       xunit = 'mm';
@@ -61,19 +65,27 @@ function perr_axis_plot (perr, onax, options)
     % have to choose to link X or Y.  I choose X.
     % Link all X axes in each column
     for (col = 1:3)
-      linkaxes(squeeze(axes_h(fx, :, col, :)), 'x');
+      axes1 = squeeze(axes_h(fx, :, col, :));
+      axes1(axes1 == 0) = [];
+      if (~isempty(axes1))
+        linkaxes(axes1, 'x');
+      end
     end
     % Force left Y axes to have the same scale, and ditto for right.
     for (row = 1:3)
       for (col = 1:3)
 	for (lr = 1:2)
+          h1 = axes_h(fx, row, col, lr);
+          if (h1 == 0)
+            continue;
+          end
 	  may = max_abs_y(fx, row, lr);
 	  if (row == 1)
 	    yl = [-may may];
 	  else
 	    yl = [0 may];		
-	  end
-	  ylim(axes_h(fx, row, col, lr), yl);
+          end
+	  ylim(h1, yl);
 	end
       end
     end

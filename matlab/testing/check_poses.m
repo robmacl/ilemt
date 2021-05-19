@@ -21,13 +21,13 @@ options.xyz_exaggerate = 10;
 %options.axis_limits(6, :) = [-13, 13];
 options.do_optimize = 1;
 
-data_file = {'Z_rot_ld.dat', 'X_rot_ld.dat', 'Y_rot_ld.dat'};
+%data_file = {'Z_rot_ld.dat', 'X_rot_ld.dat', 'Y_rot_ld.dat'};
 %data_file = {'Z_rot_sd.dat', 'X_rot_sd.dat', 'Y_rot_sd.dat'};
 %data_file = {'Z_rot_md.dat', 'X_rot_md.dat', 'Y_rot_md.dat'};
 %data_file = 'Z_rot_ld.dat';
 %data_file = 'Z_rot_sd.dat';
 %data_file = 'Z_rot_md.dat';
-%data_file = 'axis_sweep_out.dat';
+data_file = 'axis_sweep_out.dat';
 cal_file = 'XYZ_hr_cal.mat';
 %cal_file = 'Z_only_hr_cal.mat';
 %cal_file = 'so_quadrupole_hr_cal.mat';
@@ -50,16 +50,16 @@ perr_report_overall(perr);
 % Useful mainly for grid patterns, not axis sweeps.
 perr_workspace_vol(perr, options);
 
-if (false)
+if (true)
   onax=perr_on_axis(perr, options);
   perr_axis_plot(perr, onax, options);
 
-  % Write summary Excel file in data directory.  You can copy template from
-  % check_poses.xslx.
+  % Write summary Excel file in data directory.  This uses the
+  % check_poses.xslx template.
   % figure() 3, 4
   perr_axis_stats(data_file, perr, onax, options);
 
-  % Single axis response to an individual axis.  Not done on all axes by
+  % Response of every axis to an individual axis.  Not done on all axes by
   % default because it's too much clutter.
   figure(5)
   perr_axis_response(perr,onax,6);

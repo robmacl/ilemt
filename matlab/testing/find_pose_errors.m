@@ -105,4 +105,16 @@ opt_options = optimoptions(...
 
   [X_err, nres] = ofun(x);
   res = nres;
+  
+  sof = inv(pose2trans(res.so_fix));
+  sef = inv(pose2trans(res.se_fix));
+  s_measured = zeros(size(res.measured));
+  for (ix = 1:size(stage_pos, 1))
+    s_measured(ix, :) = tr2vector(sof * pose2trans(res.measured(ix, :)) * sef);
+  end
+  res.stage_pos_measured = s_measured;
+  % ### might be better to map res.errors back to the stage representation, but
+  % that was being a nuisance.  Should do OK as long as rotation is less than
+  % 180 degrees.
+  res.stage_pos_errors = res.stage_pos_measured - res.stage_pos;
 end

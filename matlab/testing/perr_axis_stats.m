@@ -1,12 +1,19 @@
-function perr_axis_plot (data_name, perr, onax, options)
+function perr_axis_stats (data_name, perr, onax, options)
   inl = zeros(8, 6);
   dnl = zeros(8, 6);
-  [pathstr, name, ext] = fileparts(data_name);
-  fout = [pathstr '\' name '.xlsx'];
-  copyfile('check_poses.xlsx', fout);
+  % Assumes data directory is the working directory
+  in_path = fileparts(which('perr_axis_stats'));
+  fbase = 'check_poses.xlsx';
+  fout = [pwd filesep fbase];
+  fin = [in_path filesep fbase];
+  copyfile(fin, fout);
+  
   % Swap 3'rd and 4'th kind (cross and to-z).
   kix_perm = [0 1 3 2];
   for (ax_ix = 1:6)
+    if (isempty(onax(ax_ix).on_ax_ix))
+      continue;
+    end
     for (kind_ix = 1:4)
       for (rms_mav_ix = 1:2)
 	inl(kix_perm(kind_ix)*2 + rms_mav_ix, ax_ix) = ...
@@ -28,4 +35,6 @@ function perr_axis_plot (data_name, perr, onax, options)
   inldnl(:, 6) = dnl(:, 6);
 
   xlswrite(fout, inldnl, 2, 'c4:h11');
+  
+  fprintf(1, 'Wrote %s\n', fout);
 end
