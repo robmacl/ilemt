@@ -118,6 +118,32 @@ search.  three-axis magnetometer calibration
   ferromagnetic compensation, or at least detection.
 
 
+[25 May 21]
+
+Looking at the corner dipole source with the angle bracket for the
+all-positive workspace.
+At pose:
+        -5	0	25	0	0	-1	
+
+I am getting a pleasingly symmetrical coupling with Premo sensor:
+	0.032	0.055	-0.042	
+	-0.033	0.055	0.037	
+	-0.081	0.000	-0.080	
+
+With rotated-dipole/Premo it looks like the coupling signs are +++.  And (as
+before) there are no input inversions with Premo.
+
+It seems that with the rotated dipole source the source axis sum (used in the
+ilemt_ui distance calculation) varies noticeably less with motion in the
+sensor X and Z directions (which are nominally tangential to the source).
+
+ ==> Digital indicator pressure moves the column approx 60 um radially.  This
+     is not good for the Z axis alignment procedure.  The stiffness seems
+     to be roughly the same in all Rz positions, but this doesn't really
+     help.  The Rz center is going to appear 60 um offset in the stage Y
+     direction. 
+
+
 [14 May 21]
 
 Summary:
