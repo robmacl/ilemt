@@ -5,7 +5,7 @@ function [F, calibrated] = source_fixture (measured, desired)
 
   F = (pinv(measured) * desired)';       %pinv--> pseudoinverse
   cpinv = cond(F(1:3, 1:3));  
-  if (cpinv > 1.1) 
+  if (cpinv > 5) 
     fprintf(1, 'Condition of pinv rotation: %f\n', cpinv);
     fprintf(1, 'Danger Will Robinson!  Poor condition, skipping poldec.\n');
     fprintf(1, 'Result is not a rigid transform.\n');    

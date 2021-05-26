@@ -6,7 +6,7 @@
 % options: a struct, see check_poses_defaults.m
 %
 %{
-function [perr, onax] = check_poses(data_file, options)n
+function [perr, onax] = check_poses(data_file, options)
 
   if (nargin < 2 || isempty(options))
      options = check_poses_defaults();
@@ -16,22 +16,29 @@ function [perr, onax] = check_poses(data_file, options)n
 
 options = check_poses_defaults();
 options.xyz_exaggerate = 10;
+options.valid_threshold = 4e-6;
 
 %options.sg_filt_F = 9;
 %options.axis_limits(6, :) = [-13, 13];
-options.do_optimize = 1;
+%options.do_optimize = 'source';
+%options.do_optimize = 'both';
+%options.moment = 1e-3;
+%options.do_optimize = false;
 
-%data_file = {'Z_rot_ld.dat', 'X_rot_ld.dat', 'Y_rot_ld.dat'};
+issweep = false;
+data_file = {'Z_rot_ld.dat', 'X_rot_ld.dat', 'Y_rot_ld.dat'};
 %data_file = {'Z_rot_sd.dat', 'X_rot_sd.dat', 'Y_rot_sd.dat'};
 %data_file = {'Z_rot_md.dat', 'X_rot_md.dat', 'Y_rot_md.dat'};
 %data_file = 'Z_rot_ld.dat';
+%data_file = 'Z_rot_ld_source_move.dat';
 %data_file = 'Z_rot_sd.dat';
 %data_file = 'Z_rot_md.dat';
-data_file = 'axis_sweep_out.dat';
-cal_file = 'XYZ_hr_cal.mat';
+%data_file = 'axis_sweep_out.dat';
+%cal_file = 'XYZ_hr_cal.mat';
 %cal_file = 'Z_only_hr_cal.mat';
-%cal_file = 'so_quadrupole_hr_cal.mat';
-%cal_file = 'so_quadrupole_all_hr_cal.mat';
+cal_file = 'so_quadrupole_all_hr_cal.mat';
+%cal_file = '../cal_5_13_dipole_cmu/XYZ_hr_cal.mat';
+%cal_file = '../cal_5_13_dipole_cmu/so_quadrupole_all_hr_cal.mat';
 %cal_file = 'se_quadrupole_all_hr_cal.mat';
 
 
@@ -50,7 +57,7 @@ perr_report_overall(perr);
 % Useful mainly for grid patterns, not axis sweeps.
 perr_workspace_vol(perr, options);
 
-if (true)
+if (issweep)
   onax=perr_on_axis(perr, options);
   perr_axis_plot(perr, onax, options);
 
@@ -64,3 +71,6 @@ if (true)
   figure(5)
   perr_axis_response(perr,onax,6);
 end
+
+%figure(11)
+%error_scatter(perr);

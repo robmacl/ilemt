@@ -8,7 +8,7 @@
 cal_mode = 'so_quadrupole_all'
 
 % 'dipole' or 'premo'
-sensor = 'dipole'
+sensor = 'premo'
 
 
 %%% Defaults:
@@ -24,7 +24,7 @@ base_calibration = [];
 %in_files = {'Z_rot_sd.dat', 'X_rot_sd.dat' 'Y_rot_sd.dat'};
 in_files = {'Z_rot_md.dat', 'X_rot_md.dat' 'Y_rot_md.dat'};
 
-% Is this for high rate calibration?
+% Is this a high rate calibration?
 options.ishigh = true;
 
 % Estimate and subtract coupling bias?  Seems to hurt, not help.
@@ -89,6 +89,7 @@ if (strcmp(sensor, 'premo'))
   %optimize = {'se_fix', 'd_se_mo'}
   %freeze = {'d_so_y_co' 'd_se_y_co'}
   %base_calibration = 'Z_only_hr_cal'
+  %base_calibration = '../cal_5_12_premo_cmu/Z_only_hr_cal.mat'
 elseif (strcmp(sensor, 'dipole'))
 else
   error('Unknown sensor: %s', sensor);
@@ -99,10 +100,10 @@ end
 % 
 % Extra hacks here
 
-%base_calibration = 'base_hr_cal'
-%in_files = 'Z_rot_sd.dat'
-  
-  
+%in_files = 'Z_rot_ld_source_move.dat'
+%base_calibration = '../cal_5_13_dipole_cmu/XYZ_hr_cal.mat'
+%optimize = {'so_fix'}
+
 
 %%% Body of script:
 

@@ -83,18 +83,26 @@ title('Pose solution residual');
   if (options.do_optimize)
 %    'PlotFcns', @optimplotresnorm, ...
 %    'Display', 'iter-detailed', ...
-opt_options = optimoptions(...
-    @lsqnonlin, ...
-    'MaxFunctionEvaluations', 2000, 'MaxIterations', 50, ...
-    'FunctionTolerance', 1e-08, 'OptimalityTolerance', 1e-07);
-%opt_options = optimset('MaxFunEvals', 2000);
-    %opt_options = optimset(options, 'PlotFcns', @optimplotresnorm);
-    %x_max = [0.2 0.2 0.2 0.2 0.2 0.2];
-    x_max = [ones(1,3) * 0.5, ones(1,3) * 3*pi];
-    x_max = [x_max x_max];
-
+%opt_options = optimoptions(...
+%    @lsqnonlin, ...
+%    'MaxFunctionEvaluations', 2000, 'MaxIterations', 300, ...
+%    'FunctionTolerance', 1e-08, 'OptimalityTolerance', 1e-07);
+opt_options = optimset('MaxFunEvals', 2000);
+opt_options = optimset(opt_options, 'PlotFcns', @optimplotresnorm);
+    allow_opt = [ones(1,3) * 0.5, ones(1,3) * 3*pi];
+    bounds = zeros(1, 12);
+    if (strcmp(options.do_optimize, 'both'))
+      bounds = [allow_opt, allow_opt];
+    elseif (strcmp(options.do_optimize, 'source'))
+      bounds(1, 1:6) = allow_opt;
+    elseif (strcmp(options.do_optimize, 'sensor'))      
+      bounds(1, 7:12) = allow_opt;
+    else
+      error('Unknown options.do_optimize: %s', options.do_optimize);
+    end
+    
     [x,resnorm,residual,exitflag,output] = ...
-	lsqnonlin(ofun, x, -x_max, x_max, opt_options);
+	lsqnonlin(ofun, x, -bounds, bounds, opt_options);
   
     source_fix_delta = x(1:6)
     sensor_fix_delta = x(7:12)
@@ -109,7 +117,7 @@ opt_options = optimoptions(...
   sof = inv(pose2trans(res.so_fix));
   sef = inv(pose2trans(res.se_fix));
   s_measured = zeros(size(res.measured));
-  for (ix = 1:size(stage_pos, 1))
+  for (ix = 1:size(res.stage_pos, 1))
     s_measured(ix, :) = tr2vector(sof * pose2trans(res.measured(ix, :)) * sef);
   end
   res.stage_pos_measured = s_measured;

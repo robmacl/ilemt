@@ -11,17 +11,20 @@ function [poses, valid, resnorms, exitflags] = ...
 
   % Pose state limits:
   % The pose is constrained to the +X hemisphere.
-  bound_x_tr = [0; 0.4];
+  bound_positive = [0; 0.4];
   
   % y and z translation bounds
-  bounds_tr = repmat([-0.4;0.4], 1, 2); 
+  bounds_tr = repmat([-0.4;0.4], 1, 3); 
+  
+  bounds_tr(:, 1) = bound_positive;
+  %bounds_tr(:, 2) = bound_positive;
   
   % rotation bounds.  We allow the rotation to go outside of the nominal
   % +/- pi range because the optimizer may want to converge to a
   % non-canonical angle.
   bounds_rot = repmat([-6*pi; 6*pi], 1, 3);
 
-  bounds = [bound_x_tr, bounds_tr, bounds_rot];
+  bounds = [bounds_tr, bounds_rot];
   
   opt_poses = [];
   resnorms = [];
