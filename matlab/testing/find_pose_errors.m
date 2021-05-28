@@ -8,18 +8,8 @@
 % vectors are a sound basis for mean and other statistics, while Euler angles
 % (or even a 1DOF angle) aren't, due to problems with wrapping.
 %
-% Arguments: 
-% data_files:
-%     Holds the test data files.  May be a cell 3-vector of fixturings, as in 
-%     read_cal_data(). 
+% options: see check_poses_options()
 % 
-% calibration: ILEMT calibration struct
-% 
-% so_fix, se_fix: source and sensor fixture transforms
-%
-% options: see check_poses_defaults().
-% 
-%
 % Results: 
 % res struct, with fields:
 % 
@@ -41,12 +31,14 @@
 % coupling_norms(npoints)
 %    norm() of each coupling matrix
 %
-function [res] = find_pose_errors(data_files, calibration, options)
+function [res] = find_pose_errors (options)
+  calibration = load(options.cal_file);
   res.so_fix = calibration.source_fixture;
   res.se_fix = calibration.sensor_fixture;
-  [stage_pos, couplings] = read_cal_data(data_files, options.ishigh, calibration.bias);
+  options.bias = calibration.bias;
+  [stage_pos, couplings] = read_cal_data(options);
   [measured, valid, resnorms] = ...
-      pose_calculation(couplings, calibration, options.valid_threshold);
+      pose_calculation(couplings, calibration, options);
 figure(10)
 probplot(resnorms);
 title('Pose solution residual');

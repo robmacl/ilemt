@@ -1,55 +1,12 @@
-% Check accuracy of pose measurements.
+% Check accuracy of pose measurements.  Driven by check_poses_options()
+% struct.
 % 
-% Arguments:
-% data_file: The measured pose data, from asap_calibration.vi
-%
-% options: a struct, see check_poses_defaults.m
-%
-%{
-function [perr, onax] = check_poses(data_file, options)
 
-  if (nargin < 2 || isempty(options))
-     options = check_poses_defaults();
-  end
-%}
+options = check_poses_options();
 
+disp(options);
 
-options = check_poses_defaults();
-options.xyz_exaggerate = 10;
-options.valid_threshold = 4e-6;
-
-%options.sg_filt_F = 9;
-%options.axis_limits(6, :) = [-13, 13];
-%options.do_optimize = 'source';
-%options.do_optimize = 'both';
-%options.moment = 1e-3;
-%options.do_optimize = false;
-
-issweep = false;
-data_file = {'Z_rot_ld.dat', 'X_rot_ld.dat', 'Y_rot_ld.dat'};
-%data_file = {'Z_rot_sd.dat', 'X_rot_sd.dat', 'Y_rot_sd.dat'};
-%data_file = {'Z_rot_md.dat', 'X_rot_md.dat', 'Y_rot_md.dat'};
-%data_file = 'Z_rot_ld.dat';
-%data_file = 'Z_rot_ld_source_move.dat';
-%data_file = 'Z_rot_sd.dat';
-%data_file = 'Z_rot_md.dat';
-%data_file = 'axis_sweep_out.dat';
-%cal_file = 'XYZ_hr_cal.mat';
-%cal_file = 'Z_only_hr_cal.mat';
-cal_file = 'so_quadrupole_all_hr_cal.mat';
-%cal_file = '../cal_5_13_dipole_cmu/XYZ_hr_cal.mat';
-%cal_file = '../cal_5_13_dipole_cmu/so_quadrupole_all_hr_cal.mat';
-%cal_file = 'se_quadrupole_all_hr_cal.mat';
-
-
-data_file
-cal_file
-
-cal = load(cal_file);
-if (~isfield(cal, 'bias'))
-  cal.bias = zeros(3);
-end
-perr = find_pose_errors(data_file, cal, options);
+perr = find_pose_errors(options);
 
 perr_report_overall(perr);
 %perr_report_correlation(perr);
@@ -57,14 +14,14 @@ perr_report_overall(perr);
 % Useful mainly for grid patterns, not axis sweeps.
 perr_workspace_vol(perr, options);
 
-if (issweep)
+if (options.issweep)
   onax=perr_on_axis(perr, options);
   perr_axis_plot(perr, onax, options);
 
   % Write summary Excel file in data directory.  This uses the
   % check_poses.xslx template.
   % figure() 3, 4
-  perr_axis_stats(data_file, perr, onax, options);
+  perr_axis_stats(perr, onax, options);
 
   % Response of every axis to an individual axis.  Not done on all axes by
   % default because it's too much clutter.

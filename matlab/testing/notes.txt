@@ -1,7 +1,9 @@
 Todo:
+ -- Rz axis runout using test indicator to reduce pole deflection
  -- Axis sweep off-axis DNL seems wrong, not the derivative.
  -- Literature search for calibration and cross-coupling
  -- Drift check when reading cal data
+
 
 Accuracy:
  -- Pseudo-inverse pose correction
@@ -13,8 +15,6 @@ Accuracy:
  -- Investigate whether ground truth is limiting observable accuracy
      - Test RxRy fixture accuracy
      - New fixture?
- -- How rigid is pole under moderate loads, such as from the indicator, or
-    cable tension?
  -- Normalization/weighting/sensitivity
  -- Try low-rate calibration
 
@@ -120,6 +120,193 @@ search.  three-axis magnetometer calibration
 [high/low metal]
   Description and performance of high/low eddy current rejection.  Possible
   ferromagnetic compensation, or at least detection.
+
+
+[28 May 21]
+
+Notes on Rz runout test:
+
+Numbers don't seem to be reproducible to better than 20 um.  Also, there seems
+to be 10's of um of hysteresis with pushing on the pole in the Y direction,
+not so much in X.  This seemed to be improved somewhat by increasing the pole
+mount spring tension, and may be due to the tape I added for friction.
+
+Note that the indicator is pointing in stage +Y, so reading increases with -Y
+
+Measure runout at -90, 0, and +90 Rz
+
+Desire is to equalize -90 and +90 readings.  Avoid zeroing the indicator after
+you start, because things may move.  If -90 is larger (positive of) +90, then
+increase the X axis offset by 1/2 the difference.
+
+After -90, +90 are fairly equal, we want to set the Y axis offset so that the
+indicator reading is -60 um wrt. whatever X null we ended at.  Eg zero degree
+reading should be -60 um below the mean of the +90 and -90 readings.  Increase
+the Y offset by the full difference between the between the +90/-90 midpoint
+and -60.  The purpose of the 60 um offset is to roughly compensate for the
+pole flex due to indicator pressure, about 60 um.  If we could read at 180
+degrees, or if the indicator had less pressure, then we would not need this
+approximation.  The pole will also deflect at +90/-90, but this effect should
+cancel.
+
+
+Not sure what to make of this, but a pinv() linear correction of the measured
+pose seems pretty effective.  Most obviously, this corrects for an apparent
+gain error in the translation, but the full 6x6 transform is correcting for
+who-knows-what, and likely overfitting.
+
+eg. with 5_25_premo_rotated_dipole I am getting:
+________________________________________________________________
+>> perr_report_overall(perr)
+Position error (m): 2.56e-04 RMS, 5.50e-04 max.
+Orientation error (radians): 4.27e-03 RMS, 1.01e-02 max
+trans_err_rms =
+   0.00015933   0.00016602   0.00011279
+rot_err_rms =
+    0.0017815    0.0032055    0.0021876
+________________________________________________________________
+
+with the correction, rather than:
+________________________________________________________________
+Position error (m): 3.51e-04 RMS, 8.40e-04 max.
+Orientation error (radians): 5.55e-03 RMS, 1.18e-02 max
+trans_err_rms =
+   0.00019952   0.00020968   0.00019844
+rot_err_rms =
+    0.0028205    0.0036717    0.0030639
+________________________________________________________________
+
+This is with the exact same data used for calibration, though, nevermind the
+same source fixturing.  With the 6x6 transform we are adding 36 DOF to the
+calibration, which certainly increases the risk of overfitting.
+
+This is the transform matrix:
+________________________________________________________________
+       1.0014   0.00049187   -0.0017722   -0.0041402    0.0060831   -0.0031132
+   0.00033711       1.0014  -0.00096297   -0.0043652   -0.0060402     0.011438
+   -0.0025403   -0.0025033       1.0033     0.015057   -0.0047506     0.003578
+  -8.9773e-06  -4.7035e-05   1.2361e-05       1.0003   -0.0012278    0.0017259
+   4.5162e-06   2.6504e-05  -2.9201e-05   -0.0010068       1.0007   0.00011469
+   2.0523e-05   2.9992e-05   -4.301e-06    0.0011922    0.0014333      0.99893
+________________________________________________________________
+
+We have some scale factor errors around 1e-3.  The off-diagonal
+translation->translation or rotation->rotation transforms can I guess be
+kinematically interpreted as axis non-orthogonality.  The interpretation of
+the translation<->rotation cross couplings is somewhat more inscrutable.  But
+these terms are also kind of smallish, eg. 1 rad Rz movement causing 30 um Y
+translation.
+
+I guess the rot->trans terms, transform(4:6, 1:3), are interpreted as a moment
+in meters.  And the trans->rot transform(1:3, 4:6) are what?  A curvature I
+guess.  meters/radian is a moment, ie. a radius, so radians/meter is 1/radius,
+or a curvature.
+
+If this correction is useful, then we should weight it for rotation
+vs. translation, eg. using our moment.  With 50mm moment, 1 mrad error causes
+50 um moment error, whereas 1mm causes 1mm.  So translation error should be
+weighted higher than rotation.
+
+FWIW, using the linear correction (from medium XYZ data) on the axis sweep
+does improve things, although the X and Y gain errors are rather
+under-corrected.  There a glitch in the Rz sweep response which may be due to
+angle-wrapping.  Maybe it would be better to estimate the error, rather than
+the corrected pose?  This would avoid large angles in the result.  But
+estimate the error as a transform, rather than difference of pose vectors?
+eg. find transform that maps measured to desired, and convert to pose vector,
+then pinv() that.  Or something.
+
+A physical interpretation for effectiveness of the linear correction is also
+elusive.  It could absorb ground truth errors, magnetic interference, or other
+magnetic model shortcomings.  It is of course unsurprising that we can reduce
+the residue by adding more DOF to the model, the big question is whether it
+has any generality.
+
+The pose is wrt. the source coordinates, though, so if the error we are
+capturing is in the source, then the correction could work when the source is
+refixtured. 
+
+
+
+[27 May 21]
+
+I got data with the Premo sensor and the corner dipole source with the
+rotated fixture (for all-positive poses).
+
+It looks like the Premo Z axis really is sign-swapped?  In the lab I convinced
+myself that the coupling signs are +++ in this setup, as are the input signs.
+So that is how I took this data, but it didn't work in Matlab until I flipped
+both the source and sensor signs for Z.  The source flip was needed because of
+the + coupling sign I used in ilemt_ui.
+
+________________________________________________________________
+>> calibrate_main
+C:\Users\robma\Documents\Work\ilemt\cal_data\5_25_premo_rotated_dipole
+            cal_mode: 'XYZ'
+              sensor: 'premo'
+    base_calibration: 'Z_only_hr_cal'
+              ishigh: 1
+              debias: 0
+                bias: [3×3 double]
+           normalize: 1
+        sensor_signs: [1 1 -1]
+        source_signs: [1 1 -1]
+         in_fixtures: {'Z_rot'  'X_rot'  'Y_rot'}
+           data_size: 'md'
+            optimize: {'d_so_pos'  'd_so_mo'  'd_se_pos'  'd_se_mo'  'so_fix'  'se_fix'}
+              freeze: {'d_so_y_co'  'd_se_y_co'}
+            out_file: 'XYZ_hr_cal'
+            in_files: {'Z_rot_md.dat'  'X_rot_md.dat'  'Y_rot_md.dat'}
+
+                 d_source_pos                            d_source_moment                            d_sensor_pos                             d_sensor_moment           
+    _______________________________________    ___________________________________    _________________________________________    ____________________________________
+     0.045025    -0.00072988              0      0.94432    0.0061231            0     0.00017682     0.00011183              0     0.15788    0.00034119             0
+    0.0016205       0.045653              0            0      0.94582            0     2.6205e-05     1.3994e-05              0           0       0.15715             0
+    -0.043884      -0.042583              0    -0.033798    0.0069698            1    -0.00012741    -0.00010236              0    0.002356     0.0019369       0.16103
+Source fix: [0.13313 0.11862 0.09599 0.75102 -0.31814 -0.78447 ]
+Sensor fix: [-0.00009 0.00022 -0.00015 -2.20217 -2.22923 -0.00112 ]
+
+cal_residue =
+     0.016437
+
+>> check_poses
+                     ishigh: 1
+            valid_threshold: 1e-05
+                do_optimize: 0
+                     moment: 0.05
+                axis_limits: [6×2 double]
+                  sg_filt_N: 2
+                  sg_filt_F: 17
+    onax_ignore_Rz_coupling: 1
+             xyz_exaggerate: 10
+                    issweep: 0
+                   cal_file: 'XYZ_hr_cal.mat'
+               sensor_signs: [1 1 -1]
+               source_signs: [1 1 -1]
+                   in_files: {'Z_rot_md.dat'  'X_rot_md.dat'  'Y_rot_md.dat'}
+Not doing optimization.
+Position error (m): 3.51e-04 RMS, 8.40e-04 max.
+Orientation error (radians): 5.55e-03 RMS, 1.18e-02 max
+trans_err_rms =
+   0.00019952   0.00020968   0.00019844
+rot_err_rms =
+    0.0028205    0.0036717    0.0030639
+________________________________________________________________
+
+So, this does look more accurate.  With small data on [12 May 21] I got:
+    Position error (m): 5.65e-04 RMS, 1.45e-03 max.
+    Orientation error (radians): 7.40e-03 RMS, 1.92e-02 max
+
+I think this is the best dipole-only calibration so far.  Aside from the
+source fixture and the non-flipped Z sensor, this is pretty much the same
+calibration as I got with the non-rotated corner dipole in
+cal_data\cal_5_12_premo on [12 May 21].
+
+The pose solution was frequently diverging, until I changed it so the pose
+solution initial state is the stage null pose (based on the fixture
+transforms). 
+
+
 
 
 [21 May 21]
@@ -380,6 +567,32 @@ The rotation effect is rather more surprising, but I guess comes from better
 dipole approximation.  Our calibration normalization by the coupling magnitude
 might also contribute, since we weight the more distant poses higher, which in
 some sense degrades the accuracy of the closer poses.
+
+
+[25 May 21]
+
+Looking at the corner dipole source with the angle bracket for the
+all-positive workspace.
+At pose:
+        -5	0	25	0	0	-1	
+
+I am getting a pleasingly symmetrical coupling with Premo sensor:
+	0.032	0.055	-0.042	
+	-0.033	0.055	0.037	
+	-0.081	0.000	-0.080	
+
+With rotated-dipole/Premo it looks like the coupling signs are +++.  And (as
+before) there are no input inversions with Premo.
+
+It seems that with the rotated dipole source the source axis sum (used in the
+ilemt_ui distance calculation) varies noticeably less with motion in the
+sensor X and Z directions (which are nominally tangential to the source).
+
+ ==> Digital indicator pressure moves the column approx 60 um radially.  This
+     is not good for the Z axis alignment procedure.  The stiffness seems
+     to be roughly the same in all Rz positions, but this doesn't really
+     help.  The Rz center is going to appear 60 um offset in the stage Y
+     direction. 
 
 
 [14 May 21]

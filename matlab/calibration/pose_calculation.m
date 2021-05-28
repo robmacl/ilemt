@@ -1,13 +1,12 @@
 % pose optimization solving non linear least-square problem
-% Point is "invalid" if residual is bigger than resnorm_threshold.
+% Point is "invalid" if residual is bigger than valid_threshold.
 function [poses, valid, resnorms, exitflags] = ...
-      pose_calculation(couplings, calibration, resnorm_threshold)
-  if (nargin < 3)
-    resnorm_threshold = Inf;
-  end
+      pose_calculation(couplings, calibration, options)
 
-  % Starting pose.
-  pose0 = [0.22, 1e-3, 1e-3, 1e-3, 1e-3, 1e-3];
+  % Starting pose.  We use the fixture poses to construct the sensor pose
+  % at the stage null pose.
+  pose0 = trans2pose(pose2trans(calibration.source_fixture) ... 
+                     * pose2trans(calibration.sensor_fixture));
 
   % Pose state limits:
   % The pose is constrained to the +X hemisphere.
@@ -52,10 +51,14 @@ function [poses, valid, resnorms, exitflags] = ...
   % vector, and not a 2*pi multiple.
   poses = canonical_rot_vec(opt_poses);
   
-  valid = resnorms <= resnorm_threshold;
+  valid = resnorms <= options.valid_threshold;
   if (sum(~valid) > 0)
     fprintf(1, '%d invalid points with residual > %g.\n', ...
-            sum(~valid), resnorm_threshold);
+            sum(~valid), options.valid_threshold);
     bad_points = find(~valid)'
+  end
+
+  if (options.linear_correction && isfield(calibration, 'linear_correction'))
+    poses = poses * calibration.linear_correction;
   end
 end
