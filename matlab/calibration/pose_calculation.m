@@ -1,27 +1,29 @@
 % pose optimization solving non linear least-square problem
-% Point is "invalid" if residual is bigger than resnorm_threshold.
+% Point is "invalid" if residual is bigger than valid_threshold.
 function [poses, valid, resnorms, exitflags] = ...
-      pose_calculation(couplings, calibration, resnorm_threshold)
-  if (nargin < 3)
-    resnorm_threshold = Inf;
-  end
+      pose_calculation(couplings, calibration, options)
 
-  % Starting pose.
-  pose0 = [0.22, 1e-3, 1e-3, 1e-3, 1e-3, 1e-3];
+  % Starting pose.  We use the fixture poses to construct the sensor pose
+  % at the stage null pose.
+  pose0 = trans2pose(pose2trans(calibration.source_fixture) ... 
+                     * pose2trans(calibration.sensor_fixture));
 
   % Pose state limits:
   % The pose is constrained to the +X hemisphere.
-  bound_x_tr = [0; 0.4];
+  bound_positive = [0; 0.4];
   
   % y and z translation bounds
-  bounds_tr = repmat([-0.4;0.4], 1, 2); 
+  bounds_tr = repmat([-0.4;0.4], 1, 3); 
+  
+  bounds_tr(:, 1) = bound_positive;
+  %bounds_tr(:, 2) = bound_positive;
   
   % rotation bounds.  We allow the rotation to go outside of the nominal
   % +/- pi range because the optimizer may want to converge to a
   % non-canonical angle.
   bounds_rot = repmat([-6*pi; 6*pi], 1, 3);
 
-  bounds = [bound_x_tr, bounds_tr, bounds_rot];
+  bounds = [bounds_tr, bounds_rot];
   
   opt_poses = [];
   resnorms = [];
@@ -49,10 +51,14 @@ function [poses, valid, resnorms, exitflags] = ...
   % vector, and not a 2*pi multiple.
   poses = canonical_rot_vec(opt_poses);
   
-  valid = resnorms <= resnorm_threshold;
+  valid = resnorms <= options.valid_threshold;
   if (sum(~valid) > 0)
     fprintf(1, '%d invalid points with residual > %g.\n', ...
-            sum(~valid), resnorm_threshold);
+            sum(~valid), options.valid_threshold);
     bad_points = find(~valid)'
+  end
+
+  if (options.linear_correction && isfield(calibration, 'linear_correction'))
+    poses = poses * calibration.linear_correction;
   end
 end

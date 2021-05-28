@@ -1,4 +1,4 @@
-function perr_axis_stats (data_name, perr, onax, options)
+function perr_axis_stats (perr, onax, options)
   inl = zeros(8, 6);
   dnl = zeros(8, 6);
   % Assumes data directory is the working directory

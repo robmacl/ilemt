@@ -8,18 +8,8 @@
 % vectors are a sound basis for mean and other statistics, while Euler angles
 % (or even a 1DOF angle) aren't, due to problems with wrapping.
 %
-% Arguments: 
-% data_files:
-%     Holds the test data files.  May be a cell 3-vector of fixturings, as in 
-%     read_cal_data(). 
+% options: see check_poses_options()
 % 
-% calibration: ILEMT calibration struct
-% 
-% so_fix, se_fix: source and sensor fixture transforms
-%
-% options: see check_poses_defaults().
-% 
-%
 % Results: 
 % res struct, with fields:
 % 
@@ -41,12 +31,14 @@
 % coupling_norms(npoints)
 %    norm() of each coupling matrix
 %
-function [res] = find_pose_errors(data_files, calibration, options)
+function [res] = find_pose_errors (options)
+  calibration = load(options.cal_file);
   res.so_fix = calibration.source_fixture;
   res.se_fix = calibration.sensor_fixture;
-  [stage_pos, couplings] = read_cal_data(data_files, options.ishigh, calibration.bias);
+  options.bias = calibration.bias;
+  [stage_pos, couplings] = read_cal_data(options);
   [measured, valid, resnorms] = ...
-      pose_calculation(couplings, calibration, options.valid_threshold);
+      pose_calculation(couplings, calibration, options);
 figure(10)
 probplot(resnorms);
 title('Pose solution residual');
@@ -83,18 +75,26 @@ title('Pose solution residual');
   if (options.do_optimize)
 %    'PlotFcns', @optimplotresnorm, ...
 %    'Display', 'iter-detailed', ...
-opt_options = optimoptions(...
-    @lsqnonlin, ...
-    'MaxFunctionEvaluations', 2000, 'MaxIterations', 50, ...
-    'FunctionTolerance', 1e-08, 'OptimalityTolerance', 1e-07);
-%opt_options = optimset('MaxFunEvals', 2000);
-    %opt_options = optimset(options, 'PlotFcns', @optimplotresnorm);
-    %x_max = [0.2 0.2 0.2 0.2 0.2 0.2];
-    x_max = [ones(1,3) * 0.5, ones(1,3) * 3*pi];
-    x_max = [x_max x_max];
-
+%opt_options = optimoptions(...
+%    @lsqnonlin, ...
+%    'MaxFunctionEvaluations', 2000, 'MaxIterations', 300, ...
+%    'FunctionTolerance', 1e-08, 'OptimalityTolerance', 1e-07);
+opt_options = optimset('MaxFunEvals', 2000);
+opt_options = optimset(opt_options, 'PlotFcns', @optimplotresnorm);
+    allow_opt = [ones(1,3) * 0.5, ones(1,3) * 3*pi];
+    bounds = zeros(1, 12);
+    if (strcmp(options.do_optimize, 'both'))
+      bounds = [allow_opt, allow_opt];
+    elseif (strcmp(options.do_optimize, 'source'))
+      bounds(1, 1:6) = allow_opt;
+    elseif (strcmp(options.do_optimize, 'sensor'))      
+      bounds(1, 7:12) = allow_opt;
+    else
+      error('Unknown options.do_optimize: %s', options.do_optimize);
+    end
+    
     [x,resnorm,residual,exitflag,output] = ...
-	lsqnonlin(ofun, x, -x_max, x_max, opt_options);
+	lsqnonlin(ofun, x, -bounds, bounds, opt_options);
   
     source_fix_delta = x(1:6)
     sensor_fix_delta = x(7:12)
@@ -109,7 +109,7 @@ opt_options = optimoptions(...
   sof = inv(pose2trans(res.so_fix));
   sef = inv(pose2trans(res.se_fix));
   s_measured = zeros(size(res.measured));
-  for (ix = 1:size(stage_pos, 1))
+  for (ix = 1:size(res.stage_pos, 1))
     s_measured(ix, :) = tr2vector(sof * pose2trans(res.measured(ix, :)) * sef);
   end
   res.stage_pos_measured = s_measured;
