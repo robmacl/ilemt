@@ -56,6 +56,7 @@ cal_residue
 %create a calibration struct using the optimized state_new                     
 hr_cal = state2calibration(state_new);
 hr_cal.bias = bias;
+hr_cal.pin_quadrupole = options.pin_quadrupole;
 hr_cal.options = options;
 
 if (~isempty(options.out_file))

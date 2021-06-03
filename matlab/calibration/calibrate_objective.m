@@ -47,8 +47,9 @@ function [residue, pred_coupling, bias] = calibrate_objective ...
   % Preallocate results
   residue = zeros(size(couplings));
   pred_coupling = zeros(size(couplings));
-  
-  for ix = 1:npoints
+
+  clear pc_cell;
+  parfor (ix = 1:npoints)
     %Convert stage_poses(ix, :) to transform matrix st
     st = vector2tr(stage_poses(ix,:)); 
     
@@ -57,9 +58,14 @@ function [residue, pred_coupling, bias] = calibrate_objective ...
     P = source_fixture * st * sensor_fixture;
     
     % calculation of predicted coupling matrix with the forward kinematic approach
-    pred_coupling(:,:,ix) = forward_kinematics(P, state2calibration(state));
+    calibration = state2calibration(state);
+    calibration.pin_quadrupole = options.pin_quadrupole;
+    pc_cell{ix} = forward_kinematics(P, calibration);
   end
-
+  
+  for (ix = 1:npoints)
+    pred_coupling(:,:,ix) = pc_cell{ix};
+  end
 
   if (options.debias)
     % Find the nominal phase of each coupling.  Ideally the complex coupling

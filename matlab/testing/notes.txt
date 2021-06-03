@@ -1,20 +1,33 @@
 Todo:
- -- Rz axis runout using test indicator to reduce pole deflection
- -- Axis sweep off-axis DNL seems wrong, not the derivative.
- -- Literature search for calibration and cross-coupling
+ -- source rotation fixture
+
+ -- Test with and without coupling normalization in calibration
+ 
  -- Drift check when reading cal data
+
+ -- Does linear correction work with gross source motion?
+
+ -- Rz axis runout using test indicator to reduce pole deflection
+ -- Double-check stage backlash compensation.  Is the backup big enough?
+    Error or retry if the creep-up does not work.
+ -- Stage performance checks using square and gauge blocks
+
+ -- change to meters/radians in axis sweep plots
+ -- Axis sweep off-axis DNL seems wrong, not the derivative.
+  ==> maybe OK.  Take closer spaced points to reduce noise
+ 
+ -- Literature search for calibration and cross-coupling
 
 
 Accuracy:
- -- Pseudo-inverse pose correction
  -- Source fixture, calibrate with multiple fixturings
+ -- Other kinds of magnetic calibration model?
  -- Try variations of source and sensor coil and fixture
-     - CMU concentric source and Premo sensor
      - Corner dipole source and sensor (didn't get large test data). 
-     - Dipole source with linear and rotated fixtures
+     - Dipole source with linear fixtures
  -- Investigate whether ground truth is limiting observable accuracy
-     - Test RxRy fixture accuracy
-     - New fixture?
+     - Test sensor RxRy fixture accuracy
+     - New sensor fixture?
  -- Normalization/weighting/sensitivity
  -- Try low-rate calibration
 
@@ -122,6 +135,627 @@ search.  three-axis magnetometer calibration
   ferromagnetic compensation, or at least detection.
 
 
+[3 Jun 21]
+
+I implemented "skew" linear correction, which uses a 4x4 linear homogenous
+transform on the translation part.  This works a bit better than just a 3x3
+rotation/scaling on the translation.  By ignoring the rotation, and
+trans<->rot cross coupling, this gets around the problem of rotation
+wrapping.  Wrapping was giving really crappy results with the axis sweep,
+especially wrt DNL.  "skew" gives almost as low error on the large grid data
+as the "pose" 6x6 transform, while avoiding the wrapping problem.
+
+It would seem that the linear correction was not reducing fixture error,
+eg. Rz runout, since we get similar performance without any rotation effect.
+rot->trans coupling is clearly a big error, but the 'pose' transform was not
+getting at it.
+
+I added the linear correction into the calibrate_main.m script so we can
+generate this as part of the main calibration.  This automation makes the
+procedure less error-prone.
+
+So the state of the art calibration is dipole + skew correction (for
+premo/rotated dipole):
+________________________________________________________________
+>> check_poses
+                     ishigh: 1
+            valid_threshold: 1e-05
+                do_optimize: 'both'
+                     moment: 0.05
+          linear_correction: 1
+                axis_limits: [6×2 double]
+                  sg_filt_N: 2
+                  sg_filt_F: 11
+    onax_ignore_Rz_coupling: 0
+             xyz_exaggerate: 10
+               stage_coords: 1
+                    issweep: 0
+                   cal_file: '../5_25_premo_rotated_dipole/XYZ_hr_cal_skew_corrected.mat'
+               sensor_signs: [1 1 1]
+               source_signs: [1 1 1]
+                   in_files: {'Z_rot_ld.dat'  'X_rot_ld.dat'  'Y_rot_ld.dat'}
+5 invalid points with residual > 1e-05.
+bad_points =
+        1293        1295        1348        1850        1880
+Optimizing fixture poses: both
+source_fix_delta =
+  -0.00037509  -0.00014137    0.0002766    0.0018123  -0.00064503   0.00040122
+sensor_fix_delta =
+  -9.3819e-05   2.0201e-05  -0.00012474   0.00081512   0.00022785   -6.472e-05
+Position error (m): 2.40e-04 RMS, 5.63e-04 max.
+Orientation error (radians): 5.99e-03 RMS, 1.12e-02 max
+trans_err_rms =
+   0.00015116   0.00013647   0.00012755
+rot_err_rms =
+    0.0026149    0.0033791    0.0041965
+________________________________________________________________
+
+
+It seems I have kind of exhausted what I can do using the current calibration
+and data (single source fixturing) with the rotated corner dipole/Premo.  The
+only open question is how well it will generalize to gross source motion,
+which needs new data.
+
+When we have source fixture indexing, then this will presumably improve
+generalization across source motion, and might make source quadrupole useful
+(although likely only with the cmu-concentric source).
+
+
+
+
+
+
+[2 Jun 21]
+
+Summary, with rotated corner dipole/Premo:
+ -- With the quadrupole position pinned to the dipole, the sensor quadrupole
+    is giving a fairly sane result, and showing an accuracy improvement.
+ -- The sensor quadrupole is showing some screwy behavior related to a shift
+    in the fixture transform.
+ -- The sensor quadrupole + linear correction is not really any better than
+    dipole + linear.  There is also an odd huge trans->rot coupling in the
+    linear correction.
+ -- With pinned quadrupole, the source quadrupole is calibrated to near
+    zero, and has no effect on the accuracy.
+ -- Weighting the linear correction by the moment didn't do anything.  It
+    gives the same transform.
+
+
+Sort of interesting sensor quadrupole run with rotated corner dipole/premo.
+________________________________________________________________
+>> calibrate_main
+C:\Users\robma\Documents\Work\ilemt\cal_data\5_25_premo_rotated_dipole
+            cal_mode: 'se_quadrupole_all'
+              sensor: 'premo'
+    base_calibration: 'se_quadrupole_hr_cal'
+              ishigh: 1
+              debias: 0
+                bias: [3×3 double]
+           normalize: 1
+        sensor_signs: [1 1 -1]
+        source_signs: [1 1 -1]
+         in_fixtures: {'Z_rot'  'X_rot'  'Y_rot'}
+           data_size: 'md'
+            optimize: {'q_se_pos'  'q_se_mo'  'd_so_pos'  'd_so_mo'  'd_se_pos'  'd_se_mo'  'so_fix'  'se_fix'}
+              freeze: {'d_so_y_co'  'd_se_y_co'}
+            out_file: 'se_quadrupole_all_hr_cal'
+            in_files: {'Z_rot_md.dat'  'X_rot_md.dat'  'Y_rot_md.dat'}
+                 d_source_pos                            d_source_moment                            d_sensor_pos                              d_sensor_moment           
+    _______________________________________    ___________________________________    _________________________________________    _____________________________________
+     0.045025    -0.00072988              0      0.94432    0.0061231            0     0.00017682     0.00011183              0      0.15788    0.00030241             0
+    0.0016205       0.045653              0            0      0.94582            0     2.6205e-05     1.3994e-05              0            0       0.15718             0
+    -0.043884      -0.042583              0    -0.033798    0.0069698            1    -0.00012741    -0.00010236              0    0.0022671      0.001897       0.16101
+    q_source_pos    q_source_moment                 q_sensor_pos                            q_sensor_moment           
+    ____________    _______________    ______________________________________    _____________________________________
+    0    0    0       0    0    0       -0.028766      0.011392       0.05791    -0.023762      -0.00402    0.00095357
+    0    0    0       0    0    0        0.031772     -0.020869      0.037881    -0.011466     -0.022037     -0.036999
+    0    0    0       0    0    0      -0.0075513     -0.025817      0.033854     0.013922     0.0078035     0.0036576
+Source fix: [0.13313 0.11862 0.09599 0.75102 -0.31814 -0.78447 ]
+Sensor fix: [-0.00014 0.00018 -0.00021 -2.20211 -2.22961 -0.00021 ]
+
+[...]
+                 d_source_pos                            d_source_moment                            d_sensor_pos                              d_sensor_moment           
+    _______________________________________    ___________________________________    _________________________________________    _____________________________________
+     0.044938    -0.00077906              0       0.9449    0.0055771            0     -0.0038014    -0.00039067              0      0.15783    0.00027108             0
+    0.0016455       0.045612              0            0      0.94596            0    -0.00087837     -0.0054135              0            0       0.15709             0
+    -0.043902      -0.042573              0    -0.034054    0.0070507            1     0.00032862     0.00073946              0    0.0022133     0.0019429       0.16089
+    q_source_pos    q_source_moment                  q_sensor_pos                            q_sensor_moment          
+    ____________    _______________    _________________________________________    __________________________________
+    0    0    0       0    0    0       -0.0029058     0.00011366       0.061485     -1.3034    -0.089855    0.0010098
+    0    0    0       0    0    0      -5.4313e-05     -0.0033488       0.037521    -0.14749      -1.7201    -0.036318
+    0    0    0       0    0    0        0.0018008    -0.00020152       0.036887    0.061559      0.12455    0.0061634
+Source fix: [0.13307 0.11866 0.09592 0.75067 -0.31737 -0.78419 ]
+Sensor fix: [-0.00010 0.00017 -0.00019 -2.20208 -2.22987 -0.00029 ]
+
+cal_residue =
+     0.014534
+
+>> check_poses
+                     ishigh: 1
+            valid_threshold: 1e-05
+                do_optimize: 'both'
+                     moment: 0.05
+          linear_correction: 1
+                axis_limits: [6×2 double]
+                  sg_filt_N: 2
+                  sg_filt_F: 17
+    onax_ignore_Rz_coupling: 0
+             xyz_exaggerate: 10
+                    issweep: 0
+                   cal_file: '../5_25_premo_rotated_dipole/se_quadrupole_all_hr_cal.mat'
+               sensor_signs: [1 1 1]
+               source_signs: [1 1 1]
+                   in_files: {'Z_rot_ld.dat'  'X_rot_ld.dat'  'Y_rot_ld.dat'}
+5 invalid points with residual > 1e-05.
+bad_points =
+        1293        1295        1348        1850        1880
+
+source_fix_delta =
+  -0.00033671  -0.00015443   0.00031811     0.001266  -0.00065808   0.00070895
+sensor_fix_delta =
+   -8.402e-05  -4.7108e-07    -9.87e-05   0.00076063   0.00027296  -0.00059731
+Position error (m): 3.12e-04 RMS, 9.31e-04 max.
+Orientation error (radians): 5.59e-03 RMS, 1.06e-02 max
+trans_err_rms =
+   0.00018257   0.00016787   0.00018956
+rot_err_rms =
+    0.0023176    0.0031818    0.0039714
+________________________________________________________________
+
+Note that the XY quadrupole position ran away during the 'se_quadrupole'
+optimization, but came back during 'se_quadrupole_all', to where it is nearly
+cooincident with the dipole.  XY moments are also roughly similar.  So the XY
+results seem physically plausible.  Not sure what is happening with the Z.
+This is similar to what we have seen in the past with the source quadrupole,
+where I thought it might be due to the lack of source fixturings making this
+non-identifiable.  But with the sensor fixturings I would expect that similar
+info is available for all the coils.  Possibly once the Z position ran away
+there was not enough evidence to drag it back.
+
+The accuracy improvement is a fairly modest 10% or so compared to
+XYZ_hr_cal_corrected.mat, but the max position error is worse.
+
+With linear correction:
+________________________________________________________________
+>> check_poses
+                     ishigh: 1
+            valid_threshold: 1e-05
+                do_optimize: 'both'
+                     moment: 0.05
+          linear_correction: 1
+                axis_limits: [6×2 double]
+                  sg_filt_N: 2
+                  sg_filt_F: 17
+    onax_ignore_Rz_coupling: 0
+             xyz_exaggerate: 10
+                    issweep: 0
+                   cal_file: '../5_25_premo_rotated_dipole/se_quadrupole_all_hr_cal_corrected.mat'
+               sensor_signs: [1 1 1]
+               source_signs: [1 1 1]
+                   in_files: {'Z_rot_ld.dat'  'X_rot_ld.dat'  'Y_rot_ld.dat'}
+5 invalid points with residual > 1e-05.
+bad_points =
+        1293        1295        1348        1850        1880
+
+source_fix_delta =
+  -0.00035699  -0.00016543   0.00030564    0.0012335  -0.00081088    0.0011606
+sensor_fix_delta =
+  -7.5493e-05   3.9661e-05  -0.00014073   7.6074e-05   0.00061316  -0.00066308
+Position error (m): 2.33e-04 RMS, 7.12e-04 max.
+Orientation error (radians): 4.25e-03 RMS, 1.04e-02 max
+trans_err_rms =
+   0.00015176   0.00013129   0.00011927
+rot_err_rms =
+    0.0016256    0.0023424    0.0031492
+________________________________________________________________
+
+This is pretty similar to what we got with the dipole+linear, so it seems that
+the quadrupole and linear are getting at similar errors, rather than being
+synergistic.  Once again, the translation max error is worse.
+
+
+Here's the sensor quadrupole with the quadrupole position pinned to the dipole:
+________________________________________________________________
+>> calibrate_main
+C:\Users\robma\Documents\Work\ilemt\cal_data\5_25_premo_rotated_dipole
+            cal_mode: 'se_quadrupole_all'
+              sensor: 'premo'
+    base_calibration: 'base_calibration'
+              ishigh: 1
+              debias: 0
+                bias: [3×3 double]
+           normalize: 1
+      pin_quadrupole: 1
+        sensor_signs: [1 1 -1]
+        source_signs: [1 1 -1]
+         in_fixtures: {'Z_rot'  'X_rot'  'Y_rot'}
+           data_size: 'md'
+            optimize: {'q_se_mo'  'd_so_pos'  'd_so_mo'  'd_se_pos'  'd_se_mo'  'so_fix'  'se_fix'}
+              freeze: {'d_so_y_co'  'd_se_y_co'}
+            out_file: 'se_quadrupole_all_hr_cal'
+            in_files: {'Z_rot_md.dat'  'X_rot_md.dat'  'Y_rot_md.dat'}
+                 d_source_pos                            d_source_moment                            d_sensor_pos                              d_sensor_moment           
+    _______________________________________    ___________________________________    _________________________________________    _____________________________________
+     0.044938    -0.00077906              0       0.9449    0.0055771            0     -0.0038014    -0.00039067              0      0.15783    0.00027108             0
+    0.0016455       0.045612              0            0      0.94596            0    -0.00087837     -0.0054135              0            0       0.15709             0
+    -0.043902      -0.042573              0    -0.034054    0.0070507            1     0.00032862     0.00073946              0    0.0022133     0.0019429       0.16089
+    q_source_pos    q_source_moment    q_sensor_pos             q_sensor_moment          
+    ____________    _______________    ____________    __________________________________
+    0    0    0       0    0    0      0    0    0      -1.3034    -0.089855    0.0010098
+    0    0    0       0    0    0      0    0    0     -0.14749      -1.7201    -0.036318
+    0    0    0       0    0    0      0    0    0     0.061559      0.12455    0.0061634
+Source fix: [0.13307 0.11866 0.09592 0.75067 -0.31737 -0.78419 ]
+Sensor fix: [-0.00010 0.00017 -0.00019 -2.20208 -2.22987 -0.00029 ]
+
+[...]
+
+                 d_source_pos                           d_source_moment                            d_sensor_pos                             d_sensor_moment           
+    _______________________________________    __________________________________    ________________________________________    _____________________________________
+     0.044985    -0.00073362              0     0.94482     0.005785            0    -0.0038465    -0.00020868              0      0.15778    0.00025226             0
+     0.001603       0.045599              0           0      0.94641            0    -0.0010106     -0.0034661              0            0       0.15706             0
+    -0.043902      -0.042608              0    -0.03362    0.0070593            1     0.0045685      0.0030737              0    0.0024578     0.0020104       0.16075
+    q_source_pos    q_source_moment    q_sensor_pos              q_sensor_moment          
+    ____________    _______________    ____________    ___________________________________
+    0    0    0       0    0    0      0    0    0       -1.0362     0.069341     -0.11864
+    0    0    0       0    0    0      0    0    0     -0.065465     -0.91514    -0.094683
+    0    0    0       0    0    0      0    0    0       0.10483      -0.1308       1.2494
+Source fix: [0.13310 0.11860 0.09594 0.75075 -0.31798 -0.78442 ]
+Sensor fix: [0.00054 0.00098 0.00379 -2.20184 -2.22949 -0.00192 ]
+
+cal_residue =
+     0.014968
+
+
+>> check_poses
+                     ishigh: 1
+            valid_threshold: 1e-05
+                do_optimize: 'both'
+                     moment: 0.05
+          linear_correction: 1
+                axis_limits: [6×2 double]
+                  sg_filt_N: 2
+                  sg_filt_F: 17
+    onax_ignore_Rz_coupling: 0
+             xyz_exaggerate: 10
+                    issweep: 0
+                   cal_file: '../5_25_premo_rotated_dipole/se_quadrupole_all_hr_cal.mat'
+               sensor_signs: [1 1 1]
+               source_signs: [1 1 1]
+                   in_files: {'Z_rot_ld.dat'  'X_rot_ld.dat'  'Y_rot_ld.dat'}
+5 invalid points with residual > 1e-05.
+bad_points =
+        1293        1295        1319        1399        1473
+
+source_fix_delta =
+  -0.00032976   -0.0001362   0.00030485    0.0013078   -0.0006708   0.00079041
+sensor_fix_delta =
+  -8.4964e-05   2.3127e-05  -8.1795e-05   0.00044595   0.00045184  -0.00080392
+Position error (m): 2.92e-04 RMS, 8.59e-04 max.
+Orientation error (radians): 5.69e-03 RMS, 1.05e-02 max
+trans_err_rms =
+   0.00017236   0.00015943    0.0001738
+rot_err_rms =
+     0.002306    0.0035246    0.0038331
+
+________________________________________________________________
+
+The cal_residue is almost as low as with the free quadrupole position, and the
+errors are slightly better.  There is a big change in the quadrupole moments,
+especially Z, which now has a similar magnitude to XY, although the sign is
+flipped for some reason.  Could this have to do with the sign flip in the
+hardware Z connection?  IDK
+
+There are also pretty significant movements in the sensor dipole positions and
+sensor fixture, at the mm level.  Among other things, this results in a
+significant point spread with Rz in the error vector plot.  This is odd, but
+is maybe not actual error?  We have used the Z dipole as the origin, and (due
+to the fixture change) this has moved relative to the physical sensor
+position.  It is not entirely pleasing that the dipole has moved away from the
+physical center.  Presumably it has been dragged by the quadrupole, which
+seems not to want to be in the exact same place.
+
+There is in some sense a risk that by discarding the fixture transforms in the
+calibration, we are causing an error in the result.  But this error is
+constrained to resemble a rigid transform of the source and sensor, so is
+pretty benign.  And if we did have a definite notion of where the source and
+sensor origin should be, then we could force that by adjusting the Z dipoles.
+
+ ==> Hmmn, we also have relatively huge values in transform(1:3, 4:6), the
+     translation->rotation coupling.
+
+The correction sort of "works", but this is not encouraging.  I suspect this
+has to do with the Rz loop now expected in the XY position.  Once again,
+perhaps not "wrong", IDK.
+
+Overall, I am not a fan of what we are seeing with the sensor quadrupole.  We
+seem to get similar benefit from dipole only + linear, and the calibration
+seem less screwy.  But the real test would be how well it generalizes,
+especially to different source fixturings.
+
+
+Source quadrupole with rotated corner dipole/Premo:
+________________________________________________________________
+>> calibrate_main
+C:\Users\robma\Documents\Work\ilemt\cal_data\5_25_premo_rotated_dipole
+            cal_mode: 'so_quadrupole_all'
+              sensor: 'premo'
+    base_calibration: 'so_quadrupole_hr_cal'
+              ishigh: 1
+              debias: 0
+                bias: [3×3 double]
+           normalize: 1
+      pin_quadrupole: 1
+        sensor_signs: [1 1 -1]
+        source_signs: [1 1 -1]
+         in_fixtures: {'Z_rot'  'X_rot'  'Y_rot'}
+           data_size: 'md'
+            optimize: {'q_so_mo'  'd_so_pos'  'd_so_mo'  'd_se_pos'  'd_se_mo'  'so_fix'  'se_fix'}
+              freeze: {'d_so_y_co'  'd_se_y_co'}
+            out_file: 'so_quadrupole_all_hr_cal'
+            in_files: {'Z_rot_md.dat'  'X_rot_md.dat'  'Y_rot_md.dat'}
+                 d_source_pos                            d_source_moment                            d_sensor_pos                             d_sensor_moment           
+    _______________________________________    ___________________________________    _________________________________________    ____________________________________
+     0.045087    -0.00068058              0      0.94432    0.0061287            0     0.00017682     0.00011183              0     0.15788    0.00034119             0
+    0.0016744       0.045702              0            0      0.94582            0     2.6205e-05     1.3994e-05              0           0       0.15715             0
+    -0.043684      -0.042384              0    -0.033806    0.0069613            1    -0.00012741    -0.00010236              0    0.002356     0.0019369       0.16103
+    q_source_pos                 q_source_moment                 q_sensor_pos    q_sensor_moment
+    ____________    _________________________________________    ____________    _______________
+    0    0    0      0.00013838     -0.0011867     -0.0074662    0    0    0       0    0    0  
+    0    0    0     -4.8212e-05     -0.0020077      -0.006613    0    0    0       0    0    0  
+    0    0    0     -0.00017767     -0.0002672      -0.053206    0    0    0       0    0    0  
+Source fix: [0.13320 0.11867 0.09619 0.75100 -0.31813 -0.78447 ]
+Sensor fix: [-0.00009 0.00022 -0.00015 -2.20217 -2.22923 -0.00112 ]
+
+[...]
+
+                 d_source_pos                            d_source_moment                            d_sensor_pos                             d_sensor_moment           
+    _______________________________________    ___________________________________    _________________________________________    ____________________________________
+     0.045086    -0.00068174              0      0.94432    0.0061285            0      0.0001771     0.00011189              0     0.15788    0.00034129             0
+    0.0016732       0.045701              0            0      0.94582            0       2.62e-05     1.3729e-05              0           0       0.15715             0
+    -0.043693      -0.042391              0    -0.033807    0.0069609            1    -0.00012705    -0.00010205              0    0.002356      0.001937       0.16103
+    q_source_pos                 q_source_moment                 q_sensor_pos    q_sensor_moment
+    ____________    _________________________________________    ____________    _______________
+    0    0    0      9.0908e-07     -0.0011844     -0.0073468    0    0    0       0    0    0  
+    0    0    0      -3.375e-05     -0.0020037     -0.0065127    0    0    0       0    0    0  
+    0    0    0     -0.00012048    -0.00026768      -0.051239    0    0    0       0    0    0  
+Source fix: [0.13320 0.11867 0.09618 0.75100 -0.31813 -0.78447 ]
+Sensor fix: [-0.00009 0.00022 -0.00014 -2.20217 -2.22923 -0.00112 ]
+
+cal_residue =
+     0.016409
+
+>>  check_poses
+                     ishigh: 1
+            valid_threshold: 1e-05
+                do_optimize: 'both'
+                     moment: 0.05
+          linear_correction: 1
+                axis_limits: [6×2 double]
+                  sg_filt_N: 2
+                  sg_filt_F: 17
+    onax_ignore_Rz_coupling: 0
+             xyz_exaggerate: 10
+                    issweep: 0
+                   cal_file: '../5_25_premo_rotated_dipole/so_quadrupole_all_hr_cal.mat'
+               sensor_signs: [1 1 1]
+               source_signs: [1 1 1]
+                   in_files: {'Z_rot_ld.dat'  'X_rot_ld.dat'  'Y_rot_ld.dat'}
+5 invalid points with residual > 1e-05.
+bad_points =
+        1293        1295        1348        1850        1880
+
+source_fix_delta =
+  -0.00034396  -0.00015267   0.00031235    0.0012019  -0.00059812   0.00071892
+sensor_fix_delta =
+  -9.3624e-05   2.0106e-05  -0.00012401   0.00068828    0.0005479  -0.00062172
+Position error (m): 3.11e-04 RMS, 8.48e-04 max.
+Orientation error (radians): 6.05e-03 RMS, 1.13e-02 max
+trans_err_rms =
+   0.00018225   0.00016822   0.00018731
+rot_err_rms =
+    0.0027136    0.0033977    0.0042082
+________________________________________________________________
+
+The source quadrupole is miniscule with pinned position compared to what we
+were seeing before, but I had suspected that whatever was going on was not
+well identified.  I checked, and this is identical to what I am now getting
+with dipole-only:
+________________________________________________________________
+>> check_poses
+                     ishigh: 1
+            valid_threshold: 1e-05
+                do_optimize: 'both'
+                     moment: 0.05
+          linear_correction: 1
+                axis_limits: [6×2 double]
+                  sg_filt_N: 2
+                  sg_filt_F: 17
+    onax_ignore_Rz_coupling: 0
+             xyz_exaggerate: 10
+                    issweep: 0
+                   cal_file: '../5_25_premo_rotated_dipole/XYZ_hr_cal.mat'
+               sensor_signs: [1 1 1]
+               source_signs: [1 1 1]
+                   in_files: {'Z_rot_ld.dat'  'X_rot_ld.dat'  'Y_rot_ld.dat'}
+5 invalid points with residual > 1e-05.
+bad_points =
+        1293        1295        1348        1850        1880
+
+source_fix_delta =
+   -0.0003435  -0.00015261   0.00031181    0.0011981  -0.00059479   0.00071839
+sensor_fix_delta =
+  -9.3643e-05   2.0104e-05  -0.00012406   0.00068538   0.00054827  -0.00062116
+Position error (m): 3.11e-04 RMS, 8.47e-04 max.
+Orientation error (radians): 6.05e-03 RMS, 1.13e-02 max
+trans_err_rms =
+   0.00018207   0.00016822    0.0001871
+rot_err_rms =
+    0.0027135    0.0033993    0.0042086
+________________________________________________________________
+
+This dipole-only number is a bit lower than what I got yesterday with only
+source fixture optimization in check_poses.  So it seems that, at least with
+the location pinned, the source quadrupole is negligible with the rotated
+corner dipole.
+
+
+I tried adding scaling by the moment to the linear correction, but it didn't
+do anything.
+
+Doing a translation-only linear correction seems to work nearly as well, and
+avoids glitching due to angle wrapping.  But it still under-corrects the XYZ
+scale in the axis sweep.
+ ==> Maybe there are not enough internal points in the medium data, and errors
+     at the corners are causing compromise.  Try large data for linear correction?
+ ==> Nope, very little difference on large data (even though same as test data)
+
+
+[1 Jun 21]
+
+The linear correction also works well with the large data:
+    cal_data\cal_5_28_premo_rotated_dipole 
+
+This was taken after the Rz realignment, and possible motion of the source,
+and benefits from doing fixture optimization in check_poses.
+
+________________________________________________________________
+
+>> check_poses
+                     ishigh: 1
+            valid_threshold: 1e-05
+                do_optimize: 'both'
+                     moment: 0.05
+          linear_correction: 1
+                axis_limits: [6×2 double]
+                  sg_filt_N: 2
+                  sg_filt_F: 17
+    onax_ignore_Rz_coupling: 1
+             xyz_exaggerate: 10
+                    issweep: 0
+                   cal_file: '../5_25_premo_rotated_dipole/XYZ_hr_cal_corrected.mat'
+               sensor_signs: [1 1 1]
+               source_signs: [1 1 1]
+                   in_files: {'Z_rot_ld.dat'  'X_rot_ld.dat'  'Y_rot_ld.dat'}
+5 invalid points with residual > 1e-05.
+bad_points =
+        1293        1295        1348        1850        1880
+
+source_fix_delta =
+  -0.00037591  -0.00015243   0.00026686    0.0014697  -0.00059853    0.0013182
+sensor_fix_delta =
+  -0.00010268   4.4312e-05  -0.00013689   4.2806e-05   0.00035485  -0.00034827
+Position error (m): 2.30e-04 RMS, 5.70e-04 max.
+Orientation error (radians): 5.03e-03 RMS, 9.67e-03 max
+trans_err_rms =
+   0.00014865   0.00012885   0.00011858
+rot_err_rms =
+    0.0020426    0.0029539      0.00352
+________________________________________________________________
+
+
+Compare to without the linear correction:
+________________________________________________________________
+>> check_poses
+                     ishigh: 1
+            valid_threshold: 1e-05
+                do_optimize: 'source'
+                     moment: 0.05
+          linear_correction: 0
+                axis_limits: [6×2 double]
+                  sg_filt_N: 2
+                  sg_filt_F: 17
+    onax_ignore_Rz_coupling: 1
+             xyz_exaggerate: 10
+                    issweep: 0
+                   cal_file: '../5_25_premo_rotated_dipole/XYZ_hr_cal_corrected.mat'
+               sensor_signs: [1 1 1]
+               source_signs: [1 1 1]
+                   in_files: {'Z_rot_ld.dat'  'X_rot_ld.dat'  'Y_rot_ld.dat'}
+5 invalid points with residual > 1e-05.
+bad_points =
+        1293        1295        1348        1850        1880
+source_fix_delta =
+  -0.00033741  -0.00011043   0.00034062    0.0014245  -0.00075376   0.00073599
+sensor_fix_delta =
+     0     0     0     0     0     0
+Position error (m): 3.46e-04 RMS, 9.03e-04 max.
+Orientation error (radians): 6.10e-03 RMS, 1.15e-02 max
+trans_err_rms =
+   0.00021863   0.00019825   0.00018108
+rot_err_rms =
+    0.0030901    0.0033521    0.0040504
+________________________________________________________________
+
+For translation, error is reduced 33% RMS and 47% max.  For rotation, 18% and
+12%.
+
+re. interpretation of the linear correction, from previous entry.
+
+The rotation->translation terms are in the range 5..50 um, which is the same
+order of magnitude as probable fixturing error.  So it is hard to be confident
+that this is correcting actual measurment error.  Looking at the
+perr_axis_response plot is not reassuring, since there is a strong sinusoidal
+component.  But the oscillation seems to peak about every 90 degrees, which is
+4x what we would expect from simple Rz runout.  I don't know what kinematic
+factor could cause this periodicity.
+ ==> are these plots over-smoothed?
+ ==> Reducing the sg_filt_F from 17 to 9 gives much noisier derivatives, but
+     has pretty minimal effect on the INL.  This however does not help the
+     weird behavior of the off-axis derivatives.
+
+
+
+Maybe the off-axis derivative effect comes from taking the vector magnitude of
+the off-axis terms?  This certainly is forcing the DNL to be positive.  Also,
+I'm comparing a vector magnitude (INL) to a vector magnitude of DNL.  This is
+not going to give a derivative relationship between the two.  For example, if
+the error is a straight line in 3-space, the DNL is fixed, but the line is
+going to have a closest approach to the true value, giving an INL with a bend.
+ ==> Still possible the off-axis DNL has a bug
+
+There is some puzzling jumps at the beginning and end of the off-axis DNL,
+especially in the Z response.  This looks sort of like a data start/end
+effect.
+
+The smoothness of the DNL is heavily determined by the window width, and the
+max DNL is moderately affected.  To be conservative it seems we should opt for
+rather less smoothing.  Also, using more closely spaced points in the pattern
+will give a lower noise derivative.  Given the current pattern resolution,
+F=17 seems rather too much.
+
+Perhaps we should say that the off-axis DNL is inscrutable/irrelevant?  We do
+care about the on-axis DNL, because this is our local error, and the INL
+because it is overall error.  For off-axis, we care about the total off-axis
+error, but perhaps not so much about the DNL?  I guess we do want to know
+about the off-axis error due to a small move, though.  We don't particularly
+care about the curve, but knowing the general magnitude (or max) is useful.
+
+But for all that matter, the user isn't going to care about the wiggles in the
+INL curve either.  I want to look at these mainly to provide insight into the
+error process, but they are also useful in publication to illustrate the INL
+vs. DNL concept, and to show that the DNL computation is meaningful.  Probably
+skip the off-axis plots for publication.
+
+
+We can understand the higher-order periodicity in the Rz response as harmonic
+distortion, which will always appear when a nonlinear system is excited with a
+periodic signal.  The magnetics are definitely nonlinear, so it is easy to
+imagine that they might cause fourth-harmonic content.  A quadrupole has four
+peaks when rotated, but they have alternating signs, so could perhaps create
+only second harmonic content.
+
+Note that our rotation is of the sensor, so we would expect to be seeing
+mainly dipole deviations of the sensor response.
+
+
+One thought, re. linear correction, is that even if it only works over the
+calibrated workspace, that workspace is still aready a lot larger than ASAP.
+In particular, for doing correlation with ASAP under free motion, we don't
+really need to work with large source rotations.  So I could start work in
+that direction, such as with the rabbit experiments.  And it is not completely
+unrealistic to use the linear correction, even if it is rather ad-hoc.
+
+
 [28 May 21]
 
 Notes on Rz runout test:
@@ -224,8 +858,7 @@ has any generality.
 
 The pose is wrt. the source coordinates, though, so if the error we are
 capturing is in the source, then the correction could work when the source is
-refixtured. 
-
+refixtured.
 
 
 [27 May 21]

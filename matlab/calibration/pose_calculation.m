@@ -25,40 +25,47 @@ function [poses, valid, resnorms, exitflags] = ...
 
   bounds = [bounds_tr, bounds_rot];
   
-  opt_poses = [];
-  resnorms = [];
-  exitflags = [];
+  clear results;
   
   %set options for the pose optimization
   option = optimset('Display', 'off', 'TolFun', 1e-09, ...
                     'MaxIter', 1000, 'MaxFunEvals', 60000);
-  for (ix = 1:size(couplings, 3))
+  parfor (ix = 1:size(couplings, 3))
     Cdes = real_coupling(couplings(:, :, ix));
     %1 and 2 row of bounds are respectively lower and upper bounds
     [pose_new, resnorm, ~, exitflag] = ...
-        lsqnonlin(@(pose) coupling_error(calibration, pose, Cdes), ...
+        lsqnonlin(@(pose) coupling_error(calibration, pose, Cdes, options), ...
                   pose0, bounds(1,:), bounds(2,:), option);
     % use last pose as initial value?  Doesn't work well with calibration
     % data points, which jump around.
     %pose0 = pose_new;
-    opt_poses = [opt_poses; pose_new];
-    resnorms = [resnorms; resnorm];
-    exitflags = [exitflags, exitflag];
+    results(ix) = ...
+        struct('pose', pose_new, 'resnorm', resnorm, 'exitflag', exitflag);
   end
 
   % Convert to canonical rotation vectors, with magnitude ranging 0:pi.
   % This insures that the same orientation always has the same rotation
   % vector, and not a 2*pi multiple.
-  poses = canonical_rot_vec(opt_poses);
+  poses = canonical_rot_vec(cat(1, results.pose));
   
+  resnorms = [results.resnorm];
   valid = resnorms <= options.valid_threshold;
   if (sum(~valid) > 0)
     fprintf(1, '%d invalid points with residual > %g.\n', ...
             sum(~valid), options.valid_threshold);
-    bad_points = find(~valid)'
+    bad_points = find(~valid)
   end
 
   if (options.linear_correction && isfield(calibration, 'linear_correction'))
-    poses = poses * calibration.linear_correction;
+    transform = calibration.linear_correction;
+    if (size(transform, 1) == 4)
+      % Linear only, with skew terms.  This is a linear homogenous transform matrix,
+      % although transform(:, 4) is effectively zero.  But nonzero
+      % transform(4, 1:3) allow for trapezoid effects.
+      corr = pad_ones(poses(:, 1:3)) * transform;
+      poses(:, 1:3) = corr(:, 1:3);
+    else
+      poses = poses * transform;
+    end
   end
 end

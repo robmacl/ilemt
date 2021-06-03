@@ -26,7 +26,6 @@ function [coupling] = forward_kinematics (P, calibration)
   
   % Component dipole positions.  If moment is effectively zero, then the
   % position is placed at the origin, with moment 0.  
-  %
   so_pos = zeros(3, 3, 3);
   se_pos = zeros(3, 3, 3);
 
@@ -43,8 +42,13 @@ function [coupling] = forward_kinematics (P, calibration)
       q_so_mo(:, axis) = 0;
     else
       m_so_off = (q_so_mo(:, axis)/m_so_mag)*(calibration.q_source_distance/2);
-      so_pos(:, axis, 2) = calibration.q_source_pos(:, axis) + m_so_off;
-      so_pos(:, axis, 3) = calibration.q_source_pos(:, axis) - m_so_off;
+      if (calibration.pin_quadrupole)
+        o_q_pos = calibration.d_source_pos(:, axis);
+      else
+        o_q_pos = calibration.q_source_pos(:, axis);
+      end
+      so_pos(:, axis, 2) = o_q_pos + m_so_off;
+      so_pos(:, axis, 3) = o_q_pos - m_so_off;
     end
     
     %sensor
@@ -56,12 +60,17 @@ function [coupling] = forward_kinematics (P, calibration)
       q_se_mo(:, axis) = 0;
     else
       m_se_off = (q_se_mo(:, axis)/m_se_mag)*(calibration.q_sensor_distance/2);
-      se_pos(:, axis, 2) = calibration.q_sensor_pos(:, axis) + m_se_off;
-      se_pos(:, axis, 3) = calibration.q_sensor_pos(:, axis) - m_se_off;
+      if (calibration.pin_quadrupole)
+        e_q_pos = calibration.d_sensor_pos(:, axis);
+      else
+        e_q_pos = calibration.q_sensor_pos(:, axis);
+      end
+      se_pos(:, axis, 2) = e_q_pos + m_se_off;
+      se_pos(:, axis, 3) = e_q_pos - m_se_off;
     end
   end
 
-  % Component dipole moments
+  % Moments for source and sensor component dipoles: dipole, +q, -q 
   so_mo = cat(3, calibration.d_source_moment, q_so_mo, -q_so_mo);
   se_mo = cat(3, calibration.d_sensor_moment, q_se_mo, -q_se_mo);
 

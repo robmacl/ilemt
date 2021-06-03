@@ -2,17 +2,16 @@ function [options] = check_poses_options (cal_options)
 % Return options struct for the check_poses.  This sets defaults and then runs
 % the local_check_options.m script.
 
-  cal_options = calibrate_options();
-
   % ishigh: if true, check high rate, otherwise low rate.
-  options.ishigh = true;
+  options.ishigh = cal_options.ishigh;
 
   % valid_threshold: if pose solution residue is greater than this, then discard
   % the point as "invalid".
   options.valid_threshold = 1e-5;
 
   % do_optimize: whether to do optimization of fixture transform to try to
-  % reduce error.  Default false.
+  % reduce error.  Values: false, 'source', 'sensor', or 'both'.  Default
+  % false.
   options.do_optimize = false;
 
   % moment: moment used in optimization to trade angular vs. translation error
@@ -32,10 +31,15 @@ function [options] = check_poses_options (cal_options)
   options.sg_filt_N = 2;
   options.sg_filt_F = 17;
 
-  options.onax_ignore_Rz_coupling = true;
+  % ### ASAP specific special case
+  options.onax_ignore_Rz_coupling = false;
 
   % xyz_exaggerate: exaggeration to use in 3D error views.
   options.xyz_exaggerate = 10;
+
+  % If true, transform to stage coordinates in 3D views.  Gives a prettier
+  % picture when there is gross rotation of the source.
+  options.stage_coords = true;
   
   % If true, this is axis sweep data, otherwise more general data, such as
   % calibration pattern.

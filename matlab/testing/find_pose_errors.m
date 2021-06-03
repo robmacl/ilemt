@@ -39,9 +39,12 @@ function [res] = find_pose_errors (options)
   [stage_pos, couplings] = read_cal_data(options);
   [measured, valid, resnorms] = ...
       pose_calculation(couplings, calibration, options);
-figure(10)
-probplot(resnorms);
-title('Pose solution residual');
+  %{
+  figure(10)
+  probplot(resnorms);
+  title('Pose solution residual');
+  %}
+  
   res.measured = measured(valid, :);
   res.stage_pos = stage_pos(valid, :);
   res.couplings = couplings(:, :, valid);
@@ -73,14 +76,10 @@ title('Pose solution residual');
     find_pose_errors_objective(state, res, options); 
 
   if (options.do_optimize)
-%    'PlotFcns', @optimplotresnorm, ...
-%    'Display', 'iter-detailed', ...
-%opt_options = optimoptions(...
-%    @lsqnonlin, ...
-%    'MaxFunctionEvaluations', 2000, 'MaxIterations', 300, ...
-%    'FunctionTolerance', 1e-08, 'OptimalityTolerance', 1e-07);
-opt_options = optimset('MaxFunEvals', 2000);
-opt_options = optimset(opt_options, 'PlotFcns', @optimplotresnorm);
+    
+    opt_options = optimset('lsqnonlin');
+    opt_options = optimset(opt_options, 'Display', 'off');
+    %opt_options = optimset(opt_options, 'PlotFcns', @optimplotresnorm);
     allow_opt = [ones(1,3) * 0.5, ones(1,3) * 3*pi];
     bounds = zeros(1, 12);
     if (strcmp(options.do_optimize, 'both'))
@@ -92,14 +91,14 @@ opt_options = optimset(opt_options, 'PlotFcns', @optimplotresnorm);
     else
       error('Unknown options.do_optimize: %s', options.do_optimize);
     end
-    
+    fprintf(1, 'Optimizing fixture poses: %s\n', options.do_optimize);
+
     [x,resnorm,residual,exitflag,output] = ...
 	lsqnonlin(ofun, x, -bounds, bounds, opt_options);
   
     source_fix_delta = x(1:6)
     sensor_fix_delta = x(7:12)
   else
-    fprintf(1, 'Not doing optimization.\n');
     x = zeros(1, 12);
   end
 
