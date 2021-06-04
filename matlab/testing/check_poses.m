@@ -25,11 +25,8 @@ if (options.issweep)
 
   % Response of every axis to an individual axis.  Not done on all axes by
   % default because it's too much clutter.
-  figure(5)
-  perr_axis_response(perr,onax,6);
-
-  figure(6)
-  perr_axis_response(perr,onax,3);
+  %figure(5)
+  %perr_axis_response(perr,onax,6);
 end
 
 %figure(11)

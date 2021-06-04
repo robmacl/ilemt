@@ -63,3 +63,5 @@ if (~isempty(options.out_file))
   %save in a .mat file all the optimized values
   save(options.out_file, '-struct', 'hr_cal');
 end
+
+output_correction(options);

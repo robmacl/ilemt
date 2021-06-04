@@ -1,6 +1,7 @@
 options.in_files = {'axis_sweep_out.dat'};
 options.issweep = true;
-options.cal_file = 'XYZ_hr_cal_skew_corrected.mat';
+%options.cal_file = 'XYZ_hr_cal_skew_corrected.mat';
+options.cal_file = 'XYZ_hr_cal_DLT_corrected.mat';
 %options.cal_file = 'XYZ_hr_cal_pose_corrected.mat';
 %options.cal_file = 'XYZ_hr_cal.mat';
 %options.cal_file = 'se_quadrupole_all_hr_cal.mat';

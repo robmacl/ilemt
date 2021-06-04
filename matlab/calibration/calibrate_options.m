@@ -47,8 +47,9 @@ options.normalize = true;
 options.pin_quadrupole = true;
 
 % Additional correction based on generated poses, eg. linear transform.
-% Values: 'none', 'skew', 'pose'.  See output_correction().
-options.correct_mode = 'skew';
+% We have several correction modes, but 'DLT' is currently the best.
+% See output_correction().
+options.correct_mode = 'DLT';
 
 % These allow sign flip on sensor input (coupling column) or source
 % (coupling row).  These are only needed if the input signs or coupling

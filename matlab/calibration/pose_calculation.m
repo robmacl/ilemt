@@ -57,14 +57,21 @@ function [poses, valid, resnorms, exitflags] = ...
   end
 
   if (options.linear_correction && isfield(calibration, 'linear_correction'))
-    transform = calibration.linear_correction;
+    % Transpose because we have row vectors.  linear_correction is in the more
+    % conventional column vector format.
+    transform = calibration.linear_correction';
+
     if (size(transform, 1) == 4)
-      % Linear only, with skew terms.  This is a linear homogenous transform matrix,
-      % although transform(:, 4) is effectively zero.  But nonzero
-      % transform(4, 1:3) allow for trapezoid effects.
+      % Transform translation only, applied to [x y z 1] vectors.  See
+      % testing/linear_correction.m
       corr = pad_ones(poses(:, 1:3)) * transform;
-      poses(:, 1:3) = corr(:, 1:3);
+      
+      % Normalize by corr(:, 4) to implement the general projection
+      for (ix = 1:size(corr, 1))
+        poses(ix, 1:3) = corr(ix, 1:3) / corr(ix, 4);
+      end
     else
+      % Transform the full pose vector.  Does not work well, because of angle wrapping.
       poses = poses * transform;
     end
   end
