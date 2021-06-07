@@ -34,8 +34,10 @@ function [options] = check_poses_options (cal_options)
   % ### ASAP specific special case
   options.onax_ignore_Rz_coupling = false;
 
-  % xyz_exaggerate: exaggeration to use in 3D error views.
-  options.xyz_exaggerate = 10;
+  % xyz_exaggerate: exaggeration to use in 3D trans->trans error views.
+  % rot_xyz_exaggerate: for rot->trans error
+  options.xyz_exaggerate = 10; % m/m
+  options.rot_xyz_exaggerate = 300; % m/rad
 
   % If true, transform to stage coordinates in 3D views.  Gives a prettier
   % picture when there is gross rotation of the source.

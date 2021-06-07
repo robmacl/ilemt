@@ -4,7 +4,7 @@ Todo:
  -- Get corner-dipole/premo data with gross source motion
  
  -- Drift check when reading cal data
- -- change to meters/radians in axis sweep plots
+ -- change to meters/radians in axis sweep plots (?)
 
  -- Try redoing calibration (with linear correction) on other source/sensor
     configurations that there is data for.
@@ -140,6 +140,42 @@ search.  three-axis magnetometer calibration
   ferromagnetic compensation, or at least detection.
 
 
+[7 Jun 21]
+
+I implemented 3D view of the rot->trans errors in perr_workspace_vol().  This
+is kind of interesting, in that it lets you see the trans->rot error better in
+non-sweep data.  The error vector spray does trend in different directions at
+different rotations.  But it rather seems that more variation in error
+direction is due to translation.  With the sweep data, this is another way to
+see the 4x rotation effect in the cross coupling.
+
+I didn't notice it before, but in the trans->trans plot you can also arcing
+flow lines in the error vectors.  Maybe this is the expected polar measurement
+effect that tangential error is larger than radial?  But this flow is around
+the center of the of the workspace, rather than the center of the source,
+which is more what I was imagining.  The calibration and correction do of
+course center the errors here.
+
+The rot->trans plot also reminded me that we don't have many rotations in the
+calibration data.  This may be affecting our ability to identify
+eg. quadrupole terms.  It might work better to add some axis sweeps to the
+cross-product mesh, to get finer gradations without a huge blowup of the
+points.  eg. denser rot sweeps at a few of the points near the source because
+deviations are stronger at short range.  And then at least one denser
+translation sweep, perhaps in the radial direction, to get at the details of
+the radial response.  These don't need to be nearly as close spaced as the
+axis sweeps, but say at least 20 points.
+
+It is also fairly obvious that the quadrupole can't very well approximate the
+response of a cube coil.  It can tweak the radial response and perhaps
+usefully model off-axis imperfections, but it can't model the systematic lack
+of axial symmetry from the square coil.  It would likely work better to use a
+square pattern of dipoles or of dipole+quadrupole.
+
+But, as noted on [4 Jun 21], our accuracy is maybe pretty OK, and it is time
+to start wrapping up the calibration effort.
+
+
 [4 Jun 21]
 
 So it seems that the linear correction was not particularly helping with
@@ -152,21 +188,22 @@ is no absolute scale reference, but I think with the sensor rotations we can
 probably detect unequal scales on XYZ, and non-orthogonality.
 
 
-Ok, I figured out how to get the general linear transform that I was trying
-to get with my pseudo-inverse "skew" method.  It was not in fact inferring any
+Ok, I figured out how to get the general linear transform that I was trying to
+get with my pseudo-inverse "skew" method.  It was not in fact inferring any
 skew or trapezoid.  I was misinterpreting it because the matrix was transposed
 for row vectors.  So it was the skew terms that were zero, and the translation
 terms were small (but nonzero).  Yet this did work better than the 3x3
 transform, which I suppose is that by dropping out the residual translation
 error, we weren't pushing that into the 3x3.  The 3x3 part has significant
 non-orthogonal components either way, which was significantly constributing to
-the effect.  The accuracy as measured by check_poses was completely unaffected
-by transform(4, :) and transform(:, 4).  The first does not matter  because we
-drop out translation, and the second was effectively zero.
+the benefit.  The accuracy as measured by check_poses was completely
+unaffected by the non-3x3 transform(4, :) and transform(:, 4).  The first does
+not matter because we drop out translation, and the second was effectively
+zero.
 
-But using a general projection transform, of which a homography or perspective projection
-matrix are special cases, we can get the skew/trapezoid terms.  A simple
-method is the "Direct Linear Transformation":
+But using a general projection transform, of which a homography or perspective
+projection matrix are special cases, we can get the skew/trapezoid terms.  A
+simple method is the "Direct Linear Transformation":
     https://en.wikipedia.org/wiki/Direct_linear_transformation
 
 I found a matlab script which implements this, now in
@@ -183,7 +220,7 @@ ________________________________________________________________
                 do_optimize: 'both'
                      moment: 0.05
           linear_correction: 1
-                axis_limits: [6?2 double]
+                axis_limits: [6×2 double]
                   sg_filt_N: 2
                   sg_filt_F: 11
     onax_ignore_Rz_coupling: 0
@@ -232,18 +269,19 @@ Given the circular spray of the error vectors it is tempting to think that the
 residual translation error is mainly rot->trans coupling.  That the vectors
 rotate definitely shows that that the error process is rotating with the
 sensor.  That is, there is a significant sensor-referred error.  It is not
-necessarily the case that the error vectors would rotate.  The rotation has to
+necessarily the case that our error vectors would rotate.  The rotation has to
 be a sensor error (or a fixture error), because rotating the sensor with the
 source->sensor translation held fixed is not going to give any change in field
 at the sensor.  Any rotational nonideality in the sensor will also contribute
 to errors varying across the translation workspace, since translation does
 cause rotation of the field at the sensor.  This kinematic
-translation->rotation effect is much larger than with the ASAP optical
+translation->rotation effect is much larger than it was with the ASAP optical
 measurement because the magnetic field is curved.
 
 But the diameter of the splatter circle can be influenced by other things,
 such as off-axis trans->trans coupling.  If the error did not rotate, then we
-*might* be able to absorb it into the linear transform, but not necessarily.
+*might* be able to absorb it into the calibration or linear transform, but not
+necessarily.
 
 So, several thoughts on the linear correction:
  -- Does this work with other source fixturings?
@@ -261,17 +299,18 @@ So, several thoughts on the linear correction:
 FWIW, comparing to the ASAP_TIM09 paper:
     Fig. 15 shows the position error when the probe undergoes  [+/-] 1 cm
     translation.  Error is 1.6% of translation, and is exaggerated
-    30x for clarity.  When ?20? rotation is introduced, the worst case relative
+    30x for clarity.  When ±20 degree rotation is introduced, the worst case relative
     error measured throughout the workspace is 6.5% of angle and 2.7% of
     translation.
-    [This is trans->trans and rot->rot error, sum of on-axis and off-axis] 
+    [This is max trans->trans and rot->rot INL, sum of on-axis and off-axis,
+    also trans INL + rot->trans INL.]
 
-    We measured the apparent translation due to a 1? rotation and the apparent
-    rotation due to a 3 mm translation.  The worst case values across the
-    workspace are 21 ?m/? and 0.36 ?/mm.  Fig. 16 shows the angular error as the
-    probe undergoes [+/-] 1cm pure translation.  The peak error is
-    1.2?.
-    [This is the trans<->rot coupling, or cross error]
+    We measured the apparent translation due to a 1 degree rotation and the
+    apparent rotation due to a 3 mm translation.  The worst case values across
+    the workspace are 21 um/ degree and 0.36 degree/mm.  Fig. 16 shows the
+    angular error as the probe undergoes [+/-] 1cm pure translation.  The peak
+    error is 1.2 degrees.
+    [This is the max trans<->rot DNL and max trans->rot INL]
 
 So, in summary:
     trans->trans: 1.6% (over +/- 1cm)
@@ -285,11 +324,11 @@ Compare to the current ILEMT axis sweep:
     rot->trans: 7.4 um/degree
     trans->rot: 0.003 degree/mm.
 [I have 'around' because the on-axis DNL is split across XYZ components, with
-total unclear.]
+the total not computed.]
 
-Now, after adding the PSD linearization, and the stage calibration, I improved
-the ASAP accuracy a lot, but this was never published.  But with this
-comparison, the ILEMT angular accuracy is *much* better, and the linear
+It's true that after adding the PSD linearization, and the stage calibration,
+I improved the ASAP accuracy a lot, but this was never published.  But with
+this comparison, the ILEMT angular accuracy is *much* better, and the linear
 accuracy is better.  The improvement in trans->rot is 100x.  And we are
 testing a 5x larger translation workspace, and 9x larger rotation.  So, even
 if the calibration breaks down outside this workspace, we are already better
@@ -297,17 +336,21 @@ than ASAP.
 
 IIRC, the final ASAP trans->trans (no rotation) performance was something like
 0.2%, which is several times better.  But if you add any rotation (which is
-not affected by the sensor linearization), then things deteriorate rapidly.
-eg. 0.2% over 1mm is 20 um, but a 1 degree rotation also causes this error.
+not much affected by the sensor linearization), then things deteriorate
+rapidly.  eg. 0.2% over 1mm is 20 um, but a 1 degree rotation also causes this
+error.
 
 The probe changes, especially bare LED, probably significantly improved the
 rot->trans coupling, IDK.
 
 So, we really can't use ASAP as "ground truth".  It's useful to for a
-high-speed comparison, but it really isn't more accurate.  I could
-re-characterize ASAP, but that would be a fair amount of work for unclear
-benefit.  If I am going to publish the simultaneous ASAP comparison, then I
-really should do this, using the current stage setup.
+high-speed comparison, but it really isn't more accurate.  It's also a
+redundant measurement which can highlight failings of the magnetic tracker
+such as metal interference.
+
+I could re-characterize ASAP accuracy, but that would be a fair amount of work
+for unclear benefit.  If I am going to publish the simultaneous ASAP
+comparison, then I really should do this, using the current stage setup.
 
 
 Planning:
@@ -319,10 +362,10 @@ be acceptable to have worse error across a large source workspace, as long as
 the linear correction works over the kind of workspace that we need for
 microsurgery.
 
-So far as the engineering of ILEMT, getting a working system, after we have a
-working calibration model, for software all we absolutely need is the
-real-time pose solution.  This also implies an API for getting the data out,
-and converting ilemt_ui to work remotely.
+So far as the engineering of ILEMT, once we have a working calibration model,
+to get a working system all we absolutely need is the real-time pose solution.
+This also implies an API for getting the data out, and converting ilemt_ui to
+work remotely.
 
 For engineering nicety we would want to take on things like duplicating the
 hardware, dealing with calibration across multiple source/sensor
@@ -336,7 +379,6 @@ This is very important for possible future funding.
 I can continue some degree of wrapping-up on my own time after funding runs
 out, but the possible effort is limited, and not sure how much I will want to
 do this.
-
 
 
 [3 Jun 21]
@@ -375,7 +417,7 @@ ________________________________________________________________
                 do_optimize: 'both'
                      moment: 0.05
           linear_correction: 1
-                axis_limits: [6?2 double]
+                axis_limits: [6×2 double]
                   sg_filt_N: 2
                   sg_filt_F: 11
     onax_ignore_Rz_coupling: 0
@@ -439,7 +481,7 @@ cal_residue =
                 do_optimize: 0
                      moment: 0.05
           linear_correction: 0
-                axis_limits: [6?2 double]
+                axis_limits: [6×2 double]
                   sg_filt_N: 2
                   sg_filt_F: 17
     onax_ignore_Rz_coupling: 0
@@ -469,7 +511,7 @@ ________________________________________________________________
                 do_optimize: 0
                      moment: 0.05
           linear_correction: 1
-                axis_limits: [6?2 double]
+                axis_limits: [6×2 double]
                   sg_filt_N: 2
                   sg_filt_F: 17
     onax_ignore_Rz_coupling: 0
@@ -500,7 +542,7 @@ ________________________________________________________________
                 do_optimize: 0
                      moment: 0.05
           linear_correction: 1
-                axis_limits: [6?2 double]
+                axis_limits: [6×2 double]
                   sg_filt_N: 2
                   sg_filt_F: 17
     onax_ignore_Rz_coupling: 0
@@ -530,7 +572,7 @@ ________________________________________________________________
                 do_optimize: 0
                      moment: 0.05
           linear_correction: 1
-                axis_limits: [6?2 double]
+                axis_limits: [6×2 double]
                   sg_filt_N: 2
                   sg_filt_F: 17
     onax_ignore_Rz_coupling: 0
@@ -591,7 +633,7 @@ C:\Users\robma\Documents\Work\ilemt\cal_data\5_25_premo_rotated_dipole
     base_calibration: 'se_quadrupole_hr_cal'
               ishigh: 1
               debias: 0
-                bias: [3?3 double]
+                bias: [3×3 double]
            normalize: 1
         sensor_signs: [1 1 -1]
         source_signs: [1 1 -1]
@@ -637,7 +679,7 @@ cal_residue =
                 do_optimize: 'both'
                      moment: 0.05
           linear_correction: 1
-                axis_limits: [6?2 double]
+                axis_limits: [6×2 double]
                   sg_filt_N: 2
                   sg_filt_F: 17
     onax_ignore_Rz_coupling: 0
@@ -684,7 +726,7 @@ ________________________________________________________________
                 do_optimize: 'both'
                      moment: 0.05
           linear_correction: 1
-                axis_limits: [6?2 double]
+                axis_limits: [6×2 double]
                   sg_filt_N: 2
                   sg_filt_F: 17
     onax_ignore_Rz_coupling: 0
@@ -724,7 +766,7 @@ C:\Users\robma\Documents\Work\ilemt\cal_data\5_25_premo_rotated_dipole
     base_calibration: 'base_calibration'
               ishigh: 1
               debias: 0
-                bias: [3?3 double]
+                bias: [3×3 double]
            normalize: 1
       pin_quadrupole: 1
         sensor_signs: [1 1 -1]
@@ -773,7 +815,7 @@ cal_residue =
                 do_optimize: 'both'
                      moment: 0.05
           linear_correction: 1
-                axis_limits: [6?2 double]
+                axis_limits: [6×2 double]
                   sg_filt_N: 2
                   sg_filt_F: 17
     onax_ignore_Rz_coupling: 0
@@ -843,7 +885,7 @@ C:\Users\robma\Documents\Work\ilemt\cal_data\5_25_premo_rotated_dipole
     base_calibration: 'so_quadrupole_hr_cal'
               ishigh: 1
               debias: 0
-                bias: [3?3 double]
+                bias: [3×3 double]
            normalize: 1
       pin_quadrupole: 1
         sensor_signs: [1 1 -1]
@@ -891,7 +933,7 @@ cal_residue =
                 do_optimize: 'both'
                      moment: 0.05
           linear_correction: 1
-                axis_limits: [6?2 double]
+                axis_limits: [6×2 double]
                   sg_filt_N: 2
                   sg_filt_F: 17
     onax_ignore_Rz_coupling: 0
@@ -928,7 +970,7 @@ ________________________________________________________________
                 do_optimize: 'both'
                      moment: 0.05
           linear_correction: 1
-                axis_limits: [6?2 double]
+                axis_limits: [6×2 double]
                   sg_filt_N: 2
                   sg_filt_F: 17
     onax_ignore_Rz_coupling: 0
@@ -987,7 +1029,7 @@ ________________________________________________________________
                 do_optimize: 'both'
                      moment: 0.05
           linear_correction: 1
-                axis_limits: [6?2 double]
+                axis_limits: [6×2 double]
                   sg_filt_N: 2
                   sg_filt_F: 17
     onax_ignore_Rz_coupling: 1
@@ -1022,7 +1064,7 @@ ________________________________________________________________
                 do_optimize: 'source'
                      moment: 0.05
           linear_correction: 0
-                axis_limits: [6?2 double]
+                axis_limits: [6×2 double]
                   sg_filt_N: 2
                   sg_filt_F: 17
     onax_ignore_Rz_coupling: 1
@@ -1241,7 +1283,7 @@ C:\Users\robma\Documents\Work\ilemt\cal_data\5_25_premo_rotated_dipole
     base_calibration: 'Z_only_hr_cal'
               ishigh: 1
               debias: 0
-                bias: [3?3 double]
+                bias: [3×3 double]
            normalize: 1
         sensor_signs: [1 1 -1]
         source_signs: [1 1 -1]
@@ -1268,7 +1310,7 @@ cal_residue =
             valid_threshold: 1e-05
                 do_optimize: 0
                      moment: 0.05
-                axis_limits: [6?2 double]
+                axis_limits: [6×2 double]
                   sg_filt_N: 2
                   sg_filt_F: 17
     onax_ignore_Rz_coupling: 1
@@ -1447,7 +1489,7 @@ cal_residue = 0.011961
 
 >> check_poses
 data_file =
-  1?3 cell array
+  1×3 cell array
     {'Z_rot_ld.dat'}    {'X_rot_ld.dat'}    {'Y_rot_ld.dat'}
 cal_file =
     'XYZ_hr_cal.mat'
@@ -1493,7 +1535,7 @@ cal_residue =
      0.010702
 >> check_poses
 data_file =
-  1?3 cell array
+  1×3 cell array
     {'Z_rot_ld.dat'}    {'X_rot_ld.dat'}    {'Y_rot_ld.dat'}
 cal_file =
     'so_quadrupole_all_hr_cal.mat'

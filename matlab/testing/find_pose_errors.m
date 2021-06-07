@@ -112,8 +112,11 @@ function [res] = find_pose_errors (options)
     s_measured(ix, :) = tr2vector(sof * pose2trans(res.measured(ix, :)) * sef);
   end
   res.stage_pos_measured = s_measured;
-  % ### might be better to map res.errors back to the stage representation, but
-  % that was being a nuisance.  Should do OK as long as rotation is less than
-  % 180 degrees.
+  % ### The way we are computing res.stage_pos_errors via subtraction does not
+  % work if there are large rotations.  Here, and with res.errors, it would be
+  % more correct to compute the pose errors using pose multiplication rather
+  % than subtraction, see perr_workspace_vol.  eg. inv(desired) * measured.
+  % The difference of the pose vectors AFAIK can't be converted to a
+  % transform, though subtracting sort of works when the rotations don't wrap.
   res.stage_pos_errors = res.stage_pos_measured - res.stage_pos;
 end
