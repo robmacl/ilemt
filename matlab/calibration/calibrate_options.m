@@ -46,6 +46,10 @@ options.normalize = true;
 % corresponding dipole position.
 options.pin_quadrupole = true;
 
+% If true, the source and sensor dipole positions are forced to zero.  This
+% is an ideal concentric coil model.
+options.concentric = false;
+
 % Additional correction based on generated poses, eg. linear transform.
 % We have several correction modes, but 'DLT' is currently the best.
 % See output_correction().
@@ -145,6 +149,9 @@ else
   error('Unknown cal_mode: %s', options.cal_mode);
 end
 
+if (options.concentric)
+  options.optimize = setdiff(options.optimize, {'d_so_pos', 'd_se_pos'});
+end
 
 if (strcmp(options.sensor, 'premo'))
 elseif (strcmp(options.sensor, 'dipole'))

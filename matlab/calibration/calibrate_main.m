@@ -27,6 +27,10 @@ else
   elseif (strcmp(options.cal_mode, 'se_quadrupole'))
     cal.q_sensor_moment = eye(3) .* -0.01;
   end
+  if (options.concentric)
+    cal.d_source_pos = zeros(3);
+    cal.d_sensor_pos = zeros(3);
+  end
   state0 = calibration2state(cal);
 end
 

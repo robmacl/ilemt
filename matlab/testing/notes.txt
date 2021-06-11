@@ -17,6 +17,13 @@ Todo:
  -- Literature search for calibration and cross-coupling
 
  -- Pose solution, closed form or whatever
+     - Compute residual for kim18 solution using kim18 forward model, vs with
+       the optimizer solution.  Is it just failing to optimize, or optimizing
+       something different?
+     - How can it be that linear correction is making kim18 results worse?
+     - Initialize pose solver optimization using kim18 solution.
+     - How bad is performance with blatantly non-concentric corner dipole?
+     - Add selection of operating hemisphere to the options struct.
 
 
 Accuracy:
@@ -140,6 +147,19 @@ search.  three-axis magnetometer calibration
   ferromagnetic compensation, or at least detection.
 
 
+[11 Jun 21]
+
+I got the kim18 closed-form pose solution to where it seems to be basically
+working.  But even when using the exact same concentric calibration, the
+accuracy is about 10x worse than using nonlinear optimization.  Possibly
+there is still a bug, or there is a numerical difficulty, maybe due to the
+particular fixturing, or something.
+
+
+
+
+
+
 [7 Jun 21]
 
 I implemented 3D view of the rot->trans errors in perr_workspace_vol().  This
@@ -174,6 +194,14 @@ square pattern of dipoles or of dipole+quadrupole.
 
 But, as noted on [4 Jun 21], our accuracy is maybe pretty OK, and it is time
 to start wrapping up the calibration effort.
+
+Materials for possible stage pole stiffening:
+8548K25, Structural FRP Fiberglass Square Tube 5 Feet Long, 3" Outside Width x 3" Outside Height 
+8993K14, Multipurpose 304 Stainless Steel 90 Degree Angle 1/8" Wall Thickness, 1-1/4" High x 1-1/4" Wide Outside
+
+We can stiffen the lower part of the pole with stainless, and also go to a larger
+square pole.
+
 
 
 [4 Jun 21]

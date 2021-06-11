@@ -18,7 +18,6 @@ function perr_workspace_vol(perr, options)
       err_stage = inv(desired_stage) * measured_stage;
       desired(ix, :) = trans2pose(desired_stage);
       errors(ix, :) = trans2pose(err_stage);
-keyboard
     end
   end
   subplot(1, 2, 1);

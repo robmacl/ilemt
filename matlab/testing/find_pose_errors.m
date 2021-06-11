@@ -38,7 +38,7 @@ function [res] = find_pose_errors (options)
   options.bias = calibration.bias;
   [stage_pos, couplings] = read_cal_data(options);
   [measured, valid, resnorms] = ...
-      pose_calculation(couplings, calibration, options);
+      pose_solution(couplings, calibration, options);
   %{
   figure(10)
   probplot(resnorms);

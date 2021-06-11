@@ -17,7 +17,11 @@ function [options] = check_poses_options (cal_options)
   % moment: moment used in optimization to trade angular vs. translation error
   % (m).
   options.moment = 0.05;
-  
+
+  % Method for pose calculation.  Values: 'optimize', 'kim18'.  See
+  % pose_calculation().
+  options.pose_solution = 'optimize';
+
   % If true, apply linear correction to measured poses.
   options.linear_correction = false;
   
