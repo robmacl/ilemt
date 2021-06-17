@@ -147,7 +147,192 @@ search.  three-axis magnetometer calibration
   ferromagnetic compensation, or at least detection.
 
 
-[11 Jun 21]
+[17 Jun 21]
+
+That was a fun one.  Turns out that with cal_5_19_premo_cmu, the
+kim_cal.coupling_gain.^2 is approximately 1/(2*pi), to within a couple
+percent.  So adding the 1/(2*pi) gamma_fudge to kim18() gave approximately the
+correct radial distance, but we were actually working with a wrongly scaled
+coupling matrix.  The error was that I had gotten the interpretation of
+coupling_gains wrong (eg. in the comment in cal2kim18), and we need to divide
+by coupling gains to convert coupling -> S_.  Multiplying twice is where the
+gain^2 term came from.
+
+I can't recall another time where I've had the wrong procedure, by pure
+cooincidence, give a result that was so close to correct.
+
+Now the kim18 method is giving quite similar results to optimization (using
+the concentric calibration), and also the linear correction is working.
+
+The correction is giving much the same accuracy regardless of whether the
+correction is computed using the same or different method.  This is not
+surprising because the methods are giving basically the same result.  The
+errors that it is correcting come from the inadequacies of the magnetic model,
+which is the same in both cases.
+
+Accuracy with both solution methods, and linear correction (using same
+method):
+________________________________________________________________
+>> check_poses
+                     ishigh: 1
+            valid_threshold: 1e-05
+                do_optimize: 0
+                     moment: 0.05
+              pose_solution: 'kim18'
+          linear_correction: 1
+                axis_limits: [6×2 double]
+                  sg_filt_N: 2
+                  sg_filt_F: 17
+    onax_ignore_Rz_coupling: 0
+             xyz_exaggerate: 10
+         rot_xyz_exaggerate: 300
+               stage_coords: 0
+                    issweep: 0
+                   cal_file: 'XYZ_concentric_hr_cal_DLT_corrected'
+               sensor_signs: [1 1 -1]
+               source_signs: [1 1 1]
+                   in_files: {'Z_rot_ld.dat'  'X_rot_ld.dat'  'Y_rot_ld.dat'}
+Position error (m): 4.43e-04 RMS, 9.82e-04 max.
+Orientation error (radians): 7.64e-03 RMS, 2.02e-02 max
+trans_err_rms =
+   0.00024632   0.00023611   0.00028259
+rot_err_rms =
+    0.0038541    0.0048778    0.0044486
+
+
+>>check_poses
+                     ishigh: 1
+            valid_threshold: 1e-05
+                do_optimize: 0
+                     moment: 0.05
+              pose_solution: 'optimize'
+          linear_correction: 1
+                axis_limits: [6×2 double]
+                  sg_filt_N: 2
+                  sg_filt_F: 17
+    onax_ignore_Rz_coupling: 0
+             xyz_exaggerate: 10
+         rot_xyz_exaggerate: 300
+               stage_coords: 0
+                    issweep: 0
+                   cal_file: 'XYZ_concentric_hr_cal_DLT_corrected'
+               sensor_signs: [1 1 -1]
+               source_signs: [1 1 1]
+                   in_files: {'Z_rot_ld.dat'  'X_rot_ld.dat'  'Y_rot_ld.dat'}
+8 invalid points with residual > 1e-05.
+bad_points =
+  Columns 1 through 6
+        1276        1291        1301        1311        1316        1343
+  Columns 7 through 8
+        1357        1367
+Position error (m): 4.41e-04 RMS, 9.60e-04 max.
+Orientation error (radians): 7.61e-03 RMS, 2.01e-02 max
+trans_err_rms =
+   0.00024037    0.0002372   0.00028311
+rot_err_rms =
+     0.003828    0.0048802    0.0044144
+________________________________________________________________
+
+So the accuracy difference of the two solutions is nil.
+
+But if we use the non-concentric model with optimize method:
+________________________________________________________________
+>> check_poses
+                     ishigh: 1
+            valid_threshold: 1e-05
+                do_optimize: 0
+                     moment: 0.05
+              pose_solution: 'optimize'
+          linear_correction: 1
+                axis_limits: [6×2 double]
+                  sg_filt_N: 2
+                  sg_filt_F: 17
+    onax_ignore_Rz_coupling: 0
+             xyz_exaggerate: 10
+         rot_xyz_exaggerate: 300
+               stage_coords: 0
+                    issweep: 0
+                   cal_file: 'XYZ_hr_cal_DLT_corrected'
+               sensor_signs: [1 1 -1]
+               source_signs: [1 1 1]
+                   in_files: {'Z_rot_ld.dat'  'X_rot_ld.dat'  'Y_rot_ld.dat'}
+12 invalid points with residual > 1e-05.
+bad_points =
+  Columns 1 through 6
+        1270        1271        1276        1291        1296        1311
+  Columns 7 through 12
+        1316        1348        1352        1353        1357        1377
+Position error (m): 3.17e-04 RMS, 7.50e-04 max.
+Orientation error (radians): 5.72e-03 RMS, 1.29e-02 max
+trans_err_rms =
+   0.00017653   0.00018174    0.0001905
+rot_err_rms =
+    0.0030535    0.0036072     0.003219
+________________________________________________________________
+
+Then we get a significant improvement.  If we go and use this calibration with
+kim18:
+________________________________________________________________
+>> check_poses
+                     ishigh: 1
+            valid_threshold: 1e-05
+                do_optimize: 0
+                     moment: 0.05
+              pose_solution: 'kim18'
+          linear_correction: 0
+                axis_limits: [6×2 double]
+                  sg_filt_N: 2
+                  sg_filt_F: 17
+    onax_ignore_Rz_coupling: 0
+             xyz_exaggerate: 10
+         rot_xyz_exaggerate: 300
+               stage_coords: 0
+                    issweep: 0
+                   cal_file: 'XYZ_hr_cal_DLT_corrected'
+               sensor_signs: [1 1 -1]
+               source_signs: [1 1 1]
+                   in_files: {'Z_rot_ld.dat'  'X_rot_ld.dat'  'Y_rot_ld.dat'}
+Position error (m): 3.54e-03 RMS, 4.99e-03 max.
+Orientation error (radians): 3.53e-02 RMS, 6.73e-02 max
+trans_err_rms =
+   0.00071938    0.0029401    0.0018424
+rot_err_rms =
+      0.01421     0.025311     0.020066
+>> output_correction(cal_options)
+Wrote XYZ_hr_cal_DLT_corrected
+>> check_poses
+                     ishigh: 1
+            valid_threshold: 1e-05
+                do_optimize: 0
+                     moment: 0.05
+              pose_solution: 'kim18'
+          linear_correction: 1
+                axis_limits: [6×2 double]
+                  sg_filt_N: 2
+                  sg_filt_F: 17
+    onax_ignore_Rz_coupling: 0
+             xyz_exaggerate: 10
+         rot_xyz_exaggerate: 300
+               stage_coords: 0
+                    issweep: 0
+                   cal_file: 'XYZ_hr_cal_DLT_corrected'
+               sensor_signs: [1 1 -1]
+               source_signs: [1 1 1]
+                   in_files: {'Z_rot_ld.dat'  'X_rot_ld.dat'  'Y_rot_ld.dat'}
+Position error (m): 5.62e-04 RMS, 1.33e-03 max.
+Orientation error (radians): 3.53e-02 RMS, 6.73e-02 max
+trans_err_rms =
+   0.00031837   0.00029812   0.00035458
+rot_err_rms =
+      0.01421     0.025311     0.020066
+________________________________________________________________
+The result is appalling using the non-concentric calibration with kim18, but
+adding the kim18 linear correction helps hugely.
+
+
+
+
+[16 Jun 21]
 
 I got the kim18 closed-form pose solution to where it seems to be basically
 working.  But even when using the exact same concentric calibration, the
@@ -155,9 +340,19 @@ accuracy is about 10x worse than using nonlinear optimization.  Possibly
 there is still a bug, or there is a numerical difficulty, maybe due to the
 particular fixturing, or something.
 
+ ==> SVD is not optimizing, fk_kim18 agrees precisely with our forward
+     kinematics.  It likes our solution better than its own.
 
+The rcond() numerical condition of the matrices Y_, S_, N_ and M_ all seem
+fine.  To within 1e-16 or so the SVD result satisfies the SVD definition, and
+A = inv(inv(A)) for M_, N_.
 
+Rstar_ is wrong too, not just the translation.  This pares us down to
+basically three lines, and rules out being caused by the mu_/gamma_ fudge
+issues.
 
+Error occurs even though we directly pass the kim18() result to fk_kim18(),
+without going to pose vector and back.
 
 
 [7 Jun 21]
