@@ -42,8 +42,22 @@ options.bias = zeros(3);
 % Normalize residue by coupling magnitude?
 options.normalize = true;
 
+% If true, then the quadrupole positions (source and sensor) are fixed to the
+% corresponding dipole position.
+options.pin_quadrupole = true;
+
+% If true, the source and sensor dipole positions are forced to zero.  This
+% is an ideal concentric coil model.
+options.concentric = false;
+
+% Additional correction based on generated poses, eg. linear transform.
+% We have several correction modes, but 'DLT' is currently the best.
+% See output_correction().
+options.correct_mode = 'DLT';
+
 % These allow sign flip on sensor input (coupling column) or source
-% (coupling row).
+% (coupling row).  These are only needed if the input signs or coupling
+% signs were wrong in labview ilemt_ui when the data was taken.
 options.sensor_signs = [1 1 1];
 options.source_signs = [1 1 1];
 
@@ -98,16 +112,28 @@ elseif (strcmp(options.cal_mode, 'XYZ'))
   options.base_calibration = 'Z_only_hr_cal';
 elseif (strcmp(options.cal_mode, 'so_quadrupole'))
   options.base_calibration = 'XYZ_hr_cal';
-  options.optimize = {'q_so_pos' 'q_so_mo' 'so_fix' 'd_so_pos' 'd_so_mo'};
+  options.optimize = {'q_so_mo' 'so_fix' 'd_so_pos' 'd_so_mo'};
+  if (~options.pin_quadrupole)
+    options.optimize = cat(2, {'q_so_pos'}, options.optimize);
+  end
 elseif (strcmp(options.cal_mode, 'so_quadrupole_all')) 
   options.base_calibration = 'so_quadrupole_hr_cal';
-  options.optimize = cat(2, {'q_so_pos' 'q_so_mo'}, options.optimize);
+  options.optimize = cat(2, {'q_so_mo'}, options.optimize);
+  if (~options.pin_quadrupole)
+    options.optimize = cat(2, {'q_so_pos'}, options.optimize);
+  end
 elseif (strcmp(options.cal_mode, 'se_quadrupole'))
   options.base_calibration = 'XYZ_hr_cal';
-  options.optimize = {'q_se_pos' 'q_se_mo' 'se_fix' 'd_se_mo'};
+  options.optimize = {'q_se_mo' 'se_fix' 'd_se_mo'};
+  if (~options.pin_quadrupole)
+    options.optimize = cat(2, {'q_se_pos'}, options.optimize);
+  end
 elseif (strcmp(options.cal_mode, 'se_quadrupole_all')) 
   options.base_calibration = 'se_quadrupole_hr_cal';
-  options.optimize = cat(2, {'q_se_pos' 'q_se_mo'}, options.optimize);
+  options.optimize = cat(2, {'q_se_mo'}, options.optimize);
+  if (~options.pin_quadrupole)
+    options.optimize = cat(2, {'q_se_pos'}, options.optimize);
+  end
 elseif (any(strcmp(options.cal_mode, {'so_fixture', 'se_fixture'})))
   % Like z_only, but only solve for source fixture
   options.base_calibration = 'base_calibration';
@@ -123,6 +149,9 @@ else
   error('Unknown cal_mode: %s', options.cal_mode);
 end
 
+if (options.concentric)
+  options.optimize = setdiff(options.optimize, {'d_so_pos', 'd_se_pos'});
+end
 
 if (strcmp(options.sensor, 'premo'))
 elseif (strcmp(options.sensor, 'dipole'))

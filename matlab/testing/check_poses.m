@@ -1,8 +1,8 @@
 % Check accuracy of pose measurements.  Driven by check_poses_options()
 % struct.
-% 
 
-options = check_poses_options();
+cal_options = calibrate_options();
+options = check_poses_options(cal_options);
 
 disp(options);
 
@@ -25,8 +25,8 @@ if (options.issweep)
 
   % Response of every axis to an individual axis.  Not done on all axes by
   % default because it's too much clutter.
-  figure(5)
-  perr_axis_response(perr,onax,6);
+  %figure(5)
+  %perr_axis_response(perr,onax,6);
 end
 
 %figure(11)

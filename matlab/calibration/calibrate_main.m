@@ -27,6 +27,10 @@ else
   elseif (strcmp(options.cal_mode, 'se_quadrupole'))
     cal.q_sensor_moment = eye(3) .* -0.01;
   end
+  if (options.concentric)
+    cal.d_source_pos = zeros(3);
+    cal.d_sensor_pos = zeros(3);
+  end
   state0 = calibration2state(cal);
 end
 
@@ -56,9 +60,12 @@ cal_residue
 %create a calibration struct using the optimized state_new                     
 hr_cal = state2calibration(state_new);
 hr_cal.bias = bias;
+hr_cal.pin_quadrupole = options.pin_quadrupole;
 hr_cal.options = options;
 
 if (~isempty(options.out_file))
   %save in a .mat file all the optimized values
   save(options.out_file, '-struct', 'hr_cal');
 end
+
+output_correction(options);
