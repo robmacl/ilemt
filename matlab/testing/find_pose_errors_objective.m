@@ -1,13 +1,13 @@
-function [state_err, nres] = find_pose_errors_objective(state, res, options)
+function [state_err, perr_new] = find_pose_errors_objective(state, perr, options)
 % Objective function for fixture transform optimization.
 %
 % Arguments:
 %
 % state: 
-%    current state, additive offsets [so_fix(1:6) se_fix(1:6)] to the
-%    source and sensor fixture transforms (units m, rad).
+%    current state, additive offsets [so_fix(1:6) st_fix(1:6) se_fix(1:6)]
+%    to the fixture transforms (units m, rad).
 % 
-% res:
+% perr:
 %    The result structure being built for find_pose_errors.  We use this to
 %    access the initial fixture transforms and the (unchanging) pose solutions.
 %  
@@ -21,15 +21,18 @@ function [state_err, nres] = find_pose_errors_objective(state, res, options)
 %    by options.moment, a distance at which the angular error becomes a
 %    translation error.
 %
-% nres:
+% perr_new:
 %    New result structure, updated for optimized fixture transforms.
 
-  nres = res;
-  nres.so_fix = res.so_fix + state(1:6);
-  nres.se_fix = res.se_fix + state(7:12);
-  nres.desired = fk_pose_calculation(res.stage_pos, nres.so_fix, nres.se_fix);
-  npoints = size(nres.desired, 1);
-  nres.errors = nres.measured - nres.desired;
+  perr_new = perr;
+  perr_new.so_fix = perr.so_fix + state(1:6);
+  perr_new.st_fix = perr.st_fix + state(7:12);
+  perr_new.se_fix = perr.se_fix + state(13:18);
+
+  perr_new.desired = ...
+      fk_pose_calculation(perr.motion_poses, perr_new.so_fix, perr.st_fix, perr_new.se_fix);
+  npoints = size(perr_new.desired, 1);
+  perr_new.errors = perr_new.measured - perr_new.desired;
   mo_scale = [ones(npoints, 3) ones(npoints, 3) * options.moment];
-  state_err = nres.errors .* mo_scale;
+  state_err = perr_new.errors .* mo_scale;
 end

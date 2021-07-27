@@ -18,7 +18,7 @@ function [options] = calibrate_options ()
 % must set these in 'local_cal_options.m'
 
 % 'Z_only', 'XYZ', 'so_quadrupole', 'so_quadrupole_all', 'se_quadrupole',
-% 'so_fixture', 'se_fixture'.
+% 'st_fixture', 'se_fixture'.
 options.cal_mode = 'XYZ';
 
 % 'dipole' or 'premo'.  
@@ -64,20 +64,39 @@ options.source_signs = [1 1 1];
 
 % Options to define the input data files:
 % 
-% data file names are of the format '<fixture>_<size>.dat'.  The <fixture>
-% represents an additional rotation.  If a cell vector of three, then they are
-% in the three standard sensor rotation fixturings.  If only one, then it is
-% not rotated.  The <size> is related to the test pattern used to generate
-% the data, where we typically have small, medium and large: 'sd', 'md',
-% 'ld'.
-options.in_fixtures = {'Z_rot', 'X_rot' 'Y_rot'};
+% Data file names are of the format:
+%  'so<source motion>_se<sensor motion>_<size>.dat'.
+% 
+% The <XXX motion> represents an additional rotation, see read_cal_data().
+% (Or, if the pattern does not match, then we assume no fixture motion.)
+% 
+% The <size> is related to the test pattern used to generate the data, where
+% we typically have small, medium and large: 'sd', 'md', 'ld'.  The size
+% doesn't affect anything, it just lets us have multiple data sizes, or
+% otherwise different files.
+%
+% The default is for source fixture motion.
+options.input_motion = {
+    'so+X+Y+Z_se+X+Y+Z'
+    'so+X+Y+Z_se+X-Z+Y'
+    'so+X+Y+Z_se-Y-Z+X'
+    };
+
 options.data_size = 'md';
+
+% Cell vector of input files, normally generated from input_motion and
+% data_size, but if you set to non-empty in local_cal_options.m then it will
+% override the default list.
+options.in_files = {};
+
+% Output calibration file name, defaulted if empty.
+options.out_file = [];
 
 
 % What to optimize: 'optimize' and 'freeze' arguments to state_bounds().
 
 % Default is 'dipole only', ie. dipole and fixture 
-options.optimize = {'d_so_pos' 'd_so_mo' 'd_se_pos' 'd_se_mo' 'so_fix' 'se_fix'};
+options.optimize = {'d_so_pos' 'd_so_mo' 'd_se_pos' 'd_se_mo' 'st_fix' 'se_fix'};
 
 % Portions of a component which is optimized, but that we don't actually want
 % to optimize.  If this is already not enabled for optimization, then no harm
@@ -93,60 +112,71 @@ options.freeze = {'d_so_y_co' 'd_se_y_co'};
 run('./local_cal_options.m');
 
 
-
 %%% mode/sensor effects:
 % 
 % Settings conditional on mode/sensor
 
 % out_file: calibration output .mat file name
-options.out_file = [options.cal_mode '_hr_cal'];
+if (isempty(options.out_file))
+  options.out_file = [options.cal_mode '_hr_cal'];
+end
 
-if (strcmp(options.cal_mode, 'Z_only'))
+bc_default = [];
+
+if (strcmp(options.cal_mode, 'default'))
+  % Just take defaults and explicit settings in local options/override
+elseif (strcmp(options.cal_mode, 'Z_only'))
   % Z rotation only, use defaults instead of base calibration,
-  options.in_fixtures = {'Z_rot'};
+  options.input_motion = options.input_motion(1);
   % If we only have Rz data, then we can't identify the Z component of the
   % sensor fixture (as distinct from the source Z fixture).
   options.freeze = {options.freeze{:} 'z_se_fix'};
 elseif (strcmp(options.cal_mode, 'XYZ'))
   % XYZ cal based on Z only
-  options.base_calibration = 'Z_only_hr_cal';
+  bc_default = 'Z_only_hr_cal';
 elseif (strcmp(options.cal_mode, 'so_quadrupole'))
-  options.base_calibration = 'XYZ_hr_cal';
+  bc_default = 'XYZ_hr_cal';
   options.optimize = {'q_so_mo' 'so_fix' 'd_so_pos' 'd_so_mo'};
   if (~options.pin_quadrupole)
     options.optimize = cat(2, {'q_so_pos'}, options.optimize);
   end
 elseif (strcmp(options.cal_mode, 'so_quadrupole_all')) 
-  options.base_calibration = 'so_quadrupole_hr_cal';
-  options.optimize = cat(2, {'q_so_mo'}, options.optimize);
+  bc_default = 'so_quadrupole_hr_cal';
+  options.optimize = cat(2, {'q_so_mo' 'so_fix'}, options.optimize);
   if (~options.pin_quadrupole)
     options.optimize = cat(2, {'q_so_pos'}, options.optimize);
   end
 elseif (strcmp(options.cal_mode, 'se_quadrupole'))
-  options.base_calibration = 'XYZ_hr_cal';
+  bc_default = 'XYZ_hr_cal';
   options.optimize = {'q_se_mo' 'se_fix' 'd_se_mo'};
   if (~options.pin_quadrupole)
     options.optimize = cat(2, {'q_se_pos'}, options.optimize);
   end
 elseif (strcmp(options.cal_mode, 'se_quadrupole_all')) 
-  options.base_calibration = 'se_quadrupole_hr_cal';
+  bc_default = 'se_quadrupole_hr_cal';
   options.optimize = cat(2, {'q_se_mo'}, options.optimize);
   if (~options.pin_quadrupole)
     options.optimize = cat(2, {'q_se_pos'}, options.optimize);
   end
-elseif (any(strcmp(options.cal_mode, {'so_fixture', 'se_fixture'})))
+elseif (any(strcmp(options.cal_mode, {'so_fixture', 'st_fixture', 'se_fixture'})))
   % Like z_only, but only solve for source fixture
-  options.base_calibration = 'base_calibration';
-  options.in_fixtures = {'Z_rot'};
+  bc_default = 'base_calibration';
+  options.input_motion = options.input_motion(1);
   options.freeze = {options.freeze{:} 'z_se_fix'};
   options.out_file = [];
   if (strcmp(options.cal_mode, 'so_fixture'))
     options.optimize = {'so_fix'};
-  else
+  elseif (strcmp(options.cal_mode, 'st_fixture'))
+    options.optimize = {'st_fix'};
+  elseif (strcmp(options.cal_mode, 'se_fixture'))
     options.optimize = {'se_fix'};
   end
 else
   error('Unknown cal_mode: %s', options.cal_mode);
+end
+
+if (isempty(options.base_calibration))
+  options.base_calibration = bc_default;
 end
 
 if (options.concentric)
@@ -159,16 +189,19 @@ else
   error('Unknown sensor: %s', options.sensor);
 end
 
+if (isempty(options.in_files))
+  ifiles = cell(size(options.input_motion));
+  for (ix = 1:length(options.input_motion))
+    ifiles{ix} = [options.input_motion{ix} '_' options.data_size '.dat'];
+  end
+  options.in_files = ifiles;
+end
+
 
 %%% overrides:
 
-% in_files: input data file names
-ifiles = cell(size(options.in_fixtures));
-for (ix = 1:length(options.in_fixtures))
-  ifiles{ix} = [options.in_fixtures{ix} '_' options.data_size '.dat'];
-end
-options.in_files = ifiles;
-
+% You can override the cal_mode derived settings here, or just use the
+% 'default' cal_mode, which does nothing.
 if (exist('./local_cal_override.m', 'file'))
   run('./local_cal_override.m');
 end

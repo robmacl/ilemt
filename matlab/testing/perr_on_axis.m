@@ -30,6 +30,7 @@ function [res] = perr_on_axis (perr, options)
   zero_tol = 1e-4;
   zero_ax = abs(perr.stage_pos) < zero_tol;
 
+  % ### FIXME: this was broken by the addition of the source motion.
   pose_err = perr.stage_pos_errors;
 
   for (ax = 1:6)

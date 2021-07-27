@@ -1,4 +1,4 @@
-function [poses, resnorms] = pose_calc_optimize (couplings, calibration, options)
+function [poses, resnorms] = pose_solve_optimize (couplings, calibration, options)
 % Pose solution by optimization of the forward kinematics.
 
 % Starting pose.  We use the fixture poses to construct the sensor pose

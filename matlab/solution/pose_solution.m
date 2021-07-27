@@ -23,6 +23,9 @@ function [poses, valid, resnorms] = pose_solution ...
   elseif (strcmp(options.pose_solution, 'kim18'))
     [poses, resnorms] = ...
         pose_solve_kim18(couplings, calibration, options);
+  elseif (strcmp(options.pose_solution, 'UKF'))
+    [poses, resnorms] = ...
+        pose_solve_UKF(couplings, calibration, options);
   else
     error('Unknown pose_solution method: %s', options.pose_solution);
   end

@@ -17,19 +17,9 @@ if (~all(all(table2array(qpole_t) == 0)))
   disp(qpole_t);
 end
 
-fprintf(1, 'Source fix: [');
-sf = cal.source_fixture;
-for ix = 1:length(sf)
-  fprintf(1, '%.5f ', sf(ix));
-end
-fprintf(1, ']\n');
-
-fprintf(1, 'Sensor fix: [');
-sf = cal.sensor_fixture;
-for ix = 1:length(sf)
-  fprintf(1, '%.5f ', sf(ix));
-end
-fprintf(1, ']\n');
+print_fix('Source', cal.source_fixture);
+print_fix('Stage', cal.stage_fixture);
+print_fix('Sensor', cal.sensor_fixture);
 
 %{
 fprintf(1, 'Quadrupole source distance: ')
@@ -38,3 +28,15 @@ fprintf(1, '%.5f \n', cal.q_source_distance);
 fprintf(1, 'Quadrupole sensor distance: ')
 fprintf(1, '%.5f \n', cal.q_sensor_distance);
 %}
+
+end
+
+function [] = print_fix (wot, sf)
+  if (any(sf))
+    fprintf(1, '%s fix: [', wot);
+    for ix = 1:length(sf)
+      fprintf(1, '%.5f ', sf(ix));
+    end
+    fprintf(1, ']\n');
+  end
+end

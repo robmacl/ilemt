@@ -2,8 +2,10 @@ function [state] = calibration2state (calibration)
 % Create a calibration state vector from a calibration struct.  See also
 % state2calibration(). 
 
+    % indices into the state vector come from the state_defs script
     state_defs;
-    % indices of the state vector came from the state_defs script
+
+    state = zeros(1, num_state);
     
     %dipole source position
     state(source_x_pos_slice) = calibration.d_source_pos(:, 1)';
@@ -25,8 +27,12 @@ function [state] = calibration2state (calibration)
     % source fixture
     state(source_fixture_pos_slice) = calibration.source_fixture(1:3);
     state(source_fixture_orientation_slice) = calibration.source_fixture(4:6);
+
+    % stage fixture
+    state(stage_fixture_pos_slice) = calibration.stage_fixture(1:3);
+    state(stage_fixture_orientation_slice) = calibration.stage_fixture(4:6);
     
-    %sensor fixture
+    % sensor fixture
     state(sensor_fixture_pos_slice) = calibration.sensor_fixture(1:3);
     state(sensor_fixture_orientation_slice) = calibration.sensor_fixture(4:6);
     

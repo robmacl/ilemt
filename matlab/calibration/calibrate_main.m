@@ -46,9 +46,9 @@ opt_option = optimoptions(...
     'FunctionTolerance', 1e-08, 'OptimalityTolerance', 1e-07);
 
 % Read input data as poses and coupling matrices
-[stage_poses, c_des] = read_cal_data(options);
+[motion_poses, c_des] = read_cal_data(options);
 
-ofun = @(state)calibrate_objective(state, stage_poses, c_des, options);
+ofun = @(state)calibrate_objective(state, motion_poses, c_des, options);
 
 % optimization of the state solving non linear least-square problem
 % row 1 and 2 of bounds are respectively lower and upper bounds

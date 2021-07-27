@@ -9,10 +9,9 @@ function [options] = check_poses_options (cal_options)
   % the point as "invalid".
   options.valid_threshold = 1e-5;
 
-  % do_optimize: whether to do optimization of fixture transform to try to
-  % reduce error.  Values: false, 'source', 'sensor', or 'both'.  Default
-  % false.
-  options.do_optimize = false;
+  % optimize_fixtures: what fixture transforms we optimize to try to reduce
+  % error.  Cell vector of any of 'source', 'stage', 'sensor'.  Default {}.
+  options.optimize_fixtures = {};
 
   % moment: moment used in optimization to trade angular vs. translation error
   % (m).

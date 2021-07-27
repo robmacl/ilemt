@@ -1,5 +1,14 @@
 function [state] = initial_state (~)
 % Return an initial state for the calibration optimization.
+% This setup is basically specific to the corner dipole source and corner
+% dipole sensor, with source/sensor axes aligned in null pose.  
+% 
+% For the other source/sensor combinations I've been using a hand-modified
+% calibration struct as the initial state.  If you have a calibration with
+% that source or sensor, then you can copy the info into the calibration, and
+% it will be correct up to a scale factor, which is easily optimized.  Getting
+% the initial fixture poses is the biggest nuisance, especially when source
+% and sensor axes are *not* aligned in the null pose.
 
 %dipole gains
 %d_source_gains = [1 1 1];
@@ -54,17 +63,19 @@ cal.q_source_distance = 0.004;
 
 cal.q_sensor_distance = 0.0005;
 
+% If there is no source fixture rotation, then this will work.
+cal.source_fixture = zeros(1, 6);
 
 % This expresses that we expect the stage null pose to be +200mm wrt. the
 % source, but angularly aligned with the source.  This places us solidly in
-% the +x hemisphere.
+% the +x hemisphere.  The -pi/2 +pi/2 Rz between stage_fixture and
+% sensor_fixture reflect the fact that the sensor is rotated 90 degrees
+% with respect to the stage coordinates.
+cal.stage_fixture = [0.22, 0, -0.025, 0, 0, -pi/2];
 
-cal.source_fixture = [0.22, 0, -0.025, 0, 0, -pi/2];
-
-
-% We expect the sensor to be angularly aligned with the stage, when in the
-% null pose.
+% The sensor fixture transform translation is approximately zero, since the
+% sensor is roughly centered at the sensor fixture center of rotation.
+% Z rotation is pi/2 (see stage_fixture above).
 cal.sensor_fixture = [zeros(1, 5), pi/2];
 
 state = calibration2state(cal);
-

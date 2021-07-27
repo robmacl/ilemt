@@ -191,9 +191,13 @@ const char *read_fifo_name = "/dev/xillybus_read_32";
 const char *write_fifo_name = "/dev/xillybus_write_32";
 
 struct IOState {
+  // TCP client
   int client_fd;
+  // Read FIFO with ADC input data
   int read_fd;
+  // Write FIFO for DAC output data
   int write_fd;
+  // Time client session started, for relative time display
   uint64_t t0;
 };
 
@@ -309,9 +313,6 @@ int main(int argc, char *argv[]) {
   sigaction(SIGPIPE, &action, NULL);
   
   int portno;
-  socklen_t clilen;
-  char buffer[256];
-  int n;
 
   if (argc >= 2) {
     portno = atoi(argv[1]);

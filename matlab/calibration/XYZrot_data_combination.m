@@ -1,5 +1,5 @@
 %combine three data files adding X and Y rotation of the stage
-function data = XYZrot_data_combination( filename1, filename2, x_rot, filename3, y_rot)
+function data = XYZrot_data_combination (filename1, filename2, x_rot, filename3, y_rot)
 %filename1 is the file with only Z rotation
 %filename2 is the file with only X rotation 
 %filename3 is the file with only Y rotation

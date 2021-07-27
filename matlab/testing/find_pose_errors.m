@@ -11,7 +11,7 @@
 % options: see check_poses_options()
 % 
 % Results: 
-% res struct, with fields:
+% perr struct, with fields:
 % 
 % measured(npoints, 6)
 % desired(npoints, 6)
@@ -19,11 +19,11 @@
 %    Pose vectors for the measured and desired poses, and the errors (the
 %    difference).
 % 
-% so_fix, se_fix:
-%    The source and sensor fixture transforms, possibly optimized.
+% so_fix, st_fix, se_fix:
+%    The source, stage, and sensor fixture transforms, possibly optimized.
 % 
-% stage_pos(npoints, 6):
-%    The stage axis positions (mm, degrees)
+% motion_poses(npoints, 12):
+%    The motion axis poses [so_fixture se_stage] (mm, degrees)
 % 
 % couplings(npoints, 3, 3)
 %    The coupling matrices.
@@ -31,12 +31,13 @@
 % coupling_norms(npoints)
 %    norm() of each coupling matrix
 %
-function [res] = find_pose_errors (options)
+function [perr] = find_pose_errors (options)
   calibration = load(options.cal_file);
-  res.so_fix = calibration.source_fixture;
-  res.se_fix = calibration.sensor_fixture;
+  perr.so_fix = calibration.source_fixture;
+  perr.st_fix = calibration.stage_fixture;
+  perr.se_fix = calibration.sensor_fixture;
   options.bias = calibration.bias;
-  [stage_pos, couplings] = read_cal_data(options);
+  [motion_poses, couplings] = read_cal_data(options);
   [measured, valid, resnorms] = ...
       pose_solution(couplings, calibration, options);
   %{
@@ -45,78 +46,92 @@ function [res] = find_pose_errors (options)
   title('Pose solution residual');
   %}
   
-  res.measured = measured(valid, :);
-  res.stage_pos = stage_pos(valid, :);
-  res.couplings = couplings(:, :, valid);
-  for (ix = 1:size(res.couplings, 3))
-    norms(ix) = norm(res.couplings(:,:,ix));
+  perr.measured = measured(valid, :);
+  perr.motion_poses = motion_poses(valid, :);
+  perr.couplings = couplings(:, :, valid);
+  for (ix = 1:size(perr.couplings, 3))
+    norms(ix) = norm(perr.couplings(:,:,ix));
   end
-  res.coupling_norms = norms;
+  perr.coupling_norms = norms;
 
   % State for minimization is: 
-  %    [so_fixture_off(1:6) se_fixture_off(1:6)]
+  %    [so_fixture_off(1:6) st_fixture_off(1:6) se_fixture_off(1:6)]
   % 
   % These are additive offsets from the nominal source and sensor fixture
-  % poses.  see check_poses_objective.m.  What this does is refine our idea of
-  % the *desired* (ground truth pose).  This differs from the main calibration
-  % optimization in that we operate in *pose* space, and that we are searching
-  % for the source and sensor fixtures that minimize the *pose* error, not the
-  % *coupling* error.  We need the pose error to evaluate performance.
+  % poses.  See find_pose_errors_objective.m.  What this does is refine our
+  % idea of the *desired* (ground truth pose).  This differs from the main
+  % calibration optimization in that we operate in *pose* space, and that we
+  % are searching for the source and sensor fixtures that minimize the *pose*
+  % error, not the *coupling* error.  We need the pose error to evaluate
+  % performance.
 
   % Intial value of x based on last run.  Initial initial value is all 1e-3,
   % giving what is (in our scaling) a small initial value.  This makes
   % optimization run much faster than all zeros, presumably because it
   % establishes the correct order of magnitude.
-  persistent x;
-  if (isempty(x))
-    x = ones(1, 12) * 1e-3;
+  persistent state;
+  if (isempty(state))
+    state = ones(1, 18) * 1e-3;
   end
 
   ofun = @(state) ...
-    find_pose_errors_objective(state, res, options); 
+    find_pose_errors_objective(state, perr, options); 
 
-  if (options.do_optimize)
-    
-    opt_options = optimset('lsqnonlin');
-    opt_options = optimset(opt_options, 'Display', 'off');
-    %opt_options = optimset(opt_options, 'PlotFcns', @optimplotresnorm);
-    allow_opt = [ones(1,3) * 0.5, ones(1,3) * 3*pi];
-    bounds = zeros(1, 12);
-    if (strcmp(options.do_optimize, 'both'))
-      bounds = [allow_opt, allow_opt];
-    elseif (strcmp(options.do_optimize, 'source'))
-      bounds(1, 1:6) = allow_opt;
-    elseif (strcmp(options.do_optimize, 'sensor'))      
-      bounds(1, 7:12) = allow_opt;
-    else
-      error('Unknown options.do_optimize: %s', options.do_optimize);
+  if (~isempty(options.optimize_fixtures))
+    badopt = setdiff(options.optimize_fixtures, {'source', 'stage', 'sensor'});
+    if (~isempty(badopt))
+      error('Unknown options.optimize_fixtures: %s', badopt{1});
     end
-    fprintf(1, 'Optimizing fixture poses: %s\n', options.do_optimize);
 
-    [x,resnorm,residual,exitflag,output] = ...
-	lsqnonlin(ofun, x, -bounds, bounds, opt_options);
-  
-    source_fix_delta = x(1:6)
-    sensor_fix_delta = x(7:12)
+    opt_options = optimset('lsqnonlin');
+    %opt_options = optimset(opt_options, 'Display', 'off');
+    opt_options = optimset(opt_options, 'PlotFcns', @optimplotresnorm);
+    allow_opt = [ones(1,3) * 0.5, ones(1,3) * 3*pi];
+    bounds = zeros(1, 18);
+    if (any(strcmp(options.optimize_fixtures, 'source')))
+      bounds(1:6) = allow_opt;
+    end
+    if (any(strcmp(options.optimize_fixtures, 'stage')))
+      bounds(1, 7:12) = allow_opt;
+    end
+    if (strcmp(options.optimize_fixtures, 'sensor'))
+      bounds(1, 13:18) = allow_opt;
+    end
+
+    fprintf(1, 'Optimizing fixture poses:\n');
+    disp(options.optimize_fixtures);
+
+    [state,resnorm,residual,exitflag,output] = ...
+	lsqnonlin(ofun, state, -bounds, bounds, opt_options);
+
+    % No semicolon, delibrate display of results
+    source_fix_delta = state(1:6)
+    stage_fix_delta = state(7:12)
+    sensor_fix_delta = state(13:18)
   else
-    x = zeros(1, 12);
+    state = zeros(1, 18);
   end
 
-  [X_err, nres] = ofun(x);
-  res = nres;
-  
-  sof = inv(pose2trans(res.so_fix));
-  sef = inv(pose2trans(res.se_fix));
-  s_measured = zeros(size(res.measured));
-  for (ix = 1:size(res.stage_pos, 1))
-    s_measured(ix, :) = tr2vector(sof * pose2trans(res.measured(ix, :)) * sef);
+  [X_err, nperr] = ofun(state);
+  perr = nperr;
+  %{
+  % ### FIXME for added source motion.  What do we even want?
+  % This is only used for perr_axis_response() in axis sweeps.
+  sof = inv(pose2trans(perr.so_fix));
+  stf = inv(pose2trans(perr.st_fix));
+  sef = inv(pose2trans(perr.se_fix));
+  s_measured = zeros(size(perr.measured));
+  for (ix = 1:size(perr.stage_pos, 1))
+    measured_t = pose2trans(perr.measured(ix, :));
+    s_measured(ix, :) = tr2vector(sof * st_pose * sef);
   end
-  res.stage_pos_measured = s_measured;
-  % ### The way we are computing res.stage_pos_errors via subtraction does not
-  % work if there are large rotations.  Here, and with res.errors, it would be
+  perr.stage_pos_measured = s_measured;
+  % ### The way we are computing perr.stage_pos_errors via subtraction does not
+  % work if there are large rotations.  Here, and with perr.errors, it would be
   % more correct to compute the pose errors using pose multiplication rather
   % than subtraction, see perr_workspace_vol.  eg. inv(desired) * measured.
   % The difference of the pose vectors AFAIK can't be converted to a
   % transform, though subtracting sort of works when the rotations don't wrap.
-  res.stage_pos_errors = res.stage_pos_measured - res.stage_pos;
+  perr.stage_pos_errors = perr.stage_pos_measured - perr.stage_pos;
+  %}
 end

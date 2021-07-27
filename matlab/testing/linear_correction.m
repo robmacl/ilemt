@@ -1,5 +1,8 @@
 function [transform] = linear_correction(perr, cp_options, cal_options)
-% Find a linear transform that minimizes the pose error
+% Find a linear transform that minimizes the pose error.  
+% 
+% This is actually used back in ../calibration/output_correction.m, but kind
+% of makes sense being here due to knowledge about the perr struct.
 mode = cal_options.correct_mode;
 
 % The linear correction is a matrix which is multiplied by the (column vector)
@@ -12,7 +15,7 @@ mode = cal_options.correct_mode;
 % We have several correction modes, but 'DLT' is currently the best.
 if (strcmp(mode, 'none'))
   % We skip writing a corrected calibration if there is no correction
-  transform = eye(6);
+  transform = eye(4);
   return;
 elseif (strcmp(mode, 'skew'))
   % Despite the name, the skew terms transform(4, 1:3) are effectively zero.
@@ -38,18 +41,6 @@ elseif (strcmp(mode, 'pose'))
 else
   error('Unknown correct_mode: %s', mode);
 end
-
-%{
-% I tried weighting the linear solution by the moment to set the desired
-% rotation/translation error tradeoff, but this gives almost exactly the same
-% result.  Not sure if this is in worthless in general, or if in this case
-% there is just really no conflict between the rotation and translation
-% corrections.
-moment_trans = diag([ones(1,3) ones(1,3)*cp_options.moment]);
-pd_new = pinv(perr.measured * moment_trans);
-transform_new = pd_new * (perr.desired * moment_trans);
-tf_new1 = moment_trans * transform_new * inv(moment_trans)
-%}
 
 calibration = load(cp_options.cal_file);
 calibration.linear_correction = transform;

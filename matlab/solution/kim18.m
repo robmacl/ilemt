@@ -46,8 +46,10 @@ pstar_(:, 2) = -gamma_ * V_(:, 1);
 pose = eye(4);
 pose(1:3, 1:3) = Rstar_;
 
-% We choose +x hemisphere
-if (pstar_(1, 1) >= 0)
+% We choose this hemisphere as positive
+plus_hemisphere = 1;
+
+if (pstar_(plus_hemisphere, 1) >= 0)
   pose(1:3, 4) = pstar_(:, 1);
 else
   pose(1:3, 4) = pstar_(:, 2);

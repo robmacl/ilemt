@@ -2,7 +2,7 @@
 %optimization state vector.
 
 %number of element in the state vector
-num_state = 75;
+num_state = 81;
 
 %dipole source position
 source_x_pos_slice = 1:3;
@@ -27,10 +27,11 @@ sensor_z_gain = 25;
 source_fixture_pos_slice = 26:28;
 source_fixture_orientation_slice = 29:31;
 
+% stage fixture is out of order in the state, see below
+
 %sensor fixture
 sensor_fixture_pos_slice = 32:34;
 sensor_fixture_orientation_slice = 35:37;
-
 
 %quadrupole source position
 qp_source_x_pos_slice = 38:40;
@@ -58,6 +59,11 @@ qp_so_dist = 74;
 %quadrupole sensor distance 
 qp_se_dist = 75;
 
+% stage fixture
+stage_fixture_pos_slice = 76:78;
+stage_fixture_orientation_slice = 79:81;
+
+
 
 % Cell array state_parts{n, 2}, a dictionary of state parts.  Each row is:
 %    {<string name> <state index vector>}
@@ -81,6 +87,11 @@ state_parts = {
     'x_so_fix' [source_fixture_pos_slice(1)]
     'y_so_fix' [source_fixture_pos_slice(2)]
     'z_so_fix' [source_fixture_pos_slice(3)]
+
+    'st_fix' [stage_fixture_pos_slice stage_fixture_orientation_slice]
+    'x_st_fix' [stage_fixture_pos_slice(1)]
+    'y_st_fix' [stage_fixture_pos_slice(2)]
+    'z_st_fix' [stage_fixture_pos_slice(3)]
 
     'se_fix' [sensor_fixture_pos_slice sensor_fixture_orientation_slice]
     'x_se_fix' [sensor_fixture_pos_slice(1)]

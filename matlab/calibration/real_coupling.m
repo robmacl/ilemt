@@ -11,7 +11,7 @@ function [res] = real_coupling (raw_data)
 % perhaps 10 degrees, depending on how you define "too small").  That is, the
 % imaginary component should be small.  So there is no ambiguity in
 % determining the sign from the real part.  As values become small the phase
-% becomes ill-defined, but getting the sign right also becomes unimportant.
+% becomes ill-defined, but then getting the sign right also becomes unimportant.
 
     signs = ones(size(raw_data));
     signs(real(raw_data) < 0) = -1;

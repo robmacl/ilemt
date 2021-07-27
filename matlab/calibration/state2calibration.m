@@ -46,6 +46,9 @@ function [calibration] = state2calibration (state)
   % fixture transforms
   calibration.source_fixture = ...
       [state(source_fixture_pos_slice) state(source_fixture_orientation_slice)];
+
+  calibration.stage_fixture = ...
+      [state(stage_fixture_pos_slice) state(stage_fixture_orientation_slice)];
     
   calibration.sensor_fixture =...
       [state(sensor_fixture_pos_slice) state(sensor_fixture_orientation_slice)];
