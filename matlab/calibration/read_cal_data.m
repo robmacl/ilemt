@@ -94,13 +94,3 @@ function [angles] = fix_lookup (wot)
   angles = tr2vector([b1 T]);
   angles = angles(4:6);
 end % non-nested fix_lookup
-
-  %{
-  % Numbers I manually generated, and are the inverse or something
-      '+X+Y+Z' [+000 +000 +000]
-      '+X-Z+Y' [+090 +000 +000]
-      '-Y-Z+X' [+090 +090 +000]
-      '+Y+Z+X' [-090 -090 +000]
-      '+Z-Y+X' [-180 -090 +000]
-      '-Y+X+Z' [+000 +000 +090]
-      %}

@@ -12,6 +12,7 @@ function make_ilemt_mesh (out_file, planes, spacing, rot_steps, rot_spacing, rot
 % for example:
 %    make_ilemt_mesh('foo.dat', 5, 20)
 %    make_ilemt_mesh('foo.dat', 5, 20, 3)
+%    make_ilemt_mesh('source_pattern.dat', [5 3 5], [35 70 25])
 
 if (nargin < 4)
   rot_steps = 1;
@@ -25,9 +26,12 @@ if (nargin < 6)
   rot_axis = 3;
 end
 
-res = make_mesh(planes, planes, planes, spacing);
-res = [res(1,:); (res(1,:) + res(2,:))*0.5; res(2:end,:)];
+if (isscalar(planes))
+  planes = repmat(planes, 1, 3);
+end
 
+res = make_mesh(planes(1), planes(2), planes(3), spacing);
+res = [res(1,:); (res(1,:) + res(2,:))*0.5; res(2:end,:)];
 res=horzcat(res, zeros(length(res),3));
 
 %plot the mesh grid
@@ -49,7 +53,11 @@ if (rot_steps > 1)
   end
   res = res_all;
 end
-  
+
+% Start and end with null pose.  Leaves stage parked, and also possible
+% drift check.
+res = vertcat(zeros(1, 6), res, zeros(1, 6));
+
 res
 
 fprintf(1, '%d points\n', length(res));

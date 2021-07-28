@@ -6,9 +6,9 @@ function [res] = make_mesh (x, y, z, spacing)
 % added.
 res = zeros(0, 3);
 res_ix = 1;
-for (zx = 1:z)
+for (xx = 1:x)
   for (yx = 1:y)
-    for (xx = 1:x)
+    for (zx = 1:z)
       res(res_ix, :) = [xx yx zx];
       res_ix = res_ix + 1;
     end

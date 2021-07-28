@@ -107,6 +107,10 @@ options.optimize = {'d_so_pos' 'd_so_mo' 'd_se_pos' 'd_se_mo' 'st_fix' 'se_fix'}
 % the Y component of the X moment to 0 prevents this.
 options.freeze = {'d_so_y_co' 'd_se_y_co'};
 
+% Maximum number of optimize iterations.  Can reduce to avoid excessive
+% effort on preliminary optimizations, or increase if optimization is still
+% progressing when it stops.
+options.iterations = 200;
 
 % Get local settings
 run('./local_cal_options.m');
@@ -149,6 +153,7 @@ elseif (strcmp(options.cal_mode, 'so_quadrupole_all'))
 elseif (strcmp(options.cal_mode, 'se_quadrupole'))
   bc_default = 'XYZ_hr_cal';
   options.optimize = {'q_se_mo' 'se_fix' 'd_se_mo'};
+  options.iterations = 50;
   if (~options.pin_quadrupole)
     options.optimize = cat(2, {'q_se_pos'}, options.optimize);
   end

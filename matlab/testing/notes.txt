@@ -172,6 +172,87 @@ search.  three-axis magnetometer calibration
   ferromagnetic compensation, or at least detection.
 
 
+[27-28 July 21]
+
+My efforts to visualize the RPY for the source fixture XYZ axis mappings
+failed, so I went and implemented in code, and now it seems to be more or less
+working with multiple fixturings.  *#$&*^#$ Euler angles, I spit on thee.
+
+I worked through up to source quadrupole with cal_7_21_premo_dipole and the
+four source fixturings.  This is with the pinned quadrupole on the non-rotated
+dipole source.
+
+________________________________________________________________
+
+                d_source_pos                           d_source_moment                            d_sensor_pos                              d_sensor_moment           
+    _____________________________________    ___________________________________    _________________________________________    _____________________________________
+     0.045831    -0.0011063             0       0.9481    0.0021454            0     0.00014469    -6.3211e-05              0      0.15665    0.00033138             0
+    0.0034569      0.043343             0            0       0.9508            0    -3.0316e-05    -1.2321e-05              0            0       0.15574             0
+    -0.038597     -0.035288             0    -0.024519     0.010004            1     0.00011242     5.4172e-05              0    0.0025424     0.0019528       0.16043
+    q_source_pos              q_source_moment              q_sensor_pos    q_sensor_moment
+    ____________    ___________________________________    ____________    _______________
+    0    0    0       -0.1046    -0.085138     -0.10047    0    0    0       0    0    0  
+    0    0    0       0.10441     -0.96208     -0.18794    0    0    0       0    0    0  
+    0    0    0     -0.045446      0.20453      -1.4928    0    0    0       0    0    0  
+Source fix: [0.00338 0.00331 -0.00596 0.01302 0.00162 0.00875 ]
+Stage fix: [0.24783 -0.00591 0.02044 -0.00113 0.01712 -1.57227 ]
+Sensor fix: [-0.00014 0.00038 -0.00015 -2.20144 -2.22831 -0.00060 ]
+
+Optimization stopped because the relative sum of squares (r) is changing
+by less than options.FunctionTolerance = 1.000000e-08.
+
+cal_residue =
+    0.0085162
+________________________________________________________________
+
+
+I thought that maybe this pattern of the q_source_moment was something I had
+seen before, but looking back, no.  Result from [2 Jun 21] rotated corner
+dipole is that the pinned quadrupole moment is nil.  Prior non-pinned results
+were physically implausible and highly suspect.
+
+The predominantly diagonal and negative quadrupole is something we have seen
+before, eg. [3 Jun 21] with the CMU concentric source, pinned.  The negative
+quadrupole means that at short range the field is weaker than the dipole model
+predicts.
+
+I don't have an explanation for why the quadrupole magnitude varies across
+axes and is much lower on X.  Frequency dependence of proximity effects (like
+eddy current loss) could be a factor.  But I would expect that to be roughly
+linear with frequency, yet the jump from X to Y (7.5 kHz to 10.5 kHz) is way
+out of line with that.  I had been thinking that axis asymmetry was due to
+varying observability of the quadrupole, given the single source fixturing.
+But now we have multiple fixturings.  Perhaps results will change with careful
+mechanical setup.
+
+Note that this quadrupole magnitude (with non-rotated corner dipole) is still
+pretty small.  At 170mm radius:
+________________________________________________________________
+>> p1
+p1 =
+            1            0            0         0.17
+            0            1            0            0
+            0            0            1            0
+            0            0            0            1
+
+>> norm(forward_kinematics(p1, d_cal))
+ans =
+      0.52877
+
+>> norm(forward_kinematics(p1, cal))
+ans =
+      0.53321
+
+>> 1-0.52877/0.53321
+ans =
+    0.0083269
+________________________________________________________________
+
+where cal is the new source quadrupole cal, and d_cal is the same, but with
+the quadrupole term zeroed.  So less than 1% at extreme close range.  (But the
+relative change in off-axis components is significantly bigger.)
+
+
 [23 July 21]
 
 Working on adding the source rotation fixture to the Matlab code.
@@ -192,6 +273,7 @@ I'm going to represent the source motion orientations by which axes are
 aligned.  The ordering is defined by fixture axis, so for example +Z-Y+X means
 that source fixture X is aligned with mover +Z axis, and so on.  Then we have:
 
+[### ******** the Euler angles are wrong, see [27-28 July 21]]
 		      fixture axes	source motion
 	old name	 X Y Z		RxRyRz (ZYX Euler order)
 ________________________________________________________________
@@ -213,6 +295,15 @@ ________________________________________________________________
 Note that in null pose the stage coordinates may be rotated WRT to sensor (by
 the sensor fixture transform), so the sensor axes don't align with the sensor
 mover axes.
+
+
+I don't have the exact numbers, but it seems that with the multiple source
+fixtures, the benefit of the quadrupole is greater, but the overall
+calibration residue is also somewhat bigger.  This is pretty much what we
+would expect.  Shouldn't over-interpret these results until I have the source
+fixture setup finalized, though.
+
+
 
 
 [20 July 21]
@@ -2503,11 +2594,11 @@ Other interpretation:
  -- That the bias estimate from mean residue did not help kind of proves that
     other errors are dominant, probably way dominant.  Because it *would* have
     worked if bias had been dominant.
- -- If the level of magnetic interference we are seeing in the test setup is a
-    problem, then it's rather hopeless to get better accuracy in any realistic
-    setting.  My feel from the 1DOF measurement is that even if we multiply
-    10x to get 3DOF position error, we are not going to break 200um, and 100um
-    or less seems likely.
+ -- If magnetic interference is what we are seeing in the test setup, then it
+    would be rather hopeless to get better accuracy in any realistic setting.
+    But my feel from the 1DOF measurement errors I've seen is that even if we
+    multiply 10x to get 3DOF position error, its going to be less than 200um,
+    and 100um or less seems likely.
 
 
 I tried sensor quadrupole with the corner-dipole/premo, and it reduced the
