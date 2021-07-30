@@ -1,0 +1,58 @@
+File name format is:
+    so<mapping>_se<mapping>_<other stuff>.dat
+
+Mapping is the mapping from fixture axes to source/sensor (mover)
+axes.  Term "mover" is clearer, because these are the axes of the
+moving part of the fixture, and are not always the same as the axes of
+the attached source or sensor.
+
+I'm going to represent the source motion orientations by which axes are
+aligned.  The ordering is defined by fixture axis, so for example +Z-Y+X means
+that source fixture X is aligned with mover +Z axis, and so on.  Then we have:
+[###???
+
+How I implemented this, which worked, is that the ordering is
+by *mover* axis.  I construct the transform [-Z ? ?] by splicing in
+[0 0 -1]' for P(1:3, 1).
+
+]
+
+Only certain fixturings are supported by our fixtures:
+
+Sensor:
+		      mover axes
+	old name	 X Y Z
+________________________________________________________________
+	Z_rot		+X+Y+Z	The home fixture
+	X_rot		+X-Z+Y	Rotated +90 degrees about stage X
+	Y_rot		-Y-Z+X	Additionally rotated +90 about stage Y
+
+
+Source:
+      mover axes
+	 X Y Z
+________________________________________________________________
+	+X+Y+Z		The home fixture
+	+Y+Z+X		X up, Y out toward sensor
+	+Z-Y+X		X up, Z out toward sensor
+	-Y+X+Z		Rotate +90 about Z
+
+Source fixture files:
+    so+X+Y+Z_se+X+Y+Z_source.dat	The home fixture
+    so-Y+X+Z_se+X+Y+Z_source.dat	Rotate +90 about Z
+    so+Z-Y+X_se+X+Y+Z_source.dat	X up, Z out toward sensor
+    so+Z-Y+X_se+X+Y+Z_ld.dat		  same, different pattern
+    so+Y+Z+X_se+X+Y+Z_source.dat	X up, Y out toward sensor
+Source input patterns:
+    source_pattern.dat
+    cal_bigdata_pattern.dat (_ld)
+
+
+Sensor fixture files:
+    so+X+Y+Z_se+X+Y+Z_size.dat		Home (in source list also)
+    so+X+Y+Z_se+X-Z+Y_size.dat		X rotate +90, (fixture) Z out Y up
+    so+X+Y+Z_se-Y-Z+X_size.dat		add Y rotate +90, Z out X up
+Sensor input patterns:
+    cal_smalldata_pattern.dat (_sd)
+    cal_middata_pattern.dat (_md)
+    cal_bigdata_pattern.dat (_ld)

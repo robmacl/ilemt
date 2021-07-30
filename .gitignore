@@ -1,2 +1,3 @@
 /matlab/calibration/*.asv
 /matlab/testing/*.txt~
+*.txt~
