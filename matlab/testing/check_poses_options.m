@@ -21,6 +21,13 @@ function [options] = check_poses_options (cal_options)
   % pose_calculation().
   options.pose_solution = 'optimize';
 
+  % 
+  % What hemisphere the pose is constrained to: 1, 2, 3 for XYZ, negative
+  % if the minus hemisphere.  eg. -2 is the -X hemisphere.  If 0 then set
+  % automatically using the ground truth pose (which may not work if there
+  % is a large change in the fixture poses).
+  options.hemisphere = +1;
+
   % If true, apply linear correction to measured poses.
   options.linear_correction = false;
   

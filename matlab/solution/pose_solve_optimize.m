@@ -1,27 +1,15 @@
-function [poses, resnorms] = pose_solve_optimize (couplings, calibration, options)
+function [poses, resnorms] = pose_solve_optimize (couplings, calibration, options, hemisphere)
 % Pose solution by optimization of the forward kinematics.
 
 % Starting pose.  We use the fixture poses to construct the sensor pose
 % at the stage null pose.
 pose0 = trans2pose(pose2trans(calibration.source_fixture) ... 
+                   * pose2trans(calibration.stage_fixture) ...
                    * pose2trans(calibration.sensor_fixture));
+% ##### initial pose needs to be derived from hemisphere?  And/or Kim18?
 
 % Pose state limits:
-% The pose is constrained to the +X hemisphere.
-bound_positive = [0; 0.4];
-
-% y and z translation bounds
-bounds_tr = repmat([-0.4;0.4], 1, 3); 
-
-bounds_tr(:, 1) = bound_positive;
-%bounds_tr(:, 2) = bound_positive;
-
-% rotation bounds.  We allow the rotation to go outside of the nominal
-% +/- pi range because the optimizer may want to converge to a
-% non-canonical angle.
-bounds_rot = repmat([-6*pi; 6*pi], 1, 3);
-
-bounds = [bounds_tr, bounds_rot];
+max_trans = 0.4;
 
 clear results;
 
@@ -29,6 +17,25 @@ clear results;
 option = optimset('Display', 'off', 'TolFun', 1e-09, ...
                   'MaxIter', 1000, 'MaxFunEvals', 60000);
 parfor (ix = 1:size(couplings, 3))
+
+  % Default translation bounds
+  bounds_tr = repmat([-max_trans; max_trans], 1, 3); 
+
+  % 1, 2, 3 for XYZ, negative if the minus hemisphere
+  bound1 = [0; max_trans];
+  hemi = hemisphere(ix);
+  if (hemi < 0)
+    bound1 = -bound1;
+    hemi = -hemi;
+  end
+  bounds_tr(:, hemi) = bound1;
+
+  % rotation bounds.  We allow the rotation to go outside of the nominal
+  % +/- pi range because the optimizer may want to converge to a
+  % non-canonical angle.
+  bounds_rot = repmat([-6*pi; 6*pi], 1, 3);
+
+  bounds = [bounds_tr, bounds_rot];
   Cdes = real_coupling(couplings(:, :, ix));
   %1 and 2 row of bounds are respectively lower and upper bounds
   [pose_new, resnorm, ~, exitflag] = ...

@@ -1,5 +1,5 @@
 function [poses, valid, resnorms] = pose_solution ...
-  (couplings, calibration, options)
+  (couplings, calibration, options, hemisphere)
 % Compute poses from coupling matrices:
 % couplings(3, 3, n):
 %    input coupling matrices
@@ -8,8 +8,13 @@ function [poses, valid, resnorms] = pose_solution ...
 %    calibration struct to use
 % 
 % options:
-%    may affect the solution
+%    may affect the solution.
 % 
+% hemisphere:
+%   Optional, vector parallel to couplings.  What hemisphere the pose is
+%   constrained to: 1, 2, 3 for XYZ, negative if the minus hemisphere.  eg. -2
+%   is the -X hemisphere.  Default is to use options.hemisphere.
+%
 % Results:
 % poses(n, 6):
 %    Result poses in rotation vector format.
@@ -17,12 +22,16 @@ function [poses, valid, resnorms] = pose_solution ...
 % valid(n):
 %    True if the result pose seems to be valid (based on residual error).
 
+  if (nargin < 4 || isempty(hemisphere))
+    hemisphere = repmat(options.hemisphere, size(couplings, 3), 1);
+  end
+
   if (strcmp(options.pose_solution, 'optimize'))
     [poses, resnorms] = ...
-        pose_solve_optimize(couplings, calibration, options);
+        pose_solve_optimize(couplings, calibration, options, hemisphere);
   elseif (strcmp(options.pose_solution, 'kim18'))
     [poses, resnorms] = ...
-        pose_solve_kim18(couplings, calibration, options);
+        pose_solve_kim18(couplings, calibration, hemisphere);
   elseif (strcmp(options.pose_solution, 'UKF'))
     [poses, resnorms] = ...
         pose_solve_UKF(couplings, calibration, options);

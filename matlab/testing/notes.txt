@@ -1,20 +1,11 @@
 Todo:
-  
- -- source rotation fixture
-     - Need to add another fixture transform to calibration
- 
- -- Drift check when reading cal data
-
- -- Rz axis runout using test indicator to reduce pole deflection
-
  -- Literature search for calibration and cross-coupling
-
+ -- Lube stage.  New noise?
  -- Pose solution:
      - Initialize pose solver optimization using kim18 solution.
      - How bad is kim18 performance with non-concentric corner dipole?  
      - Add selection of operating hemisphere to the options struct.
-     - UKF solver matlab prototype
-
+ -- Get check_poses() working with multiple source fixtures
  -- Realtime code: signal processing and pose solution
 
 
@@ -81,95 +72,75 @@ Maybe later:
      - LUT interpolation might generalize better if it was done in a more
        physically relevant coordinates, eg. coupling/magnetic
 
+
+[30 July 21]
 
-Paper ideas:
+Ok, here's one more take on how to notate the fixture orientations.  +Z-Y+X
+was completely nonintuitive, and also I got things inconsistent between source
+and sensor.  This goes back to the in/up convention I first used for the
+source fixtures.
 
-*** need to write each paper before moving on to next problem, or the writing
-*** is going to be much harder/will not happen.
+Here's how it works:
+ -- "out" is a synonym for fixture +Y.  Now the source fixture uses the same
+    Rz orientation as the stage (and sensor fixture), so "out" is in the same
+    direction for both.
+ -- "up" is a synonym for fixture +Z.
+ -- We represent a rotation by which mover axis is "out" and "up.  If the
+    out/up axis is negative, then we use in/down.
+ -- out/in always comes before up/down.  So YoutZup, YinZup, etc.
 
-I am considering cross-coupling (a hardware problem) solved, and calibration
-is nearing completion.  Making a stand-alone cross-coupling paper would
-require extra work.
+So ZoutYup means:
+	Mover		Fixture
+____________________________________
+	+Z (Z)		+Y (out)
+	+Y (Y)		+Z (up)
+	+X		-X	(implied by right hand convention)
 
-
-What results do we have?
- -- Calibration accuracy with various source/sensor combinations.
-    Sophistication and accuracy of stage ground truth is much higher
-    than all the academic trackers.  Accuracy is good in comparison to
-    published ASAP performance.  Want more data, see above.
- -- Kim18 algorithm works, to higher accuracy than they were able to test.
-    But only with concentric coils.  Even with nominally concentric coils,
-    allowing offset helps accuracy.
- -- Linear correction helps
- -- Source cross coupling can be a problem
- -- Sensor cross coupling seems to be a problem, but only indirect
-    evidence from eg. C load.
-
-
-Current aim is the cross-coupling paper.  For that we need some extra
-experiments and simulations to get at the mechanism and magnitude.  Literature
-search.  three-axis magnetometer calibration
-
-[cross-coupling]
-  Source-source and sensor-sensor coil coupling can be big problems
-   - Depends on concentric vs. non, sensor loading, whether source coils are
-     driven simultaneously.
-   - Ferrite core problematic with non-concentric coils
-   - Source coupling is a big issue with FDM, and probably not with TDM,
-     depending on driver details.
-   - Can use current sense to reduce source coil coupling
-   - Can also minimize coupling through concentric coils or non-concentric
-     arrangements. 
-   - Need to establish these claims somehow.  Simply using calibration accuracy
-     experiments is not very good because there is not a simple causal
-     relation.  Given eg. field map or simulations, can be presented as more
-     general than ILEMT, and not needing a lot of ILEMT context.
-   - 2D FEMM XY simulation?  Not accurate, but a good visualization
-   - There are enough points that it can't be a short paper
-
-[calibration]
-  ILEMT calibration accuracy report:
-   - We have this thing which has some kind of accuracy
-   - Background on project
-   - Calibration and test methods?
-      - Details of calibration model, eg. fixture transforms?
-   - Sensitivity of the pose solution to coupling error?  Possible short paper
-     in itself.
-  Things it isn't:
-   - Not an omnibus all-the-results paper, without: dynamic and noise
-     performance, metal rejection, in-vivo accuracy compared to ASAP, EMI
-     tolerance, etc.
-   - If you don't think about those omissions, then this can resemble the
-     journal standard of being the final results on a project.  It is (we
-     hope) a wrap-up within the limited scope of static accuracy w/o
-     interference. 
-   - No emphasis on the dipole-approximating coil (especially if it isn't used
-     for our headline results).
+To me this is fairly intuitive, but it semantically works basically the same
+way as the +/- axis mapping.  For data collection plans (input file and
+fixtures), see:
+    ilemt/cal_data/input_patterns/test_plans.txt 
 
 
-[quadrupole]
-  Dipole/quadrupole story (tentative because of coil interactions, and weird
-  quadrupole fit):
-   - Dipole-approx coil fairly accurate
-   - Dipole performance may be limited by cross-coupling.  Use the best
-     dipole-approximating source arrangement, reference [cross-coupling].
-   - Quadrupole can help a bit
-   - This is a plausible tidy result, possible short paper.
-   - Show model deviation in the coupling space, not just pose accuracy.
-     Sensitivity of pose solution.
-   - Discussing pose accuracy needs the ILEMT context. Needs to reference
-     [calibration]
-   - Need to at least review other multi-dipole models, current sheet, etc.
-   - Change to meters/radians in axis sweep plots?
 
-[system]
-  Hardware description, signal processing, noise and dynamics performance.
-  Accuracy update.
-   - Need to mention high/low motivation, but no evaluation here
 
-[high/low metal]
-  Description and performance of high/low eddy current rejection.  Possible
-  ferromagnetic compensation, or at least detection.
+
+
+[29 July 21]
+
+It would be nice if we could more explicitly separate the source and sensor
+calibration so that we could swap one or the other without having to start
+over from scratch, ideally a drop-in replacement with either no serial number
+dependence, or with calibration data that is paired to that source/sensor.
+
+The one big obstruction is the system gain.  Sources and sensors vary in their
+gain, and we need to factor this gain to the appropriate place.
+
+If source and sensor were calibrated to physical units, then this would not be
+a problem.  But this would be a whole new undertaking, and could introduce
+extra error.
+
+Another approach is to standardize the gain to a particular source and sensor.
+One source (corner dipole) gets the Z moment forced to 1.  Calibrating a
+different source wrt. the same sensor gives a change in the gain which we
+attribute to the source.  The sensor calibration is entirely frozen, and we
+allow the source Z gain to change.  (Source Z gain is not currently
+represented in the state, would need to be added.)  Likewise, to calibrate
+another sensor we change the sensor and hold the source frozen.
+
+I guess the key idea is that we need to permit (just one of) either source or
+sensor gain to vary during calibration.  It isn't required that any of the
+gains be 1.  We calibrate a new source using the standard sensor, with its
+already established fixed calibration.  We calibrate a new sensor using the
+standard source and its fixed calibration.
+
+Although this is cringe from a metrology perspective, we are implicitly
+referring back to a "gold standard" source and sensor.  For max
+interoperability we want the reference to be not just the same design, but the
+exact same unit.  At the moment we are not going to get far enough down the
+road of source/sensor interchangability that this needs to be worried about.
+I'm hoping that the two-sensor bar method can be used to calibrate out minor
+variations in a particular source/sensor configuration.
 
 
 [27-28 July 21]
@@ -249,8 +220,9 @@ ans =
 ________________________________________________________________
 
 where cal is the new source quadrupole cal, and d_cal is the same, but with
-the quadrupole term zeroed.  So less than 1% at extreme close range.  (But the
-relative change in off-axis components is significantly bigger.)
+the quadrupole term zeroed.  So less than 1% even at extreme close range.
+(But the relative change in off-axis components is significantly bigger, might
+affect pose solution disproportionately, IDK.  Sensitivity.)
 
 
 [23 July 21]

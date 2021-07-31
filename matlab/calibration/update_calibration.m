@@ -1,23 +1,41 @@
 function [] = update_calibration (cal_file)
 % Update format of a calibration file to the current format
-calibration = load(cal_file);
 
-if (~isfield(calibration, 'pin_quadrupole'))
-  calibration.pin_quadrupole = true;
+if (nargin < 1 || isempty(cal_file))
+  dirlist = dir('*.mat');
+  files = {dirlist.name};
+else
+  files = {cal_file};
 end
 
-if (~isfield(calibration, 'linear_correction'))
-  calibration.linear_correction = eye(4);
-end
+for (f_ix = 1:length(files))
+  file1 = files{f_ix};
+  
+  calibration = load(file1);
 
-if (~isfield(calibration, 'bias'))
-  calibration.bias = zeros(3);
-end
+  if (~isfield(calibration, 'd_source_pos'))
+    fprintf(1, 'Not a calibration, ignoring: %s\n', file1);
+    continue;
+  end
+  
+  if (~isfield(calibration, 'pin_quadrupole'))
+    calibration.pin_quadrupole = true;
+  end
 
-if (~isfield(calibration, 'stage_fixture'))
-  % Existing source fixture becomes the stage fixture
-  calibration.stage_fixture = calibration.source_fixture;
-  calibration.source_fixture = zeros(1, 6);
-end
+  if (~isfield(calibration, 'linear_correction'))
+    calibration.linear_correction = eye(4);
+  end
 
-save(cal_file, '-struct', 'calibration');
+  if (~isfield(calibration, 'bias'))
+    calibration.bias = zeros(3);
+  end
+
+  if (~isfield(calibration, 'stage_fixture'))
+    % Existing source fixture becomes the stage fixture
+    calibration.stage_fixture = calibration.source_fixture;
+    calibration.source_fixture = zeros(1, 6);
+  end
+
+  save(file1, '-struct', 'calibration');
+  fprintf(1, 'Updated %s\n', file1);
+end

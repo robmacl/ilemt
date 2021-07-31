@@ -1,4 +1,4 @@
-function [pose] = kim18 (coupling, calibration)
+function [pose] = kim18 (coupling, calibration, hemi)
 % Method from "Closed-Form Position and Orientation Estimation for a
 % Three-Axis Electromagnetic Tracking System", Wooyoung Kim, Jihoon Song,
 % Frank Park, 2018.  IEEE Transactions on Industrial Electronics
@@ -46,10 +46,17 @@ pstar_(:, 2) = -gamma_ * V_(:, 1);
 pose = eye(4);
 pose(1:3, 1:3) = Rstar_;
 
-% We choose this hemisphere as positive
-plus_hemisphere = 1;
 
-if (pstar_(plus_hemisphere, 1) >= 0)
+% Handle hemispere selection
+h_sign = 1;
+if (hemi < 0)
+  hemi = -hemi;
+  h_sign = -1;
+end
+
+% If the first solution falls in the hemisphere, then return it, otherwise
+% the second solution.
+if (pstar_(hemi, 1) * h_sign >= 0)
   pose(1:3, 4) = pstar_(:, 1);
 else
   pose(1:3, 4) = pstar_(:, 2);

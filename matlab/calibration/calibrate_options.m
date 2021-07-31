@@ -77,10 +77,10 @@ options.source_signs = [1 1 1];
 %
 % The default is for source fixture motion.
 options.input_motion = {
-    'so+X+Y+Z_se+X+Y+Z'
-    'so+X+Y+Z_se+X-Z+Y'
-    'so+X+Y+Z_se-Y-Z+X'
-    };
+    'soYoutZup_seYoutZup'
+    'soYoutZup_seZinYup'
+    'soYoutZup_seZinXdown'
+    }';
 
 options.data_size = 'md';
 

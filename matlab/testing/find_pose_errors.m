@@ -38,8 +38,22 @@ function [perr] = find_pose_errors (options)
   perr.se_fix = calibration.sensor_fixture;
   options.bias = calibration.bias;
   [motion_poses, couplings] = read_cal_data(options);
+  
+  if (options.hemisphere == 0)
+    % Find hemisphere for pose solutions.  We use the ground truth pose and pick
+    % the direction with the largest translation.
+    desired1 = fk_pose_calculation(motion_poses, perr.so_fix, perr.st_fix, perr.se_fix);
+    desired1 = desired1(:, 1:3);
+    hemisphere = zeros(size(desired1, 1), 1);
+    for (ix = 1:size(desired1, 1))
+      [~, m_ix] = max(abs(desired1(ix, :)), [], 2);
+      hemisphere(ix) = m_ix * sign(desired1(ix, m_ix));
+    end
+  else
+    hemisphere = [];
+  end
   [measured, valid, resnorms] = ...
-      pose_solution(couplings, calibration, options);
+      pose_solution(couplings, calibration, options, hemisphere);
   %{
   figure(10)
   probplot(resnorms);
