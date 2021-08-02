@@ -1,26 +1,40 @@
 File name format is:
     so<mapping>_se<mapping>_<other stuff>.dat
 
-Mapping is the mapping from fixture axes to source/sensor (mover)
-axes.  Term "mover" is clearer, because these are the axes of the
-moving part of the fixture, and are not always the same as the axes of
-the attached source or sensor.
+The mapping is from the from fixed fixture axes to the moving part of the
+fixture (the "mover").  The fixture and mover axes are aligned in the fixture
+null pose.  The fixture axes are also nominally aligned with the stage axes,
+although misalignment in source->stage is absorbed into the stage fixture
+transform.
 
-This is the representation for the axis mapping:
- -- "out" is a synonym for fixture +Y.  Now the source fixture uses the same
-    Rz orientation as the stage (and sensor fixture), so "out" is in the same
-    direction for both.
- -- "up" is a synonym for fixture +Z.
+The term "mover" reminds us that these are the axes of the moving part of the
+fixture, which are are *not* aligned with either the source or sensor axes.
+This large mismatch is absorbed into the source and sensor fixture transforms.
+
+Representation of the axis mapping:
+ -- "out" is a synonym for fixture +Y, which is always in the direction from
+    source to sensor in the standard stage setup.  
+ -- "up" is a synonym for fixture +Z, which is always physically "up", toward
+    the ceiling.
  -- We represent the axis mapping by which mover axis is "out" and
     "up".  If the out/up axis is negative, then we use in/down.
  -- out/in always comes before up/down.  So YoutZup, YinZup, etc.
 
-So ZoutYup means:
-	Mover		Fixture
+
+The idea is that you can look at the setup and quickly tell whether the setup
+is correct by looking at which mover axes are out and up.
+
+An example of the mapping ZoutYup:
+	Fixture		Mover
 ____________________________________
-	+Z (Z)		+Y (out)
-	+Y (Y)		+Z (up)
-	+X		-X	(implied by right hand convention)
+	+X		-X
+	+Y (out)	+Z (Z)
+	+Z (up)		+Y (Y)		
+
+From this mapping we can read off the out/up notation.  Ignore the fixture X,
+which is implied by right hand rule.  Then (mover) Z is "out" and mover Y is
+"up".
+
 
 Only certain fixturings are supported by our fixtures:
 
@@ -40,11 +54,15 @@ ________________________________________________________________
 	XinYup		Flip and +90 about Z
 
 
+
+For the calibration and test procedures we need multiple files in various
+fixturings (test plans).  These are some useful combinations:
+
 Source fixture files:
     soYoutZup_seYoutZup_source.dat	The home fixture
     soXoutZup_seYoutZup_source.dat	Rotate +90 about Z
-    soZoutYup_seYoutZup_source.dat	Flip sides so Z out
-    soZoutYup_seYoutZup_ld.dat		  same, different pattern
+    soZoutYup_seYoutZup_source.dat	Flip sides so Z is out
+    soZoutYup_seYoutZup_ld.dat		" same fixture, different pattern
     soXinYup_seYoutZup_source.dat	Flip and +90 about Z
 Source input patterns:
     source_pattern.dat
@@ -55,7 +73,7 @@ Sensor fixture files:
     soYoutZup_seYoutZup_size.dat	Home (in source list also)
     soYoutZup_seZinYup_size.dat		fixture X rotatef +90
     soYoutZup_seZinXdown_size.dat	add Y rotate +90
-Sensor input patterns:
+Sensor input patterns with (size):
     cal_smalldata_pattern.dat (_sd)
     cal_middata_pattern.dat (_md)
     cal_bigdata_pattern.dat (_ld)

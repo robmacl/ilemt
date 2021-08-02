@@ -10,7 +10,7 @@ fixtures = {'Z_rot', 'soYoutZup_seYoutZup'
             'so+Z-Y+X_se+X+Y+Z', 'soZoutYup_seYoutZup'
             'so+Y+Z+X_se+X+Y+Z', 'soXinYup_seYoutZup'
             'so+X+Y+Z_se+X-Z+Y', 'soYoutZup_seZinYup'
-            'so+X+Y+Z_se-Y-Z+X', 'soYoutZup_seZinXup'
+            'so+X+Y+Z_se-Y-Z+X', 'soYoutZup_seZinXdown'
             
             'soYoutZup_seZinXup', 'soYoutZup_seZinXdown'
             };

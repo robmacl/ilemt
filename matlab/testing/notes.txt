@@ -101,10 +101,6 @@ way as the +/- axis mapping.  For data collection plans (input file and
 fixtures), see:
     ilemt/cal_data/input_patterns/test_plans.txt 
 
-
-
-
-
 
 [29 July 21]
 
