@@ -1,6 +1,7 @@
 Todo:
  -- Literature search for calibration and cross-coupling
  -- Lube stage.  New noise?
+ -- Get the right rotation error in check_poses() when there is wrapping
  -- Realtime code: signal processing and pose solution
 
 

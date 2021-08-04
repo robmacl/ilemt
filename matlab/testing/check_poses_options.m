@@ -65,7 +65,10 @@ function [options] = check_poses_options (cal_options, key_value)
   options.source_signs = cal_options.source_signs;
   options.in_files = cal_options.in_files;
 
-  run('./local_check_options.m');
+  optfile = './local_check_options.m';
+  if (exist(optfile, 'file'))
+    run(optfile);
+  end
 
   for (key_ix = 1:2:(length(key_value) - 1))
     key = key_value{key_ix};
@@ -74,7 +77,7 @@ function [options] = check_poses_options (cal_options, key_value)
     end
   end
 
-  persistent last_calibration;
+  global last_calibration;
 
   if (isempty(options.cal_file))
     if (isempty(last_calibration))

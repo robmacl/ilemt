@@ -57,23 +57,16 @@ else
   check_options({options}, varargin);
 end
 
+% Used by save_checkpoint()
+global current_calibrate_options;
+current_calibrate_options = options;
+
 
 %%% Body of script:
 
 format short g
 disp(pwd())
 disp(options)
-
-persistent last_calibration;
-
-if (isempty(options.base_calibration))
-  if (isempty(last_calibration))
-    error('No last_calibration, must specifiy options.base_calibration');
-  end
-  fprintf(1, 'Using last_calibration "%s" as base calibration.\n', ...
-          last_calibration);
-  options.base_calibration = last_calibration;
-end
 
 % create an input state for the optimization from the calibration values and
 % source and sensor fixtures
@@ -142,4 +135,5 @@ calibration = output_correction(calibration, options);
 save_calibration(calibration, options.out_file);
 
 % last_calibration is the default base_calibration for the next calibration
+% or check_poses().
 last_calibration = options.out_file;
