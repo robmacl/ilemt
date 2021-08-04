@@ -14,6 +14,7 @@ function [state] = calibration2state (calibration)
     %dipole source moment
     state(source_x_moment_slice) = calibration.d_source_moment(:, 1)';
     state(source_y_moment_slice) = calibration.d_source_moment(:, 2)';
+    state(source_z_gain) = calibration.d_source_moment(3, 3);
     
     %dipole sensor position
     state(sensor_x_pos_slice) = calibration.d_sensor_pos(:, 1)';

@@ -1,4 +1,4 @@
-function [poses, resnorms] = pose_solve_optimize (couplings, calibration, options, hemisphere)
+function [poses, resnorms] = pose_solve_optimize (couplings, calibration, hemisphere)
 % Pose solution by optimization of the forward kinematics.
 
 % Starting pose.  We use the fixture poses to construct the sensor pose
@@ -6,7 +6,6 @@ function [poses, resnorms] = pose_solve_optimize (couplings, calibration, option
 pose0 = trans2pose(pose2trans(calibration.source_fixture) ... 
                    * pose2trans(calibration.stage_fixture) ...
                    * pose2trans(calibration.sensor_fixture));
-% ##### initial pose needs to be derived from hemisphere?  And/or Kim18?
 
 % Pose state limits:
 max_trans = 0.4;
@@ -39,7 +38,7 @@ parfor (ix = 1:size(couplings, 3))
   Cdes = real_coupling(couplings(:, :, ix));
   %1 and 2 row of bounds are respectively lower and upper bounds
   [pose_new, resnorm, ~, exitflag] = ...
-      lsqnonlin(@(pose) coupling_error(calibration, pose, Cdes, options), ...
+      lsqnonlin(@(pose) coupling_error(calibration, pose, Cdes), ...
                 pose0, bounds(1,:), bounds(2,:), option);
   % use last pose as initial value?  Doesn't work well with calibration
   % data points, which jump around.

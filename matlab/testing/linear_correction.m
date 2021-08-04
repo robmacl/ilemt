@@ -1,4 +1,4 @@
-function [transform] = linear_correction(perr, cp_options, cal_options)
+function [calibration] = linear_correction(perr, cal_options, calibration)
 % Find a linear transform that minimizes the pose error.  
 % 
 % This is actually used back in ../calibration/output_correction.m, but kind
@@ -14,9 +14,7 @@ mode = cal_options.correct_mode;
 
 % We have several correction modes, but 'DLT' is currently the best.
 if (strcmp(mode, 'none'))
-  % We skip writing a corrected calibration if there is no correction
   transform = eye(4);
-  return;
 elseif (strcmp(mode, 'skew'))
   % Despite the name, the skew terms transform(4, 1:3) are effectively zero.
   % The translation terms transform(1:3, 4) are nonzero, but don't have any
@@ -42,9 +40,4 @@ else
   error('Unknown correct_mode: %s', mode);
 end
 
-calibration = load(cp_options.cal_file);
 calibration.linear_correction = transform;
-[~, name, ext] = fileparts(cp_options.cal_file);
-ofile = [name '_' mode '_corrected' ext];
-save(ofile, '-struct', 'calibration');
-fprintf(1, 'Wrote %s\n', ofile);

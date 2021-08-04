@@ -1,19 +1,14 @@
 Todo:
  -- Literature search for calibration and cross-coupling
  -- Lube stage.  New noise?
- -- Pose solution:
-     - Initialize pose solver optimization using kim18 solution.
-     - How bad is kim18 performance with non-concentric corner dipole?  
-     - Add selection of operating hemisphere to the options struct.
- -- Get check_poses() working with multiple source fixtures
  -- Realtime code: signal processing and pose solution
 
 
 Accuracy:
+ -- Try source fixtures with rotated corner dipole.
  -- Test ascension tracker accuracy in same setup
  -- Out-of-position tests: straight line and gross rotation
  -- Test with and without coupling normalization in calibration
- -- Source fixture, calibrate with multiple fixturings
  -- Investigate whether ground truth is limiting observable accuracy:
      - Test sensor RxRy fixture accuracy
      - New sensor fixture?
@@ -72,6 +67,166 @@ Maybe later:
      - LUT interpolation might generalize better if it was done in a more
        physically relevant coordinates, eg. coupling/magnetic
 
+
+
+Notes on Rz runout test:
+
+Numbers don't seem to be reproducible to better than 20 um.  Also, there seems
+to be 10's of um of hysteresis with pushing on the pole in the Y direction,
+not so much in X.  This seemed to be improved somewhat by increasing the pole
+mount spring tension, and may be due to the tape I added for friction.
+
+Note that the indicator is pointing in stage +Y, so reading increases with -Y
+
+Measure runout at -90, 0, and +90 Rz
+
+Desire is to equalize -90 and +90 readings.  Avoid zeroing the indicator after
+you start, because things may move.  If -90 is larger (positive of) +90, then
+increase the X axis offset by 1/2 the difference.
+
+After -90, +90 are fairly equal, we want to set the Y axis offset so that the
+indicator reading is -60 um wrt. whatever X null we ended at.  Eg zero degree
+reading should be -60 um below the mean of the +90 and -90 readings.  Increase
+the Y offset by the full difference between the between the +90/-90 midpoint
+and -60.  The purpose of the 60 um offset is to roughly compensate for the
+pole flex due to indicator pressure, about 60 um.  If we could read at 180
+degrees, or if the indicator had less pressure, then we would not need this
+approximation.  The pole will also deflect at +90/-90, but this effect should
+cancel.
+ ==> with test indicator the indicator force deflection should be negligible,
+     so change -60 um to zero in the above.
+
+
+[4 Aug 21]
+
+________________________________________________________________
+'C:\Users\robma\Documents\Work\ilemt\cal_data\cal_7_29_premo_dipole'
+>> cp=check_poses();
+                     ishigh: 1
+            valid_threshold: 1e-05
+          optimize_fixtures: {}
+                     moment: 0.05
+              pose_solution: 'optimize'
+                 hemisphere: 0
+          linear_correction: 1
+                axis_limits: [6×2 double]
+                  sg_filt_N: 2
+                  sg_filt_F: 11
+    onax_ignore_Rz_coupling: 0
+             xyz_exaggerate: 10
+         rot_xyz_exaggerate: 300
+               stage_coords: 1
+                    issweep: 0
+                   cal_file: 'XYZ_hr_cal.mat'
+               sensor_signs: [1 1 1]
+               source_signs: [1 1 1]
+                   in_files: {'soYoutZup_seYoutZup_ld.dat'  'soYoutZup_seZinYup_ld.dat'  'soYoutZup_seZinXdown_ld.dat'}
+1 invalid points with residual > 1e-05.
+bad_points =
+        1367
+Position error (m): 4.55e-04 RMS, 1.69e-03 max.
+Orientation error (radians): 1.55e+00 RMS, 6.28e+00 max
+trans_err_rms =
+   0.00017687   0.00035153   0.00022884
+rot_err_rms =
+        1.092      0.10177       1.0912
+
+>> disp(cp.calibration.options)
+              source: 'dipole'
+              sensor: 'premo'
+            cal_mode: 'XYZ'
+    base_calibration: 'XYZ_hr_cal_old'
+              ishigh: 1
+           normalize: 1
+      pin_quadrupole: 1
+          concentric: 0
+        correct_mode: 'none'
+        sensor_signs: [1 1 1]
+        source_signs: [1 1 1]
+     sensor_fixtures: {'seYoutZup'  'seZinYup'  'seZinXdown'}
+     source_fixtures: {'soYoutZup'}
+       data_patterns: {'md'}
+            in_files: {'soYoutZup_seYoutZup_md.dat'  'soYoutZup_seZinYup_md.dat'  'soYoutZup_seZinXdown_md.dat'}
+            out_file: 'XYZ_hr_cal'
+            optimize: {'d_so_pos'  'd_so_mo'  'd_se_pos'  'd_se_mo'  'st_fix'  'se_fix'}
+              freeze: {'d_so_z_gain'  'd_so_y_co'  'd_se_y_co'}
+          iterations: 200
+
+>> print_calibration(cp.calibration)
+                d_source_pos                            d_source_moment                             d_sensor_pos                             d_sensor_moment          
+    _____________________________________    _____________________________________    _________________________________________    ___________________________________
+     0.046218    -0.0012051             0      0.93063    -0.0084566             0     0.00015939     8.3417e-05              0      0.15915    0.0001556            0
+    0.0023748      0.046346             0            0       0.94769             0     6.2236e-05     1.8204e-05              0            0      0.15828            0
+    -0.043866     -0.042817             0    -0.023946      0.007795             1    -0.00015015    -0.00017581              0    0.0022674    0.0020203       0.1627
+Source fix: [0.00381 0.00333 -0.00605 0.00969 0.00974 -1.59302 ]
+Stage fix: [-0.00050 0.24294 0.00575 -0.00312 0.00326 0.01568 ]
+Sensor fix: [-0.00022 0.00019 -0.00021 -2.20115 -2.23164 -0.00009 ]
+
+
+w/o linear correction:
+Position error (m): 5.62e-04 RMS, 1.81e-03 max.
+Orientation error (radians): 1.55e+00 RMS, 6.28e+00 max
+________________________________________________________________
+
+
+Most recent comparison data with non-rotated corner dipole seems to be
+[12 May 21], when I got:
+    Position error (m): 5.65e-04 RMS, 1.45e-03 max.
+    Orientation error (radians): 7.40e-03 RMS, 1.92e-02 max
+
+With non-rotated corner dipole Premo (no linear correction).  Comparing to the
+new result (also without linear correction), RMS is about the same, max rather
+worse.  So these results are about what we would expect.  The new source
+fixture setup and code changes have not made anything worse.  This is a
+regression test, and is not using any source fixture data.
+
+See [27 May 21], there was a quite significant improvement with the rotated
+corner dipole (no linear correction):
+    Position error (m): 3.51e-04 RMS, 8.40e-04 max.
+    Orientation error (radians): 5.55e-03 RMS, 1.18e-02 max
+
+So with the non-rotated dipole we can't expect the 2.28e-04 RMS, 4.98e-04 max
+that we got on [4 Jun 21].
+
+We can't expect the same accuracy with multiple source fixtures as we get with
+just one.
+
+Ideally we'd like to come up with a calibration that covers multiple fixtures
+without greatly compromising the performance in the nominal orientation.  One
+way to do this may be to calibrate source parameters with multiple fixtures,
+then do the final calibration on sensor parameters only, with single source
+fixture data.  This way the linear correction would only apply to the nominal
+orientation, which would increase its effectiveness, but we should not use it
+outside of that quadrant.
+
+Also reasonable would be to have two calibrations, one which is all-quadrant,
+and one which is optimized for the nominal orientation, and then report
+seperate accuracy stats.
+
+
+
+[3 Aug 21]
+
+Working with cal_7_29_premo_dipole, and seeing some confusing stuff.  I started
+with base calibration from cal_7_21_premo_dipole, which had nontrivial
+quadrupole, then the XYZ cal with that in place.  Then I went on to redo
+quadrupole cal, and the quadrupole largely disappeared.  But after
+so_quadrupole_all optimization using both the _source and _md data, this
+calibration is not working as well as the XYZ_hr_cal (which had the old
+quadrupole).
+
+One thought is that there is a lot more sensor fixture data than source
+fixture, and this may be swamping the calibration.
+
+
+I added d_so_z_gain to the state so that the source Z moment can vary from 1.
+I discussed this for partitioning source and sensor gain, but it seems like it
+should help with quadrupole calibration also, since it avoids an interaction
+with the sensor parameters.  Previously we needed allow the sensor gain to
+vary to compensate for the source Z quadrupole, since the Z dipole was fixed.
+
+
+
 
 [30 July 21]
 
@@ -97,8 +252,8 @@ ____________________________________
 	+X		-X	(implied by right hand convention)
 
 To me this is fairly intuitive, but it semantically works basically the same
-way as the +/- axis mapping.  For data collection plans (input file and
-fixtures), see:
+way as the +/- axis mapping.  For more discussion of the fixture convention,
+and data collection plans (input file and fixtures), see:
     ilemt/cal_data/input_patterns/test_plans.txt 
 
 
@@ -144,6 +299,8 @@ variations in a particular source/sensor configuration.
 My efforts to visualize the RPY for the source fixture XYZ axis mappings
 failed, so I went and implemented in code, and now it seems to be more or less
 working with multiple fixturings.  *#$&*^#$ Euler angles, I spit on thee.
+[2 Aug 21, I think real problem is that I didn't appreciate that the source
+and sensor fixtures are inverses of each other with respect to the notation.]
 
 I worked through up to source quadrupole with cal_7_21_premo_dipole and the
 four source fixturings.  This is with the pinned quadrupole on the non-rotated
@@ -710,6 +867,13 @@ square pole.
 
 
 [4 Jun 21]
+
+Summary:
+ -- Switch to DLT linear correction
+ -- Best accuracy so far with any sensor/source, using Premo/rotated dipole.
+    Position error (m): 2.28e-04 RMS, 4.98e-04 max.
+    Orientation error (radians): 5.99e-03 RMS, 1.12e-02 max
+
 
 So it seems that the linear correction was not particularly helping with
 trans<->rot couplings (which might partly come from eg. Rz runout), since we
@@ -1693,32 +1857,6 @@ unrealistic to use the linear correction, even if it is rather ad-hoc.
 
 
 [28 May 21]
-
-Notes on Rz runout test:
-
-Numbers don't seem to be reproducible to better than 20 um.  Also, there seems
-to be 10's of um of hysteresis with pushing on the pole in the Y direction,
-not so much in X.  This seemed to be improved somewhat by increasing the pole
-mount spring tension, and may be due to the tape I added for friction.
-
-Note that the indicator is pointing in stage +Y, so reading increases with -Y
-
-Measure runout at -90, 0, and +90 Rz
-
-Desire is to equalize -90 and +90 readings.  Avoid zeroing the indicator after
-you start, because things may move.  If -90 is larger (positive of) +90, then
-increase the X axis offset by 1/2 the difference.
-
-After -90, +90 are fairly equal, we want to set the Y axis offset so that the
-indicator reading is -60 um wrt. whatever X null we ended at.  Eg zero degree
-reading should be -60 um below the mean of the +90 and -90 readings.  Increase
-the Y offset by the full difference between the between the +90/-90 midpoint
-and -60.  The purpose of the 60 um offset is to roughly compensate for the
-pole flex due to indicator pressure, about 60 um.  If we could read at 180
-degrees, or if the indicator had less pressure, then we would not need this
-approximation.  The pole will also deflect at +90/-90, but this effect should
-cancel.
-
 
 Not sure what to make of this, but a pinv() linear correction of the measured
 pose seems pretty effective.  Most obviously, this corrects for an apparent

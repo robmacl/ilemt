@@ -1,4 +1,4 @@
-function [options] = check_poses_options (cal_options)
+function [options] = check_poses_options (cal_options, key_value)
 % Return options struct for the check_poses.  This sets defaults and then runs
 % the local_check_options.m script.
 
@@ -26,10 +26,10 @@ function [options] = check_poses_options (cal_options)
   % if the minus hemisphere.  eg. -2 is the -X hemisphere.  If 0 then set
   % automatically using the ground truth pose (which may not work if there
   % is a large change in the fixture poses).
-  options.hemisphere = +1;
+  options.hemisphere = 0;
 
   % If true, apply linear correction to measured poses.
-  options.linear_correction = false;
+  options.linear_correction = true;
   
   % axis_limits(6, 2): for each axis, the [min, max] range of data to
   % analyze (mm, degrees).  Outside this range is discarded.  
@@ -39,7 +39,7 @@ function [options] = check_poses_options (cal_options)
   % Parameters for Savitzky-Golay filter used to smooth and differentiate
   % the results: polynomial order and window width.
   options.sg_filt_N = 2;
-  options.sg_filt_F = 17;
+  options.sg_filt_F = 11;
 
   % ### ASAP specific special case
   options.onax_ignore_Rz_coupling = false;
@@ -58,7 +58,7 @@ function [options] = check_poses_options (cal_options)
   options.issweep = false;
 
   % Calibration to use
-  options.cal_file = 'XYZ_hr_cal.mat';
+  options.cal_file = [];
 
   % For read_cal_data()
   options.sensor_signs = cal_options.sensor_signs;
@@ -66,4 +66,22 @@ function [options] = check_poses_options (cal_options)
   options.in_files = cal_options.in_files;
 
   run('./local_check_options.m');
-end
+
+  for (key_ix = 1:2:(length(key_value) - 1))
+    key = key_value{key_ix};
+    if (isfield(options, key))
+      options.(key) = key_value{key_ix + 1};
+    end
+  end
+
+  persistent last_calibration;
+
+  if (isempty(options.cal_file))
+    if (isempty(last_calibration))
+      error('No last_calibration, must specifiy options.cal_file');
+    end
+    fprintf(1, 'Checking last_calibration "%s".\n', last_calibration);
+    options.cal_file = last_calibration;
+  end
+
+end % check_poses_options

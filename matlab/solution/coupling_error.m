@@ -1,5 +1,5 @@
 % Calculate the error used to run the pose optimization
-function [error] = coupling_error (calibration, pose, coupling, options)
+function [error] = coupling_error (calibration, pose, coupling)
   % pose converted into a transform matrix
   P = pose2trans(pose);
 

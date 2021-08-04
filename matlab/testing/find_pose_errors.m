@@ -1,3 +1,4 @@
+function [perr] = find_pose_errors (calibration, options)
 % Check accuracy of poses, returning information about the errors which is
 % analyzed elsewhere.  
 % 
@@ -31,12 +32,9 @@
 % coupling_norms(npoints)
 %    norm() of each coupling matrix
 %
-function [perr] = find_pose_errors (options)
-  calibration = load(options.cal_file);
   perr.so_fix = calibration.source_fixture;
   perr.st_fix = calibration.stage_fixture;
   perr.se_fix = calibration.sensor_fixture;
-  options.bias = calibration.bias;
   [motion_poses, couplings] = read_cal_data(options);
   
   if (options.hemisphere == 0)

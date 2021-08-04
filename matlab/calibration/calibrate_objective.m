@@ -1,4 +1,4 @@
-function [residue, pred_coupling, bias] = calibrate_objective ...
+function [residue, pred_coupling] = calibrate_objective ...
       (state, motion_poses, couplings, options)
 % The guts of the objective function for the calibration optimization.  
 % state:
@@ -27,9 +27,6 @@ function [residue, pred_coupling, bias] = calibrate_objective ...
 % pred_coupling: 
 %     The coupling matrices predicted from the calibration state and the
 %     forward kinematics.
-% 
-% bias:
-%     Bias estimate for coupling measurements (complex 3x3)
 
   state_defs;
   
@@ -70,7 +67,7 @@ function [residue, pred_coupling, bias] = calibrate_objective ...
     % motion is from manually positioned mechanical "fixtures".  This is
     % part of the known motion, and must not be confused with our unknown
     % "fixture transforms".  For clarity, I am using "motion" to describe
-    % the known motion, however it is mechanically created.
+    % the known motion, regardless of how it is mechanically created.
     %
     % Motion of the source via manual rotation
     so_motion = vector2tr(motion_poses(ix, 1:6)); 
@@ -91,9 +88,8 @@ function [residue, pred_coupling, bias] = calibrate_objective ...
     % across the input data.
     P = so_fixture * so_motion * st_fixture * se_motion * se_fixture;
     
-    % calculation of predicted coupling matrix with the forward kinematic approach
-    calibration = state2calibration(state);
-    calibration.pin_quadrupole = options.pin_quadrupole;
+    % Calculation of coupling matrix predicted by state and pose.
+    calibration = state2calibration(state, options);
     pc_cell{ix} = forward_kinematics(P, calibration);
   end
   
@@ -101,41 +97,10 @@ function [residue, pred_coupling, bias] = calibrate_objective ...
     pred_coupling(:,:,ix) = pc_cell{ix};
   end
 
-  if (options.debias)
-    % Find the nominal phase of each coupling.  Ideally the complex coupling
-    % has been corrected for phase in ilemt_ui so that the magnitude is
-    % entirely real, but this is imperfect.  In order to extract the small
-    % bias as complex we have to project the predicted coupling back to the
-    % expected phase.  This is done by multiplying the predicted real
-    % coupling by the phasor, giving it a rotation in the complex plane.
-    %  
-    % How do we find this phasor?  We want the real part positive (right half
-    % plane) so that we don't cause any extra sign flips.  So each coupling
-    % is sign flipped (180 degree rotation) if it has a negative real part.
-    % Then we take a weighted mean of each 3x3 coupling position and scale it
-    % into a unit vector.
-    % ### this is a constant function of the couplings, so does not change
-    % during optimization, and does not need to be in here.
-    csum = sum(couplings .* sign(real(couplings)),3);
-    nom_phasor = csum ./ abs(csum);
-    p_c_complex = repmat(nom_phasor, 1, 1, npoints) .* pred_coupling;
-    
-    % Estimate bias in the complex couplings (a fixed additive offset) and
-    % subtract this.  This has to be done in the objective function because our
-    % bias estimate is based on the residue.  The bias becomes part of the
-    % calibration.  We operate on the complex coupling because the bias may not
-    % be in-phase with the desired signal.  The debiased coupling is then
-    % converted to real for computing the residue.
-    bias = mean(couplings - p_c_complex, 3);
-    couplings_debias = real_coupling(couplings - repmat(bias, 1, 1, npoints));
-  else
-    couplings_debias = real_coupling(couplings);
-    bias = zeros(3);
-  end
-
+  r_couplings = real_coupling(couplings);
   for (ix = 1:npoints)
-    %mismatch between measured coupling and predicted coupling
-    coupling1 = couplings_debias(:, :, ix);
+    % Mismatch between measured coupling and predicted coupling
+    coupling1 = r_couplings(:, :, ix);
     if (options.normalize)
       da_norm = norm(coupling1);
     else

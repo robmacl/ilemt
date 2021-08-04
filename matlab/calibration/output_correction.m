@@ -1,4 +1,4 @@
-function [] = output_correction (cal_options)
+function [calibration] = output_correction (calibration, cal_options)
 % Apply additional correction to calibration based on the pose solution.
 % Currently this is based on linear transforms.  'cal_options' is the
 % calibration options.
@@ -12,13 +12,13 @@ function [] = output_correction (cal_options)
   % anything that might have come from eg. local_check_options.m, because the
   % check data is not always the same as the calibration data.  Otherwise we
   % could get weird results if we have been eg. checking an axis sweep.
-  cp_options = check_poses_options(cal_options);
-  
+  cp_options = check_poses_options(cal_options, {});
+
   % Don't do any correction on the pose, since that is what we are trying
   % to compute.
   cp_options.linear_correction = false;
 
-  % Use whatever input files to whatever we used for calibration.
+  % Use whatever input files we used for calibration.
   cp_options.in_files = cal_options.in_files;
 
   % Correction input is the current output
@@ -28,6 +28,6 @@ function [] = output_correction (cal_options)
   % this exact data.
   cp_options.do_optimize = false;
   
-  perr = find_pose_errors(cp_options);
-  linear_correction(perr, cp_options, cal_options);
+  perr = find_pose_errors(calibration, cp_options);
+  calibration = linear_correction(perr, cal_options, calibration);
 end

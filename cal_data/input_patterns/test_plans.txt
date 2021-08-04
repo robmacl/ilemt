@@ -59,21 +59,23 @@ For the calibration and test procedures we need multiple files in various
 fixturings (test plans).  These are some useful combinations:
 
 Source fixture files:
-    soYoutZup_seYoutZup_source.dat	The home fixture
-    soXoutZup_seYoutZup_source.dat	Rotate +90 about Z
-    soZoutYup_seYoutZup_source.dat	Flip sides so Z is out
-    soZoutYup_seYoutZup_ld.dat		" same fixture, different pattern
-    soXinYup_seYoutZup_source.dat	Flip and +90 about Z
+soYoutZup_seYoutZup_source.dat	The home fixture
+soXoutZup_seYoutZup_source.dat	Rotate +90 about Z
+soZoutYup_seYoutZup_source.dat	Flip sides so Z is out
+soZoutYup_seYoutZup_ld.dat	" same fixture, different pattern
+soXinYup_seYoutZup_source.dat	Flip and +90 about Z
+
 Source input patterns:
-    source_pattern.dat
-    cal_bigdata_pattern.dat (_ld)
+source_pattern.dat
+cal_bigdata_pattern.dat (_ld)
 
 
 Sensor fixture files:
-    soYoutZup_seYoutZup_size.dat	Home (in source list also)
-    soYoutZup_seZinYup_size.dat		fixture X rotatef +90
-    soYoutZup_seZinXdown_size.dat	add Y rotate +90
+soYoutZup_seYoutZup_size.dat	Home (in source list also)
+soYoutZup_seZinYup_size.dat	fixture X rotate +90
+soYoutZup_seZinXdown_size.dat	add Y rotate +90
+
 Sensor input patterns with (size):
-    cal_smalldata_pattern.dat (_sd)
-    cal_middata_pattern.dat (_md)
-    cal_bigdata_pattern.dat (_ld)
+cal_smalldata_pattern.dat (_sd)
+cal_middata_pattern.dat (_md)
+cal_bigdata_pattern.dat (_ld)
