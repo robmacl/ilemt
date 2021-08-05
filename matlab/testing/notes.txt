@@ -98,6 +98,16 @@ cancel.
      so change -60 um to zero in the above.
 
 
+[5 Aug 21]
+
+Getting a bit overwhelmed with all of the calibration variants I am testing,
+what their parameters are, and which output files they correspond to.  So I've
+created a test_script.m (so far only in cal_7_30_premo_cmu) which will
+generate all of the calibrations from a base calibration, and run tests.  This
+will enable reproducible results.
+
+
+
 [4 Aug 21]
 
 ________________________________________________________________
@@ -205,6 +215,19 @@ and one which is optimized for the nominal orientation, and then report
 seperate accuracy stats.
 
 
+Pinned quadrupole with cal_7_30_premo_cmu gave a fairly "pretty" quadrupole,
+with roughly equal negative diagonal.  check_poses() accuracy was negligibly
+better than dipole-only (compared with linear correction, and without using
+any source fixtures in the test).  So adding the source fixture/quadrupole
+calibration did not hurt home hemisphere performance.  We would expect the
+benefit of multi source fixture calibration the appear only when those
+fixtures are tested.
+
+I tried non-pinned quadrupole with cal_7_30_premo_cmu, using just the source
+fixtures.  The source fixture Z offset was running away.  Not optimizing the
+source fixture stopped the runaway, but the result is still barf.
+
+
 
 [3 Aug 21]
 
@@ -225,8 +248,6 @@ I discussed this for partitioning source and sensor gain, but it seems like it
 should help with quadrupole calibration also, since it avoids an interaction
 with the sensor parameters.  Previously we needed allow the sensor gain to
 vary to compensate for the source Z quadrupole, since the Z dipole was fixed.
-
-
 
 
 [30 July 21]

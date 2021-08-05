@@ -11,6 +11,6 @@ function perr_report_overall (perr)
   fprintf(1, 'Orientation error (radians): %.2e RMS, %.2e max\n', ...
 	  sqrt(mean(rot_err_mag.^2)), max(abs(rot_err_mag)));
 
-  % trans_err_rms = sqrt(mean(perr.errors(:, 1:3).^2))
+  %trans_err_rms = sqrt(mean(perr.errors(:, 1:3).^2))
   %rot_err_rms = sqrt(mean(perr.errors(:, 4:6).^2))
 end

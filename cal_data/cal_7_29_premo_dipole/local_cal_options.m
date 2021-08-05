@@ -1,7 +1,5 @@
-%{
 options.source = 'dipole';
 options.sensor = 'premo';
-%}
 
 %{
 options.cal_mode = 'so_fixture';

@@ -1,4 +1,6 @@
-function [] = error_scatter (perr)
+function [] = error_scatter (perr, options)
+% Scatter plot of error vs. distance or coupling magnitude
+
   % Vector magnitude of translation and rotation error at each point.
   trans_err_mag = sqrt(sum(perr.errors(:, 1:3).^2, 2));
   rot_err_mag = sqrt(sum(perr.errors(:, 4:6).^2, 2));
@@ -12,7 +14,9 @@ function [] = error_scatter (perr)
   else
     error('bad!');
   end
-  
+
+  %figure(options.figure_base + 6);
+  figure();
   subplot(2, 1, 1);
   scatter(xvals, trans_err_mag);
   ylabel('Error (m RMS)');
@@ -20,3 +24,4 @@ function [] = error_scatter (perr)
   scatter(xvals, rot_err_mag);
   ylabel('Error (rad RMS)');
   xlabel(x_type);
+  set_fig_name(options);

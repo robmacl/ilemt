@@ -2,6 +2,22 @@ function [options] = check_poses_options (cal_options, key_value)
 % Return options struct for the check_poses.  This sets defaults and then runs
 % the local_check_options.m script.
 
+  % Calibration to use
+  options.cal_file = [];
+
+  % Text tag for this analysis variant, placed in figure header.
+  options.variant = 'default';
+
+  % Input test data
+  options.in_files = cal_options.in_files;
+
+  % If true, apply linear correction to measured poses.
+  options.linear_correction = true;
+
+  % Method for pose calculation.  Values: 'optimize', 'kim18'.  See
+  % pose_calculation().
+  options.pose_solution = 'optimize';
+
   % ishigh: if true, check high rate, otherwise low rate.
   options.ishigh = cal_options.ishigh;
 
@@ -17,19 +33,11 @@ function [options] = check_poses_options (cal_options, key_value)
   % (m).
   options.moment = 0.05;
 
-  % Method for pose calculation.  Values: 'optimize', 'kim18'.  See
-  % pose_calculation().
-  options.pose_solution = 'optimize';
-
-  % 
   % What hemisphere the pose is constrained to: 1, 2, 3 for XYZ, negative
   % if the minus hemisphere.  eg. -2 is the -X hemisphere.  If 0 then set
   % automatically using the ground truth pose (which may not work if there
   % is a large change in the fixture poses).
   options.hemisphere = 0;
-
-  % If true, apply linear correction to measured poses.
-  options.linear_correction = true;
   
   % axis_limits(6, 2): for each axis, the [min, max] range of data to
   % analyze (mm, degrees).  Outside this range is discarded.  
@@ -41,9 +49,6 @@ function [options] = check_poses_options (cal_options, key_value)
   options.sg_filt_N = 2;
   options.sg_filt_F = 11;
 
-  % ### ASAP specific special case
-  options.onax_ignore_Rz_coupling = false;
-
   % xyz_exaggerate: exaggeration to use in 3D trans->trans error views.
   % rot_xyz_exaggerate: for rot->trans error
   options.xyz_exaggerate = 10; % m/m
@@ -53,17 +58,24 @@ function [options] = check_poses_options (cal_options, key_value)
   % picture when there is gross rotation of the source.
   options.stage_coords = true;
   
-  % If true, this is axis sweep data, otherwise more general data, such as
-  % calibration pattern.
-  options.issweep = false;
+  % What reports and plots to generate:
+  % overall: text report of RMS and max error
+  % correlation: test report of error correlations
+  % workspace: 3D plot of error vectors.
+  % sweep: axis sweep linearity tests, plots and excel.
+  options.reports = {'overall', 'workspace'};
 
-  % Calibration to use
-  options.cal_file = [];
+  % For sweep report, detailed cross coupling response from these axes.
+  options.axis_response = [6];
+
+  % Add this to figure number so we can have multiple check_poses() reports open
+  % at once.  Suggest increment of 100.
+  % ### disabled
+  options.figure_base = 0;
 
   % For read_cal_data()
   options.sensor_signs = cal_options.sensor_signs;
   options.source_signs = cal_options.source_signs;
-  options.in_files = cal_options.in_files;
 
   optfile = './local_check_options.m';
   if (exist(optfile, 'file'))

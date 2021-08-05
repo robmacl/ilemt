@@ -83,13 +83,6 @@ function [res] = perr_on_axis (perr, options)
       diff_ax = 1:3;
     end
     same_ax(same_ax == ax) = [];
-
-    % Because of the shorter moment, Rz measurment is inferior, and is also
-    % largely irrelevant to Micron, so it makes sense to split this out.
-    if (options.onax_ignore_Rz_coupling)
-      same_ax(same_ax == 6) = [];
-      diff_ax(diff_ax == 6) = [];
-    end
     Rz_ax = [6];
     
     res(ax).on_ax_ix = on_ax_ix;

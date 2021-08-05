@@ -170,13 +170,18 @@ elseif (strcmp(options.cal_mode, 'Z_only'))
   options.freeze = {options.freeze{:} 'z_se_fix'};
 
 elseif (strcmp(options.cal_mode, 'XYZ'))
-  % XYZ cal based on Z only
+  % Dipole calibration with all sensor fixtures, but single source fixture.
   options.source_fixtures = options.source_fixtures(1);
+
+elseif (strcmp(options.cal_mode, 'XYZ_all'))
+  % Dipole calibration with all source and sensor fixtures.n
+  options.optimize = cat(2, {'so_fix'}, options.optimize);
+  options.data_patterns = {'md' 'source'};
 
 elseif (strcmp(options.cal_mode, 'so_quadrupole'))
   % Preliminary optimization of source quadrupole parameters, without changing
   % sensor paramters.
-  options.test_patterns = {'source'};
+  options.data_patterns = {'source'};
   options.optimize = {'q_so_mo' 'so_fix' 'st_fix' 'd_so_pos' 'd_so_mo'};
   options.freeze = {'d_se_z_gain' 'd_so_y_co' 'd_se_y_co'};
   options.correct_mode = 'none';
@@ -186,10 +191,18 @@ elseif (strcmp(options.cal_mode, 'so_quadrupole'))
   end
   options.data_patterns = {'source'};
 
-elseif (strcmp(options.cal_mode, 'so_quadrupole_all')) 
+elseif (strcmp(options.cal_mode, 'so_quadrupole_reopt')) 
   % Reoptimize sensor parameters in source quadrupole optimization, while
-  % holding source fixed.
+  % holding source fixed, using single source fixture.
   options.optimize = {'d_se_mo' 'd_se_pos' 'st_fix' 'se_fix'};
+
+elseif (strcmp(options.cal_mode, 'so_quadrupole_all')) 
+  % With source quadrupole, optimize source and sensor parameters all together.
+  options.data_patterns = {'source', 'md'};
+  options.optimize = cat(2, {'so_fix' 'q_so_mo'}, options.optimize);
+  if (~options.pin_quadrupole)
+    options.optimize = cat(2, {'q_so_pos'}, options.optimize);
+  end
 
 elseif (strcmp(options.cal_mode, 'se_quadrupole'))
   % Sensor quadrupole, analogous to source quadrupole.
@@ -271,15 +284,4 @@ end
 % out_file: calibration output .mat file name
 if (isempty(options.out_file))
   options.out_file = [options.cal_mode '_hr_cal'];
-end
-
-global last_calibration;
-
-if (isempty(options.base_calibration))
-  if (isempty(last_calibration))
-    error('No last_calibration, must specifiy options.base_calibration');
-  end
-  fprintf(1, 'Using last_calibration "%s" as base calibration.\n', ...
-          last_calibration);
-  options.base_calibration = last_calibration;
 end

@@ -14,11 +14,14 @@ function [perr] = find_pose_errors (calibration, options)
 % Results: 
 % perr struct, with fields:
 % 
+% measured_source(npoints, 6)
 % measured(npoints, 6)
 % desired(npoints, 6)
 % errors(npoints, 6):
 %    Pose vectors for the measured and desired poses, and the errors (the
-%    difference).
+%    difference).  measured_source is the normal pose measurement (sensor in
+%    stage coordinates).  If options.stage_coords is true (default), then
+%    measured, desired, and errors are in stage coordinates.
 % 
 % so_fix, st_fix, se_fix:
 %    The source, stage, and sensor fixture transforms, possibly optimized.
@@ -50,15 +53,16 @@ function [perr] = find_pose_errors (calibration, options)
   else
     hemisphere = [];
   end
-  [measured, valid, resnorms] = ...
+  [so_measured, valid, resnorms] = ...
       pose_solution(couplings, calibration, options, hemisphere);
   %{
   figure(10)
   probplot(resnorms);
   title('Pose solution residual');
   %}
-  
-  perr.measured = measured(valid, :);
+
+  perr.solution_residuals = resnorms;
+  perr.measured_source = so_measured(valid, :);
   perr.motion_poses = motion_poses(valid, :);
   perr.couplings = couplings(:, :, valid);
   for (ix = 1:size(perr.couplings, 3))
@@ -113,8 +117,10 @@ function [perr] = find_pose_errors (calibration, options)
     fprintf(1, 'Optimizing fixture poses:\n');
     disp(options.optimize_fixtures);
 
+    figure(1);
     [state,resnorm,residual,exitflag,output] = ...
 	lsqnonlin(ofun, state, -bounds, bounds, opt_options);
+    close();
 
     % No semicolon, delibrate display of results
     source_fix_delta = state(1:6)
@@ -124,26 +130,5 @@ function [perr] = find_pose_errors (calibration, options)
     state = zeros(1, 18);
   end
 
-  [X_err, nperr] = ofun(state);
-  perr = nperr;
-  %{
-  % ### FIXME for added source motion.  What do we even want?
-  % This is only used for perr_axis_response() in axis sweeps.
-  sof = inv(pose2trans(perr.so_fix));
-  stf = inv(pose2trans(perr.st_fix));
-  sef = inv(pose2trans(perr.se_fix));
-  s_measured = zeros(size(perr.measured));
-  for (ix = 1:size(perr.stage_pos, 1))
-    measured_t = pose2trans(perr.measured(ix, :));
-    s_measured(ix, :) = tr2vector(sof * st_pose * sef);
-  end
-  perr.stage_pos_measured = s_measured;
-  % ### The way we are computing perr.stage_pos_errors via subtraction does not
-  % work if there are large rotations.  Here, and with perr.errors, it would be
-  % more correct to compute the pose errors using pose multiplication rather
-  % than subtraction, see perr_workspace_vol.  eg. inv(desired) * measured.
-  % The difference of the pose vectors AFAIK can't be converted to a
-  % transform, though subtracting sort of works when the rotations don't wrap.
-  perr.stage_pos_errors = perr.stage_pos_measured - perr.stage_pos;
-  %}
+  [~, perr] = ofun(state);
 end

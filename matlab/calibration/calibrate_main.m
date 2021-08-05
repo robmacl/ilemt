@@ -50,6 +50,8 @@ function [calibration, options] = calibrate_main (cal_mode, varargin)
 %     sensor fixture motions to solve for the sensor fixture.
 % 
 
+fprintf(1, '\nCalibrating from: %s\n', pwd());
+
 if (isstruct(cal_mode) && isfield(cal_mode, 'cal_mode'))
   options = cal_mode;
 else
@@ -61,11 +63,21 @@ end
 global current_calibrate_options;
 current_calibrate_options = options;
 
+global last_calibration;
+
+if (isempty(options.base_calibration))
+  if (isempty(last_calibration))
+    error('No last_calibration, must specifiy options.base_calibration');
+  end
+  fprintf(1, 'Using last_calibration "%s" as base calibration.\n', ...
+          last_calibration);
+  options.base_calibration = last_calibration;
+end
+
 
 %%% Body of script:
 
 format short g
-disp(pwd())
 disp(options)
 
 % create an input state for the optimization from the calibration values and
@@ -125,7 +137,10 @@ ofun = @(state)calibrate_objective(state, motion_poses, measured_couplings, opti
 % calibration that we seek is the one that generates the measured couplings
 % from the known poses.
 [state_new, cal_residue] = lsqnonlin(ofun,state0,bounds(1,:),bounds(2,:), opt_option);
-cal_residue % deliberate display
+
+fprintf(1, 'RMS/point residue %g, sum square %g.\n', ...
+        sqrt(cal_residue/size(motion_poses, 1)), cal_residue);
+
 
 calibration = state2calibration(state_new, options);
 
@@ -136,4 +151,5 @@ save_calibration(calibration, options.out_file);
 
 % last_calibration is the default base_calibration for the next calibration
 % or check_poses().
+global last_calibration;
 last_calibration = options.out_file;

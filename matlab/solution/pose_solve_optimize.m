@@ -1,12 +1,6 @@
 function [poses, resnorms] = pose_solve_optimize (couplings, calibration, hemisphere)
 % Pose solution by optimization of the forward kinematics.
 
-% Starting pose.  We use the fixture poses to construct the sensor pose
-% at the stage null pose.
-pose0 = trans2pose(pose2trans(calibration.source_fixture) ... 
-                   * pose2trans(calibration.stage_fixture) ...
-                   * pose2trans(calibration.sensor_fixture));
-
 % Pose state limits:
 max_trans = 0.4;
 
@@ -16,6 +10,11 @@ clear results;
 option = optimset('Display', 'off', 'TolFun', 1e-09, ...
                   'MaxIter', 1000, 'MaxFunEvals', 60000);
 parfor (ix = 1:size(couplings, 3))
+  % Starting pose.  We use the fixture poses to construct the sensor pose
+  % at the stage null pose.
+  pose0 = trans2pose(pose2trans(calibration.source_fixture) ... 
+                     * pose2trans(calibration.stage_fixture) ...
+                     * pose2trans(calibration.sensor_fixture));
 
   % Default translation bounds
   bounds_tr = repmat([-max_trans; max_trans], 1, 3); 
@@ -28,6 +27,9 @@ parfor (ix = 1:size(couplings, 3))
     hemi = -hemi;
   end
   bounds_tr(:, hemi) = bound1;
+  
+  ### flip initial pose into the correct hemisphere, or something.  Use kim18?
+
 
   % rotation bounds.  We allow the rotation to go outside of the nominal
   % +/- pi range because the optimizer may want to converge to a

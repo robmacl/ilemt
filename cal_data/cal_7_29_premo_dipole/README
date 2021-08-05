@@ -1,0 +1,11 @@
+Source: CMU corner dipole, non-rotated
+Sensor: Premo
+
+Data with source and sensor fixturings, with sensor fixture setup on the
+adapted source slider, rather than the cal_7_21_premo_dipole setup on blocks
+of wood.
+
+And also redid stage Rz axis alignment, this time using the test indicator,
+which has much lower force, so minimal pole deflection.  The Rz was out ~300
+um.  Still possible that I disturbed Rz alignment by messing around with the
+sensor during the data collection.

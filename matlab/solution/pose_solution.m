@@ -43,7 +43,7 @@ function [poses, valid, resnorms] = pose_solution ...
   if (sum(~valid) > 0)
     fprintf(1, '%d invalid points with residual > %g.\n', ...
             sum(~valid), options.valid_threshold);
-    bad_points = find(~valid)
+    %bad_points = find(~valid)
   end
 
   if (options.linear_correction && isfield(calibration, 'linear_correction'))
