@@ -16,7 +16,11 @@ function [options] = check_poses_options (cal_options, key_value)
 
   % Method for pose calculation.  Values: 'optimize', 'kim18'.  See
   % pose_calculation().
-  options.pose_solution = 'optimize';
+  if (cal_options.concentric)
+    options.pose_solution = 'kim18';
+  else
+    options.pose_solution = 'optimize';
+  end
 
   % ishigh: if true, check high rate, otherwise low rate.
   options.ishigh = cal_options.ishigh;
@@ -67,11 +71,6 @@ function [options] = check_poses_options (cal_options, key_value)
 
   % For sweep report, detailed cross coupling response from these axes.
   options.axis_response = [6];
-
-  % Add this to figure number so we can have multiple check_poses() reports open
-  % at once.  Suggest increment of 100.
-  % ### disabled
-  options.figure_base = 0;
 
   % For read_cal_data()
   options.sensor_signs = cal_options.sensor_signs;

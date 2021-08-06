@@ -113,16 +113,25 @@ state0 = calibration2state(base_cal);
 % state_bounds() for details.
 bounds = state_bounds(state0, options.optimize, options.freeze);
 
-% Set the options for the optimization, including the "print_state" function
-% that displays state after each iteration.  
+% Set the options for the optimization.  
 opt_option = optimoptions(...
     @lsqnonlin, ...
-    'Display', 'iter-detailed', ...
-    'PlotFcns', @optimplotresnorm, ...
-    'OutputFcn', @(state, ~, ~) print_state(state, options), ...
     'MaxIterations', options.iterations);
 
+if (options.verbose >= 1)
+  opt_option = optimoptions(opt_option, ...
+      'Display', 'iter-detailed');
+end
+
+% optional display of optimization progress.
+if (options.verbose >= 2)
+  opt_option = optimoptions(opt_option, ...
+      'PlotFcns', @optimplotresnorm, ...
+      'OutputFcn', @(state, ~, ~) print_state(state, options));
+end
+
 %{
+% really tight stopping critera that may not be useful
     'MaxFunctionEvaluations', 60000
     'FunctionTolerance', 1e-08, 'OptimalityTolerance', 1e-07
 %}
@@ -138,14 +147,15 @@ ofun = @(state)calibrate_objective(state, motion_poses, measured_couplings, opti
 % from the known poses.
 [state_new, cal_residue] = lsqnonlin(ofun,state0,bounds(1,:),bounds(2,:), opt_option);
 
-fprintf(1, 'RMS/point residue %g, sum square %g.\n', ...
-        sqrt(cal_residue/size(motion_poses, 1)), cal_residue);
-
-
 calibration = state2calibration(state_new, options);
 
 % Apply output correction minimizing error in pose space (linear correction).
 calibration = output_correction(calibration, options);
+
+fprintf(1, '\nCalibration result:\n');
+print_calibration(calibration)
+fprintf(1, 'RMS/point residue %g, sum square %g.\n', ...
+        sqrt(cal_residue/size(motion_poses, 1)), cal_residue);
 
 save_calibration(calibration, options.out_file);
 

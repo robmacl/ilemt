@@ -55,7 +55,7 @@ function [state_err, perr] = find_pose_errors_objective(state, perr_in, options)
       st_desired(ix, :) = trans2pose(st_desired1);
       st_errors(ix, :) = trans2pose(st_error1);
 if (norm(st_errors(ix, :)) > 0.1)
-  keyboard;
+  %keyboard;
 end
     end
     perr.measured = st_measured;

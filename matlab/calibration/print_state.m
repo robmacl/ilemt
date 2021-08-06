@@ -5,8 +5,11 @@ function [do_stop] = print_state(state, options)
 
   global state_checkpoint;
   state_checkpoint = state;
-  print_calibration(state2calibration(state, options));
-  fprintf(1, '\n');
+  
+  if (options.verbose)
+    print_calibration(state2calibration(state, options));
+    fprintf(1, '\n');
+  end
 
   do_stop = false;
 end

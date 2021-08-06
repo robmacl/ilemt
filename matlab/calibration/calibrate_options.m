@@ -141,6 +141,9 @@ options.freeze = {'d_so_z_gain' 'd_so_y_co' 'd_se_y_co'};
 % progressing when it stops.
 options.iterations = 200;
 
+% Controls display verbosity: 0, 1, 2
+options.verbose = 2;
+
 % Get local settings
 run('./local_cal_options.m');
 
@@ -234,22 +237,27 @@ elseif (strcmp(options.cal_mode, 'se_fixture'))
   options.correct_mode = 'none';
 end
 
-if (options.concentric)
-  options.optimize = setdiff(options.optimize, {'d_so_pos', 'd_se_pos'});
-end
-
 
 %%% overrides:
 
-% You can override the cal_mode derived settings by using the key value arguments.
-% You can also use the 'default' cal_mode, which suppresses the above cal_mode
-% specific option setting, and then set everything in local_cal_options.
+% You can override the cal_mode derived settings by using the key value
+% arguments.  You can also use the 'default' cal_mode, which suppresses the
+% above cal_mode specific option setting, and then set everything in
+% local_cal_options.
 
 for (key_ix = 1:2:(length(key_value) - 1))
   key = key_value{key_ix};
   if (isfield(options, key))
     options.(key) = key_value{key_ix + 1};
   end
+end
+
+
+% This has to be after the keyword overrides in order to be able to specify
+% 'concentric' there.  This should be harmless because it makes no sense to
+% optimize the position with concentric solution.
+if (options.concentric)
+  options.optimize = setdiff(options.optimize, {'d_so_pos', 'd_se_pos'});
 end
 
 
@@ -283,5 +291,9 @@ end
 
 % out_file: calibration output .mat file name
 if (isempty(options.out_file))
-  options.out_file = [options.cal_mode '_hr_cal'];
+  wot = options.cal_mode;
+  if (options.concentric)
+    wot = [wot '_concentric'];
+  end
+  options.out_file = [wot '_hr_cal'];
 end

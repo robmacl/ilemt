@@ -1,9 +1,11 @@
 Todo:
+ -- Better initial value for optimize pose solution
+ -- 180 degree pose rotation error with soZoutYup?
+ -- Linear correction is not working with kim18 concentric?
+ -- Don't forget to worry about trans2pose tr2angvec
  -- Literature search for calibration and cross-coupling
  -- Lube stage.  New noise?
- -- Get the right rotation error in check_poses() when there is wrapping
  -- Realtime code: signal processing and pose solution
-
 
 Accuracy:
  -- Try source fixtures with rotated corner dipole.
@@ -96,6 +98,47 @@ approximation.  The pole will also deflect at +90/-90, but this effect should
 cancel.
  ==> with test indicator the indicator force deflection should be negligible,
      so change -60 um to zero in the above.
+
+
+[6 Aug 21]
+
+[Note that this below is with cal_7_30_premo_cmu]
+
+Having some sort of problem with the soZoutYup source fixture testing, where
+the position is good but the orientation is off 180 degrees or so, and this
+does *not* seem to be due to simple angle wrapping.  FWIW, since we are not
+including the source fixture motion in the initial state we are currently
+getting really terrible initial state in this case, only just barely in the
+correct hemisphere (after I added adding a hack to flip initial state when the
+hemisphere is wrong).
+
+Does this have to do with hemisphere ambiguity?  Is the forward kinematics
+desired pose wrong?  Note that if there is magnetic ambiguity, then the
+calibration will be fine if we have the wrong "desired" pose because we are
+still generating the correct coupling.  Or *approximately* correct, in that
+with a non-concentric source there is AFAICT not a perfect mirror symmetry,
+although there is presumably still some pair of ambiguous poses.
+
+This doesn't seem to be simple magnetic ambiguity, though, because that flips
+the translation, but does not affect the orientation.
+
+Maybe we still do not have the right source motion/source fixture transform?
+
+
+I rolled back to the version of trans2pose which uses tr2angvec() because the
+logm version was not working in some cases.  I don't know if whatever problem
+I thought I was having is going to reappear.
+
+I moved the 'stage_coords' feature into find_pose_errors(), and it *seems* to
+be working there.  The problem with the soZoutYup fixture is still there
+without the stage_coords transform.  The rotation difference does not seem to
+be a wrapping thing, the axis of rotation is in a very different direction,
+not sign flipped.
+
+
+kim18 concentric solution is working much worse than it did on [17 Jun 21],
+and the linear correction does not work at all.  Presumably something to do
+with the source fixture or options modifications.
 
 
 [5 Aug 21]
