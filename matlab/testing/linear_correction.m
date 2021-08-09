@@ -1,9 +1,12 @@
-function [calibration] = linear_correction(perr, cal_options, calibration)
+function [calibration] = linear_correction(perr, cp_options, cal_options, calibration)
 % Find a linear transform that minimizes the pose error.  
 % 
 % This is actually used back in ../calibration/output_correction.m, but kind
 % of makes sense being here due to knowledge about the perr struct.
 mode = cal_options.correct_mode;
+
+% Must be in source coordinates
+assert(~cp_options.stage_coords);
 
 % The linear correction is a matrix which is multiplied by the (column vector)
 % pose to improve the accuracy.  If 6x6, then it is applied to the entire
@@ -32,7 +35,7 @@ elseif (strcmp(mode, 'DLT'))
   % think they apply for us because the calibration data is reasonably
   % centered, and the scale is almost exactly 1.
   % See utils/dlt.m
-  transform = dlt(pad_ones(perr.measured(:, 1:3))',pad_ones(perr.desired(:, 1:3))');
+  transform = dlt(pad_ones(perr.measured(:, 1:3))', pad_ones(perr.desired(:, 1:3))');
 elseif (strcmp(mode, 'pose'))
   pd = pinv(perr.measured);
   transform = (pd * perr.desired)';

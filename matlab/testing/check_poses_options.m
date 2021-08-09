@@ -13,7 +13,7 @@ function [options] = check_poses_options (cal_options, key_value)
 
   % If true, apply linear correction to measured poses.
   options.linear_correction = true;
-
+  
   % Method for pose calculation.  Values: 'optimize', 'kim18'.  See
   % pose_calculation().
   if (cal_options.concentric)
@@ -21,6 +21,10 @@ function [options] = check_poses_options (cal_options, key_value)
   else
     options.pose_solution = 'optimize';
   end
+  
+  % If non-empty, this is a calibration file which can be used with Kim18
+  % to initialize the 'optimize' pose solution.
+  options.concentric_cal_file = [];
 
   % ishigh: if true, check high rate, otherwise low rate.
   options.ishigh = cal_options.ishigh;

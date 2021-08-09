@@ -1,7 +1,7 @@
 Todo:
  -- Better initial value for optimize pose solution
- -- 180 degree pose rotation error with soZoutYup?
- -- Linear correction is not working with kim18 concentric?
+ -- Do we want to bring back tighter termination conditions on calibration
+    optimization? 
  -- Don't forget to worry about trans2pose tr2angvec
  -- Literature search for calibration and cross-coupling
  -- Lube stage.  New noise?
@@ -98,6 +98,39 @@ approximation.  The pole will also deflect at +90/-90, but this effect should
 cancel.
  ==> with test indicator the indicator force deflection should be negligible,
      so change -60 um to zero in the above.
+
+
+[9 Aug 21]
+
+re. pose output rotation problem, with cal_7_30_premo_cmu test_script.m, every
+run that includes soZoutYup has goofy huge error, and all of the others fine.
+Or specifically, the 'ld'.  The 'source' seems sane.
+ ==> Ok, pretty sure the 'ld' was taken in the wrong fixture.  The home pose
+     coupling is not even vaguely the same between 'ld' and 'source'.  I guess
+     it could be the wrong sensor fixture, not necessarily source.
+
+
+ ==> Linear correction is now hurting accuracy with non-concentric XYZ_hr_cal
+     also.
+
+Linear correction was broken by the change to check_poses 'stage_coords'.
+Correction can't be caculated in the stage coordinates.  I got this to work by
+not using 'stage_coords'.  Still not seeing all that much benefit on this
+data, but at least isn't hurting.  The non stage_coords path doesn't deal with
+rotation error wrapping, but that won't matter for the linear correction,
+which is only on translation.
+
+
+
+We are still having lots of points where the 'optimize' pose solution does not
+converge.  This throwing away "bad" points is pretty unacceptable for
+performance evaluation, and we do need to solve the problem of how to
+initialize the pose for realtime use.
+ ==> Initializing to the Kim18 solution has fixed this, at least on this data
+     (with nominally concentric source and sensor).
+
+
+
 
 
 [6 Aug 21]

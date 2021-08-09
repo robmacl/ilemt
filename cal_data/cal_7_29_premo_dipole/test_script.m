@@ -18,7 +18,6 @@ cal_runs = {
 % {'so_quadrupole_reopt', 'so_quadrupole_hr_cal'}
     {'so_quadrupole_all', 'so_quadrupole_hr_cal'}
     };
-cal_runs = {};
 
 cal_opts = {'verbose', 1};
 

@@ -7,8 +7,10 @@ function [poses, valid, resnorms] = pose_solution ...
 % calibration: 
 %    calibration struct to use
 % 
-% options:
-%    may affect the solution.
+% options.pose_solution:
+%    Selects the solution method.
+% 
+% Other options.* may also have effect.
 % 
 % hemisphere:
 %   Optional, vector parallel to couplings.  What hemisphere the pose is
@@ -28,7 +30,7 @@ function [poses, valid, resnorms] = pose_solution ...
 
   if (strcmp(options.pose_solution, 'optimize'))
     [poses, resnorms] = ...
-        pose_solve_optimize(couplings, calibration, hemisphere);
+        pose_solve_optimize(couplings, calibration, hemisphere, options);
   elseif (strcmp(options.pose_solution, 'kim18'))
     [poses, resnorms] = ...
         pose_solve_kim18(couplings, calibration, hemisphere);

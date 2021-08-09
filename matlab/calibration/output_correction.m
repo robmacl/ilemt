@@ -7,13 +7,15 @@ function [calibration] = output_correction (calibration, cal_options)
     return;
   end
 
-  % Don't do any correction on the pose, since that is what we are trying
-  % to compute.
-  % Use whatever input files we used for calibration.
-  % We don't need fixture optimization, since the calibration was done on
-  % this exact data.
+  % -- Don't do any correction on the pose, since that is what we are trying
+  %    to compute.
+  % -- Pose error must be in ordinary output coordinates (source)
+  % -- Use whatever input files we used for calibration.
+  % -- We don't need fixture optimization, since the calibration was done on
+  %    this exact data.
   opts = {
       'linear_correction', false, ...
+      'stage_coords', false, ...
       'in_files', cal_options.in_files, ...
       'cal_file', cal_options.out_file, ...
       'optimize_fixtures', {}
@@ -27,5 +29,5 @@ function [calibration] = output_correction (calibration, cal_options)
   cp_options = check_poses_options(cal_options, opts);
   
   perr = find_pose_errors(calibration, cp_options);
-  calibration = linear_correction(perr, cal_options, calibration);
+  calibration = linear_correction(perr, cp_options, cal_options, calibration);
 end
