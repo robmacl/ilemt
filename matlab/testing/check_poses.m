@@ -8,13 +8,23 @@ fprintf(1, '\nChecking from: %s\n', pwd());
 cal_options = calibrate_options('check_poses', varargin);
 options = check_poses_options(cal_options, varargin);
 check_options({cal_options, options}, varargin);
-disp(options);
+
+% Options display.  Don't show all the options.
+showopts = {'cal_file', 'variant', 'in_files', 'linear_correction', ...
+            'pose_solution'};
+
+for (ix = 1:length(showopts))
+  show.(showopts{ix}) = options.(showopts{ix});
+end
+
+disp(show);
+
 
 calibration = load(options.cal_file);
 perr = find_pose_errors(calibration, options);
 
 if (any(strcmp(options.reports, 'overall')))
-  perr_report_overall(perr);
+  res.overall = perr_report_overall(perr);
 end
 
 if (any(strcmp(options.reports, 'correlation')))

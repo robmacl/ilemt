@@ -6,7 +6,7 @@ function [do_stop] = print_state(state, options)
   global state_checkpoint;
   state_checkpoint = state;
   
-  if (options.verbose)
+  if (options.verbose >= 2)
     print_calibration(state2calibration(state, options));
     fprintf(1, '\n');
   end

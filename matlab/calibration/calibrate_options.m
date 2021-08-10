@@ -141,6 +141,9 @@ options.freeze = {'d_so_z_gain' 'd_so_y_co' 'd_se_y_co'};
 % progressing when it stops.
 options.iterations = 200;
 
+% Options to pass to optimoptions
+options.optimoptions_opts = {};
+
 % Controls display verbosity: 0, 1, 2
 options.verbose = 2;
 

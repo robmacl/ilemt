@@ -1,0 +1,141 @@
+________________________________________________________________
+Test start:    10-Aug-2021 15:42:58
+
+Checking from: C:\Users\robma\Documents\Work\ilemt\cal_data\5_25_premo_rotated_dipole
+             cal_file: 'XYZ_concentric_hr_cal'
+              variant: 'default'
+             in_files: {'soYoutZup_seYoutZup_ld.dat'  'soYoutZup_seZinYup_ld.dat'  'soYoutZup_seZinXdown_ld.dat'}
+    linear_correction: 1
+        pose_solution: 'kim18'
+{Error using <a href="matlab:matlab.internal.language.introspective.errorDocCallback('load')" style="font-weight:bold">load</a>
+'XYZ_concentric_hr_cal' is not found in the current folder or on the MATLAB path, but exists in:
+    C:\Users\robma\Documents\Work\ilemt\cal_data\cal_7_30_premo_cmu
+    C:\Users\robma\Documents\Work\ilemt\cal_data\cal_7_29_premo_dipole
+    C:\Users\robma\Documents\Work\ilemt\cal_data\cal_5_19_premo_cmu
+
+Change the MATLAB current folder or add its folder to the MATLAB path.
+Error in <a href="matlab:matlab.internal.language.introspective.errorDocCallback('check_poses', 'C:\Users\robma\Documents\Work\ilemt\matlab\testing\check_poses.m', 23)" style="font-weight:bold">check_poses</a> (<a href="matlab: opentoline('C:\Users\robma\Documents\Work\ilemt\matlab\testing\check_poses.m',23,0)">line 23</a>)
+calibration = load(options.cal_file);
+Error in <a href="matlab:matlab.internal.language.introspective.errorDocCallback('test_script', 'C:\Users\robma\Documents\Work\ilemt\matlab\testing\test_script.m', 46)" style="font-weight:bold">test_script</a> (<a href="matlab: opentoline('C:\Users\robma\Documents\Work\ilemt\matlab\testing\test_script.m',46,0)">line 46</a>)
+        check_poses('cal_file', cp_runs{cal_ix}{:}, ...} 
+<a href="matlab: opentoline('C:\Users\robma\Documents\Work\ilemt\matlab\testing\check_poses.m',23,1)">23  </a>calibration = load(options.cal_file);
+dbquit
+test_script
+________________________________________________________________
+Test start:    10-Aug-2021 15:43:28
+
+Calibrating from: C:\Users\robma\Documents\Work\ilemt\cal_data\5_25_premo_rotated_dipole
+              source: 'dipole'
+              sensor: 'premo'
+            cal_mode: 'XYZ'
+    base_calibration: 'base_calibration'
+              ishigh: 1
+           normalize: 1
+      pin_quadrupole: 1
+          concentric: 1
+        correct_mode: 'DLT'
+        sensor_signs: [1 1 -1]
+        source_signs: [1 1 -1]
+     sensor_fixtures: {'seYoutZup'  'seZinYup'  'seZinXdown'}
+     source_fixtures: {'soYoutZup'}
+       data_patterns: {'md'}
+            in_files: {'soYoutZup_seYoutZup_md.dat'  'soYoutZup_seZinYup_md.dat'  'soYoutZup_seZinXdown_md.dat'}
+            out_file: 'XYZ_concentric_hr_cal'
+            optimize: {'d_se_mo'  'd_so_mo'  'se_fix'  'st_fix'}
+              freeze: {'d_so_z_gain'  'd_so_y_co'  'd_se_y_co'}
+          iterations: 200
+             verbose: 1
+Starting parallel pool (parpool) using the 'local' profile ...
+Connected to the parallel pool (number of workers: 4).
+{Operation terminated by user during <a href="matlab:matlab.internal.language.introspective.errorDocCallback('distcomp.remoteparfor/getCompleteIntervals', 'C:\Program Files\MATLAB\R2020b\toolbox\parallel\distcomp\+distcomp\remoteparfor.m', 379)" style="font-weight:bold">distcomp.remoteparfor/getCompleteIntervals</a> (<a href="matlab: opentoline('C:\Program Files\MATLAB\R2020b\toolbox\parallel\distcomp\+distcomp\remoteparfor.m',379,0)">line 379</a>)
+
+In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('parallel_function>distributed_execution', 'C:\Program Files\MATLAB\R2020b\toolbox\matlab\lang\parallel_function.m', 741)" style="font-weight:bold">parallel_function>distributed_execution</a> (<a href="matlab: opentoline('C:\Program Files\MATLAB\R2020b\toolbox\matlab\lang\parallel_function.m',741,0)">line 741</a>)
+        [tags, out] = P.getCompleteIntervals(chunkSize);
+In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('parallel_function', 'C:\Program Files\MATLAB\R2020b\toolbox\matlab\lang\parallel_function.m', 573)" style="font-weight:bold">parallel_function</a> (<a href="matlab: opentoline('C:\Program Files\MATLAB\R2020b\toolbox\matlab\lang\parallel_function.m',573,0)">line 573</a>)
+    R = distributed_execution(...
+In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('calibrate_objective', 'C:\Users\robma\Documents\Work\ilemt\matlab\calibration\calibrate_objective.m', 65)" style="font-weight:bold">calibrate_objective</a> (<a href="matlab: opentoline('C:\Users\robma\Documents\Work\ilemt\matlab\calibration\calibrate_objective.m',65,0)">line 65</a>)
+  parfor (ix = 1:npoints)
+In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('calibrate_main>@(state)calibrate_objective(state,motion_poses,measured_couplings,options)', 'C:\Users\robma\Documents\Work\ilemt\matlab\calibration\calibrate_main.m', 143)" style="font-weight:bold">calibrate_main>@(state)calibrate_objective(state,motion_poses,measured_couplings,options)</a> (<a href="matlab: opentoline('C:\Users\robma\Documents\Work\ilemt\matlab\calibration\calibrate_main.m',143,0)">line 143</a>)
+ofun = @(state)calibrate_objective(state, motion_poses, measured_couplings, options);
+In finDiffEvalAndChkErr
+In finitedifferences
+In computeFinDiffGradAndJac
+In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('sfdnls', 'C:\Program Files\MATLAB\R2020b\toolbox\shared\optimlib\sfdnls.m', 54)" style="font-weight:bold">sfdnls</a> (<a href="matlab: opentoline('C:\Program Files\MATLAB\R2020b\toolbox\shared\optimlib\sfdnls.m',54,0)">line 54</a>)
+        computeFinDiffGradAndJac(x,funfcn,confcn,valx, ...
+In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('snlsFixedVar>i_sfdnls', 'C:\Program Files\MATLAB\R2020b\toolbox\shared\optimlib\snlsFixedVar.m', 526)" style="font-weight:bold">snlsFixedVar>i_sfdnls</a> (<a href="matlab: opentoline('C:\Program Files\MATLAB\R2020b\toolbox\shared\optimlib\snlsFixedVar.m',526,0)">line 526</a>)
+[A,findiffevals] = sfdnls(xcurr,fvec,Jstr,group,alpha,funfcn,l,u,...
+In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('snlsFixedVar', 'C:\Program Files\MATLAB\R2020b\toolbox\shared\optimlib\snlsFixedVar.m', 72)" style="font-weight:bold">snlsFixedVar</a> (<a href="matlab: opentoline('C:\Program Files\MATLAB\R2020b\toolbox\shared\optimlib\snlsFixedVar.m',72,0)">line 72</a>)
+    [JACval, initJacobFuncCount] = i_sfdnls(xstart, Jstr, fval, ...
+In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('lsqncommon', 'C:\Program Files\MATLAB\R2020b\toolbox\shared\optimlib\lsqncommon.m', 174)" style="font-weight:bold">lsqncommon</a> (<a href="matlab: opentoline('C:\Program Files\MATLAB\R2020b\toolbox\shared\optimlib\lsqncommon.m',174,0)">line 174</a>)
+            snlsFixedVar(funfcn,xC,lb,ub,flags.verbosity,options,defaultopt,initVals.F,initVals.J,caller, ...
+In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('lsqnonlin', 'C:\Program Files\MATLAB\R2020b\toolbox\optim\optim\lsqnonlin.m', 260)" style="font-weight:bold">lsqnonlin</a> (<a href="matlab: opentoline('C:\Program Files\MATLAB\R2020b\toolbox\optim\optim\lsqnonlin.m',260,0)">line 260</a>)
+   lsqncommon(funfcn,xCurrent,lb,ub,options,defaultopt,optimgetFlag,caller,...
+In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('calibrate_main', 'C:\Users\robma\Documents\Work\ilemt\matlab\calibration\calibrate_main.m', 148)" style="font-weight:bold">calibrate_main</a> (<a href="matlab: opentoline('C:\Users\robma\Documents\Work\ilemt\matlab\calibration\calibrate_main.m',148,0)">line 148</a>)
+[state_new, cal_residue] = lsqnonlin(ofun,state0,bounds(1,:),bounds(2,:), opt_option);
+In <a href="matlab:matlab.internal.language.introspective.errorDocCallback('test_script', 'C:\Users\robma\Documents\Work\ilemt\matlab\testing\test_script.m', 31)" style="font-weight:bold">test_script</a> (<a href="matlab: opentoline('C:\Users\robma\Documents\Work\ilemt\matlab\testing\test_script.m',31,0)">line 31</a>)
+      calibrate_main(cal_runs{cal_ix}{1}, ...} 
+diary off
+________________________________________________________________
+Test start:    10-Aug-2021 16:13:40
+
+Checking from: C:\Users\robma\Documents\Work\ilemt\cal_data\5_25_premo_rotated_dipole
+             cal_file: 'XYZ_concentric_hr_cal'
+              variant: 'default'
+             in_files: {'soYoutZup_seYoutZup_ld.dat'  'soYoutZup_seZinYup_ld.dat'  'soYoutZup_seZinXdown_ld.dat'}
+    linear_correction: 1
+        pose_solution: 'kim18'
+Position error (m): 4.58e-02 RMS, 2.10e-01 max.
+Orientation error (radians): 2.23e+00 RMS, 3.14e+00 max
+
+Checking from: C:\Users\robma\Documents\Work\ilemt\cal_data\5_25_premo_rotated_dipole
+             cal_file: 'XYZ_concentric_hr_cal'
+              variant: 'nocorrect'
+             in_files: {'soYoutZup_seYoutZup_ld.dat'  'soYoutZup_seZinYup_ld.dat'  'soYoutZup_seZinXdown_ld.dat'}
+    linear_correction: 0
+        pose_solution: 'kim18'
+Position error (m): 1.95e-02 RMS, 4.70e-02 max.
+Orientation error (radians): 2.23e+00 RMS, 3.14e+00 max
+
+Checking from: C:\Users\robma\Documents\Work\ilemt\cal_data\5_25_premo_rotated_dipole
+             cal_file: 'XYZ_hr_cal'
+              variant: 'default'
+             in_files: {'soYoutZup_seYoutZup_ld.dat'  'soYoutZup_seZinYup_ld.dat'  'soYoutZup_seZinXdown_ld.dat'}
+    linear_correction: 1
+        pose_solution: 'optimize'
+1760 invalid points with residual > 1e-05.
+Position error (m): 3.78e-03 RMS, 1.09e-02 max.
+Orientation error (radians): 2.31e+00 RMS, 3.13e+00 max
+
+Checking from: C:\Users\robma\Documents\Work\ilemt\cal_data\5_25_premo_rotated_dipole
+             cal_file: 'XYZ_hr_cal'
+              variant: 'nocorrect'
+             in_files: {'soYoutZup_seYoutZup_ld.dat'  'soYoutZup_seZinYup_ld.dat'  'soYoutZup_seZinXdown_ld.dat'}
+    linear_correction: 0
+        pose_solution: 'optimize'
+1760 invalid points with residual > 1e-05.
+Position error (m): 3.76e-03 RMS, 1.09e-02 max.
+Orientation error (radians): 2.31e+00 RMS, 3.13e+00 max
+
+trans_rms:
+                              <strong>default</strong>     <strong>nocorrect</strong>
+                             <strong>_________</strong>    <strong>_________</strong>
+    <strong>XYZ_concentric_hr_cal</strong>     0.045769     0.019532
+    <strong>XYZ_hr_cal           </strong>    0.0037752    0.0037604
+
+trans_max:
+                             <strong>default</strong>     <strong>nocorrect</strong>
+                             <strong>________</strong>    <strong>_________</strong>
+    <strong>XYZ_concentric_hr_cal</strong>     0.21037    0.046955 
+    <strong>XYZ_hr_cal           </strong>    0.010906    0.010886 
+
+rot_rms:
+                             <strong>default</strong>    <strong>nocorrect</strong>
+                             <strong>_______</strong>    <strong>_________</strong>
+    <strong>XYZ_concentric_hr_cal</strong>    2.2276      2.2276  
+    <strong>XYZ_hr_cal           </strong>    2.3081      2.3081  
+
+rot_max:
+                             <strong>default</strong>    <strong>nocorrect</strong>
+                             <strong>_______</strong>    <strong>_________</strong>
+    <strong>XYZ_concentric_hr_cal</strong>    3.1416      3.1416  
+    <strong>XYZ_hr_cal           </strong>    3.1335      3.1335  

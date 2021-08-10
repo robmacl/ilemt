@@ -37,7 +37,7 @@ for (f_ix = 1:length(files))
     so_f = calibration.source_fixture;
     calibration.stage_fixture = ...
         [-so_f(2) so_f(1) so_f(3) 0 0 0];
-    calibration.source_fixture = [zeros(1, 6) so_f(6)];
+    calibration.source_fixture = [zeros(1, 5) so_f(6)];
   end
 
   save(file1, '-struct', 'calibration');
