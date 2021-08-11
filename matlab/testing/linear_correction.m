@@ -44,3 +44,6 @@ else
 end
 
 calibration.linear_correction = transform;
+calibration.source_fixture = perr.so_fix;
+calibration.stage_fixture = perr.st_fix;
+calibration.sensor_fixture = perr.se_fix;

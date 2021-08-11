@@ -7,18 +7,32 @@ function [calibration] = output_correction (calibration, cal_options)
     return;
   end
 
+  % Doing the fixture optimization here is useful because the calibration
+  % optimization chooses fixtures which minimize the coupling error, while the
+  % check_poses() fixture optimization directly minimizes the pose error.
+  % Also, having fixture error is going to reduce the performance of the
+  % linear correction itself.
+  opt_fix = {};
+  if (any(strcmp(cal_options.optimize, 'so_fix')))
+    opt_fix{end+1} = 'source';
+  end
+  if (any(strcmp(cal_options.optimize, 'st_fix')))
+    opt_fix{end+1} = 'stage';
+  end
+  if (any(strcmp(cal_options.optimize, 'se_fix')))
+    opt_fix{end+1} = 'sensor';
+  end
+  
   % -- Don't do any correction on the pose, since that is what we are trying
   %    to compute.
   % -- Pose error must be in ordinary output coordinates (source)
   % -- Use whatever input files we used for calibration.
-  % -- We don't need fixture optimization, since the calibration was done on
-  %    this exact data.
   opts = {
       'linear_correction', false, ...
       'stage_coords', false, ...
       'in_files', cal_options.in_files, ...
       'cal_file', cal_options.out_file, ...
-      'optimize_fixtures', {}
+      'optimize_fixtures', opt_fix
          };
 
   % This stuff works using the check_poses() features, so we need a

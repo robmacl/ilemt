@@ -1,3 +1,4 @@
+%%% ### ram: increased error threshold in orthonormal test
 %TR2ANGVEC Convert rotation matrix to angle-vector form
 %
 % [THETA,V] = TR2ANGVEC(R, OPTIONS) is rotation expressed in terms of an
@@ -97,7 +98,7 @@ function [theta_, n_] = tr2angvec(R, varargin)
         
         % check the determinant
         % ### ram 6-Aug-21: was10*eps
-        assert( abs(det(Ri)-1) < 15*eps, 'SMTB:tr2angvec:badarg', 'matrix is not orthonormal');
+        assert( abs(det(Ri)-1) < 30*eps, 'SMTB:tr2angvec:badarg', 'matrix is not orthonormal');
         
         [th,v] = trlog(Ri);
         theta(i) = th;

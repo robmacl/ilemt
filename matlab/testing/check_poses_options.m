@@ -35,16 +35,23 @@ function [options] = check_poses_options (cal_options, key_value)
 
   % optimize_fixtures: what fixture transforms we optimize to try to reduce
   % error.  Cell vector of any of 'source', 'stage', 'sensor'.  Default {}.
+  % 
+  % Enabling this is useful if there has been a gross change in the setup from
+  % when the calibration was done, but is questionable for absolute accuracy
+  % measurement, since it uses the test data ground truth itself to minimize
+  % the error.  This undermines the data hygiene principle of using different
+  % data for calibration and test, since we have extended a calibration
+  % minimization into the test.
   options.optimize_fixtures = {};
 
   % moment: moment used in optimization to trade angular vs. translation error
-  % (m).
+  % in fixture optimization (m).
   options.moment = 0.05;
 
   % What hemisphere the pose is constrained to: 1, 2, 3 for XYZ, negative
   % if the minus hemisphere.  eg. -2 is the -X hemisphere.  If 0 then set
   % automatically using the ground truth pose (which may not work if there
-  % is a large change in the fixture poses).
+  % is a large change in the fixture poses from calibration time).
   options.hemisphere = 0;
   
   % axis_limits(6, 2): for each axis, the [min, max] range of data to

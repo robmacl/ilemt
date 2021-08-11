@@ -113,11 +113,14 @@ state0 = calibration2state(base_cal);
 % state_bounds() for details.
 bounds = state_bounds(state0, options.optimize, options.freeze);
 
-% Set the options for the optimization.  
+% Set the options for the optimization.
+% Tighter tolerances than the default 1e-6 probably don't really help, but
+% also don't slow that much.
 opt_option = optimoptions(...
     @lsqnonlin, ...
     'MaxIterations', options.iterations, ...
     'OutputFcn', @(state, ~, ~) print_state(state, options), ...
+    'FunctionTolerance', 1e-08, 'OptimalityTolerance', 1e-07,
     options.optimoptions_opts{:});
 
 if (options.verbose >= 1)
@@ -133,8 +136,6 @@ end
 
 %{
 % really tight stopping critera that may not be useful
-    'MaxFunctionEvaluations', 60000
-    'FunctionTolerance', 1e-08, 'OptimalityTolerance', 1e-07
 %}
 
 % Read input data as stage/fixture poses (ground truth) and the measured

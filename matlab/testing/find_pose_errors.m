@@ -100,8 +100,8 @@ function [perr] = find_pose_errors (calibration, options)
     end
 
     opt_options = optimset('lsqnonlin');
-    %opt_options = optimset(opt_options, 'Display', 'off');
-    opt_options = optimset(opt_options, 'PlotFcns', @optimplotresnorm);
+    opt_options = optimset(opt_options, 'Display', 'off');
+    %opt_options = optimset(opt_options, 'PlotFcns', @optimplotresnorm);
     allow_opt = [ones(1,3) * 0.5, ones(1,3) * 3*pi];
     bounds = zeros(1, 18);
     if (any(strcmp(options.optimize_fixtures, 'source')))
@@ -110,7 +110,7 @@ function [perr] = find_pose_errors (calibration, options)
     if (any(strcmp(options.optimize_fixtures, 'stage')))
       bounds(1, 7:12) = allow_opt;
     end
-    if (strcmp(options.optimize_fixtures, 'sensor'))
+    if (any(strcmp(options.optimize_fixtures, 'sensor')))
       bounds(1, 13:18) = allow_opt;
     end
 

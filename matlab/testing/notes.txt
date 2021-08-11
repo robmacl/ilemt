@@ -1,6 +1,4 @@
 Todo:
- -- Do we want to bring back tighter termination conditions on calibration
-    optimization?
  -- kim18 refusing to run with cal_5_28_premo_rotated_dipole (not orthonormal
     in tr2angvec).  A problem for the initial pose solution.
  -- Don't forget to worry about trans2pose tr2angvec
@@ -98,7 +96,7 @@ cancel.
      so change -60 um to zero in the above.
 
 
-[10 Aug 21]
+[10-11 Aug 21]
 
 I'm now generating a summary table of the RMS/max errors in the
 test_output.txt, so not duplicating that here.
@@ -112,7 +110,14 @@ negligible progress.
 
 cal_7_30_premo_cmu:
 Don't have a "ld" test file with source motion, so can't really test properly,
-but even without source motion, so_quadrupole_all is noticeably better than XYZ_all.
+but even without source motion, so_quadrupole_all is noticeably better than
+XYZ_all.
+
+cal_5_28_premo_rotated_dipole:
+I can reproduce the results from [4 June 21], but the star result of 2.28e-04
+RMS, 4.93e-04 max is probably too good to be true because it is dependent on
+fixture optimization in check_poses().  This is questionable because it
+exploits the test data ground truth to minimize the very thing we are measuring.
 
 
 This is the comparison of the so_quadrupole_all pinned quadrupole calibrations:
@@ -177,6 +182,149 @@ conditions, but the optimizer refused to do anything more.
      that the linear correction has been subtly degraded somehow.
 
 
+ ==> From [1 Jun 21]
+        (then)
+        Position error (m): 3.46e-04 RMS, 9.03e-04 max.
+	Orientation error (radians): 6.10e-03 RMS, 1.15e-02 max
+	(now)
+	Position error (m): 3.46e-04 RMS, 9.03e-04 max.
+	Orientation error (radians): 6.10e-03 RMS, 1.15e-02 max
+
+Hmmn, that is *exactly* the same.  So there might be something to the idea
+that the linear correction is not working as well.
+
+I compared the old linear correction with the new, and they are slightly
+different, but the corrected accuracy is the same.  So I suspect the fixture
+pose changes.
+
+ ==> OK, we weren't allowing sensor fixture optimization.
+
+Now we get:
+    Position error (m): 2.28e-04 RMS, 4.94e-04 max.
+    Orientation error (radians): 5.30e-03 RMS, 1.09e-02 max
+
+Which is the nearly the same position error as on [4 Jun 24].
+
+Hmmn, also seeing a quite significant benefit of fixture optimization with
+cal_7_30_premo_cmu.
+________________________________________________________________
+>> check_poses('cal_file', 'XYZ_hr_cal')
+
+Checking from: C:\Users\robma\Documents\Work\ilemt\cal_data\cal_7_30_premo_cmu
+             cal_file: 'XYZ_hr_cal'
+              variant: 'default'
+             in_files: {'soYoutZup_seYoutZup_ld.dat'  'soYoutZup_seZinYup_ld.dat'  'soYoutZup_seZinXdown_ld.dat'}
+    linear_correction: 1
+        pose_solution: 'optimize'
+    optimize_fixtures: {}
+Position error (m): 6.03e-04 RMS, 1.24e-03 max.
+Orientation error (radians): 4.93e-03 RMS, 1.06e-02 max
+ans = 
+  struct with fields:
+
+        overall: [1×1 struct]
+    cal_options: [1×1 struct]
+        options: [1×1 struct]
+           perr: [1×1 struct]
+           onax: []
+    calibration: [1×1 struct]
+>> cp=check_poses('cal_file', 'XYZ_hr_cal', 'optimize_fixtures', {'stage', 'sensor'});
+
+Checking from: C:\Users\robma\Documents\Work\ilemt\cal_data\cal_7_30_premo_cmu
+             cal_file: 'XYZ_hr_cal'
+              variant: 'default'
+             in_files: {'soYoutZup_seYoutZup_ld.dat'  'soYoutZup_seZinYup_ld.dat'  'soYoutZup_seZinXdown_ld.dat'}
+    linear_correction: 1
+        pose_solution: 'optimize'
+    optimize_fixtures: {'stage'  'sensor'}
+Optimizing fixture poses:
+    {'stage'}    {'sensor'}
+source_fix_delta =
+     0     0     0     0     0     0
+stage_fix_delta =
+  -1.1704e-06  -0.00036527   0.00015271  -1.4015e-05  -5.6628e-05  -5.5399e-05
+sensor_fix_delta =
+   6.0401e-05  -0.00014618  -0.00015106    0.0004906   0.00052564  -0.00054039
+Position error (m): 4.63e-04 RMS, 9.18e-04 max.
+Orientation error (radians): 4.86e-03 RMS, 1.02e-02 max
+________________________________________________________________
+
+Fixture optimization should of course only reduce the error, and is to some
+degree going to squeeze out "real" error.  But 23% is quite significant.  One
+thought is that calibration optimization is not directly minimizing the pose
+error.
+
+ ==> Also, the test data is explicitly different from the calibration data,
+     since it has more points.  So seeing a difference is not surprising, and
+     doing the fixture optimization at check time is a bit dodgy because it
+     undermines the principle of testing on different data than the
+     calibration.
+
+I changed output_correction to do the fixture optimizations, which seems
+useful, but only very marginally improved accuracy in check_poses() without
+fixture optimization:
+________________________________________________________________
+Checking from: C:\Users\robma\Documents\Work\ilemt\cal_data\cal_7_30_premo_cmu
+             cal_file: 'XYZ_tweak_hr_cal'
+              variant: 'default'
+             in_files: {'soYoutZup_seYoutZup_ld.dat'  'soYoutZup_seZinYup_ld.dat'  'soYoutZup_seZinXdown_ld.dat'}
+    linear_correction: 1
+        pose_solution: 'optimize'
+    optimize_fixtures: {}
+Position error (m): 5.92e-04 RMS, 1.23e-03 max.
+Orientation error (radians): 4.99e-03 RMS, 1.08e-02 max
+________________________________________________________________
+
+Doing the check_poses() optimization gets basically the same result either
+with or without optimization in output_correction:
+________________________________________________________________
+Checking from: C:\Users\robma\Documents\Work\ilemt\cal_data\cal_7_30_premo_cmu
+             cal_file: 'XYZ_tweak_hr_cal'
+              variant: 'default'
+             in_files: {'soYoutZup_seYoutZup_ld.dat'  'soYoutZup_seZinYup_ld.dat'  'soYoutZup_seZinXdown_ld.dat'}
+    linear_correction: 1
+        pose_solution: 'optimize'
+    optimize_fixtures: {'stage'  'sensor'}
+Optimizing fixture poses:
+    {'stage'}    {'sensor'}
+source_fix_delta =
+     0     0     0     0     0     0
+stage_fix_delta =
+    1.702e-06  -0.00035856    0.0001225   6.5302e-05    0.0001444  -0.00042197
+sensor_fix_delta =
+   3.6965e-05   -0.0001151  -0.00011487   0.00051922  -0.00049737  -1.8401e-05
+Position error (m): 4.64e-04 RMS, 9.20e-04 max.
+Orientation error (radians): 4.91e-03 RMS, 1.03e-02 max
+________________________________________________________________
+FWIW, it is barely detectably worse.
+
+So the benefit of check_poses() fixture optimization is due to optimizing on
+the actual test data, based on our ground-truth knowledge.  This is still
+perhaps somewhat defensible, in that we do not have any definite source/sensor
+coordinate system, and from a relative motion perspective we *could* choose
+this particular fixed kinematics to get this result.  But a better way to
+quantify the relative motion performance would be via the linearity tests.
+
+So the very good results from cal_5_28_premo_rotated_dipole are in some part
+due to the use of check_poses() fixture optimization on that data.  But
+without the cp optimization, the results are really bad, due to motion in the
+setup, probably mainly the 17 mrad change in Rx.  So we can't really do this
+test "right" without retaking the data.
+
+It's possible that doing the calibration on the large data would give a better
+calibration, but then we would need even larger, or otherwise different test
+data, which is once again going to somewhat decrease measured accuracy.  I
+don't want to go down that rabbit hole.  We already have a capability to make
+the accuracy seem worse by using the source fixtures.
+
+My thinking is that we want a dual characterization of accuracy, with and
+without source fixtures.  The benefits of the rotated dipole configuration are
+very unlikely to persist across source motion.
+
+
+On the plus side, I am now pretty confident that I have not broken anything
+with the calibration and test setup, since I am getting extremely similar
+accuracy to what I had gotten on [4 June 21].
 
 
 [9 Aug 21]

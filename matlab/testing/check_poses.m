@@ -11,10 +11,13 @@ check_options({cal_options, options}, varargin);
 
 % Options display.  Don't show all the options.
 showopts = {'cal_file', 'variant', 'in_files', 'linear_correction', ...
-            'pose_solution'};
+            'pose_solution', 'optimize_fixtures'};
 
 for (ix = 1:length(showopts))
-  show.(showopts{ix}) = options.(showopts{ix});
+  wot = options.(showopts{ix});
+  if (~isempty(wot))
+    show.(showopts{ix}) = wot;
+  end
 end
 
 disp(show);
