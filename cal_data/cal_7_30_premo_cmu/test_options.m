@@ -13,20 +13,15 @@ cal_runs = {
 % {'so_quadrupole_reopt', 'so_quadrupole_hr_cal'}
     {'so_quadrupole_all', 'so_quadrupole_hr_cal'}
     };
-cal_runs = {};
 
 % cp_runs{:, 1} is the cal_file
 % cp_runs(:, 2:end} are additional options
 %{'so_quadrupole_reopt_hr_cal'}
 cp_runs = {
     {'XYZ_hr_cal'}
-%    {'XYZ_all_hr_cal', 'linear_correction', false}
     {'XYZ_all_hr_cal'}
-    {'so_quadrupole_hr_cal'}
-%    {'so_quadrupole_all_hr_cal', 'linear_correction', false}
     {'so_quadrupole_all_hr_cal'}
     {'XYZ_concentric_hr_cal', 'pose_solution', 'kim18'}
-%    {'XYZ_all_concentric_hr_cal', 'linear_correction', false}
     {'XYZ_all_concentric_hr_cal', 'pose_solution', 'kim18'}
     };
 

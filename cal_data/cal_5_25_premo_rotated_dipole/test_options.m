@@ -11,7 +11,6 @@ cal_runs = {
     {'XYZ' 'base_calibration', 'concentric', true}
     {'XYZ', 'base_calibration'}
     };
-cal_runs = {};
 
 
 %% check_poses() runs

@@ -5,15 +5,25 @@ function perr_workspace_vol(perr, options)
   errors = perr.errors;
   desired = perr.desired;
 
-  subplot(1, 2, 1);
+  subplot(2, 2, 1);
   % trans->trans error
   perr_wv1(perr, options, desired(:, 1:3), errors(:, 1:3), ...
-           options.xyz_exaggerate, 'trans->trans', 'm/m');
+           options.xyz_exaggerate(1), 'trans->trans', 'm/m');
   
-  subplot(1, 2, 2);
+  subplot(2, 2, 2);
   % rot->trans error
   perr_wv1(perr, options, desired(:, 4:6), errors(:, 1:3), ...
-           options.rot_xyz_exaggerate, 'rot->trans', 'm/rad');
+           options.xyz_exaggerate(2), 'rot->trans', 'm/rad');
+  
+  subplot(2, 2, 3);
+  % trans->rot error
+  perr_wv1(perr, options, desired(:, 1:3), errors(:, 4:6), ...
+           options.xyz_exaggerate(3), 'trans->rot', 'rad/m');
+  
+  subplot(2, 2, 4);
+  % rot->rot error
+  perr_wv1(perr, options, desired(:, 4:6), errors(:, 4:6), ...
+           options.xyz_exaggerate(4), 'rot->rot', 'rad/rad');
 
   set_fig_name(options);
 end

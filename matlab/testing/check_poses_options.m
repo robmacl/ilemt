@@ -64,15 +64,16 @@ function [options] = check_poses_options (cal_options, key_value)
   options.sg_filt_N = 2;
   options.sg_filt_F = 11;
 
-  % xyz_exaggerate: exaggeration to use in 3D trans->trans error views.
-  % rot_xyz_exaggerate: for rot->trans error
-  options.xyz_exaggerate = 10; % m/m
-  options.rot_xyz_exaggerate = 300; % m/rad
+  % xyz_exaggerate: exaggeration to use in 3D error views.  See
+  % perr_workspace_vol().
+  % 
+  % Vector [trans->trans rot->trans trans->rot rot->rot].   
+  options.xyz_exaggerate = [10 300 1 30];
 
-  % If true, transform to stage coordinates in 3D views.  Gives a prettier
-  % picture when there is gross rotation of the source.
+  % If true, transform error to stage coordinates.  Gives a prettier picture
+  % when there is gross rotation of the source.
   options.stage_coords = true;
-  
+
   % What reports and plots to generate:
   % overall: text report of RMS and max error
   % correlation: test report of error correlations

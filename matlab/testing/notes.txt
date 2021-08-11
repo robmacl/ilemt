@@ -1,10 +1,19 @@
 Todo:
- -- kim18 refusing to run with cal_5_28_premo_rotated_dipole (not orthonormal
-    in tr2angvec).  A problem for the initial pose solution.
- -- Don't forget to worry about trans2pose tr2angvec
+ -- Move cal_data to another repository
  -- Literature search for calibration and cross-coupling
  -- Lube stage.  New noise?
  -- Realtime code: signal processing and pose solution
+
+
+Don't forget:
+ -- worry about trans2pose, change to using tr2angvec and orthonormal test.
+ -- quadrupole calibration anomaly between cal_7_21_premo_dipole and
+    cal_7_29_premo_dipole.  See [3 Aug 21].  Note that I was not using the
+    'source' data pattern on 7/21.  Does sensor rotation help source
+    identification?  Or the 'source' pattern just gives worse results, such as
+    from larger translation than used in the test?  But also maybe just bad
+    setup on 7/21.
+
 
 Accuracy:
  -- Try source fixtures with rotated corner dipole.
@@ -335,7 +344,6 @@ Or specifically, the 'ld'.  The 'source' seems sane.
  ==> Ok, pretty sure the 'ld' was taken in the wrong fixture.  The home pose
      coupling is not even vaguely the same between 'ld' and 'source'.  I guess
      it could be the wrong sensor fixture, not necessarily source.
-
 
  ==> Linear correction is now hurting accuracy with non-concentric XYZ_hr_cal
      also.

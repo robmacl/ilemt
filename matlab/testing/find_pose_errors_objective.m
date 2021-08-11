@@ -33,6 +33,10 @@ function [state_err, perr] = find_pose_errors_objective(state, perr_in, options)
   so_desired = fk_pose_calculation(perr.motion_poses, perr.so_fix, ...
                                    perr.st_fix, perr.se_fix);
 
+  % Finding errors by perr.measured - perr.desired breaks down badly when
+  % the total rotation is near 180 degrees, causing angle wrapping.  So
+  % find errors by matrix division on the transform representation.
+
   if (options.stage_coords)
     so_fix_t = pose2trans(perr.so_fix);
     st_fix_t = pose2trans(perr.st_fix);
@@ -54,27 +58,24 @@ function [state_err, perr] = find_pose_errors_objective(state, perr_in, options)
       st_measured(ix, :) = trans2pose(st_measured1);
       st_desired(ix, :) = trans2pose(st_desired1);
       st_errors(ix, :) = trans2pose(st_error1);
-if (norm(st_errors(ix, :)) > 0.1)
-  %keyboard;
-end
     end
     perr.measured = st_measured;
     perr.desired = st_desired;
     perr.errors = st_errors;
   else
+    % Errors in source coordinates (no coordinate transform).
     perr.measured = so_measured;
     perr.desired = so_desired;
-    perr.errors = perr.measured - perr.desired;
-for (ix = 1:size(so_measured, 1))
-  so_measured1 = perr.measured(ix, :);
-  so_desired1 = perr.desired(ix, :);
-  so_error1 = perr.errors(ix, :);
-  if (norm(so_error1) > 0.1)
-    %keyboard;
-  end
-end
+    so_errors = zeros(size(so_measured));
+    for (ix = 1:size(so_measured, 1))
+      so_measured1 = pose2trans(perr.measured(ix, :));
+      so_desired1 = pose2trans(perr.desired(ix, :));
+      so_errors(ix, :) = trans2pose(inv(so_desired1) * so_measured1);
+    end
+    perr.errors = so_errors;
   end
 
+  % Weight the angular error according to the moment.
   npoints = size(perr.desired, 1);
   mo_scale = [ones(npoints, 3) ones(npoints, 3) * options.moment];
   state_err = perr.errors .* mo_scale;

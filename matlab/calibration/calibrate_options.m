@@ -61,6 +61,9 @@ options.concentric = false;
 % See output_correction().
 options.correct_mode = 'DLT';
 
+% If true, reoptimize the fixture poses in output_correction().
+options.reoptimize_fixture = false;
+
 % These allow sign flip on sensor input (coupling column) or source
 % (coupling row).  These are only needed if the input signs or coupling
 % signs were wrong in labview ilemt_ui when the data was taken.

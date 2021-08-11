@@ -120,7 +120,7 @@ opt_option = optimoptions(...
     @lsqnonlin, ...
     'MaxIterations', options.iterations, ...
     'OutputFcn', @(state, ~, ~) print_state(state, options), ...
-    'FunctionTolerance', 1e-08, 'OptimalityTolerance', 1e-07,
+    'FunctionTolerance', 1e-08, 'OptimalityTolerance', 1e-07, ...
     options.optimoptions_opts{:});
 
 if (options.verbose >= 1)
@@ -133,10 +133,6 @@ if (options.verbose >= 2)
   opt_option = optimoptions(opt_option, ...
       'PlotFcns', @optimplotresnorm);
 end
-
-%{
-% really tight stopping critera that may not be useful
-%}
 
 % Read input data as stage/fixture poses (ground truth) and the measured
 % coupling matrices.
