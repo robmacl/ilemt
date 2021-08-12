@@ -1,5 +1,8 @@
 Todo:
  -- Move cal_data to another repository
+ -- linear correction is broken for concentric in cal_7_29_premo_dipole.  We
+    don't expect good results for non-concentric source, but the correction
+    shouldn't make it hideously worse.  This was working at one point, I think.
  -- Literature search for calibration and cross-coupling
  -- Lube stage.  New noise?
  -- Realtime code: signal processing and pose solution
@@ -106,6 +109,26 @@ cancel.
 
 
 [10-11 Aug 21]
+
+Summary:
+ -- Got scripted testing working on several calibration datasets.
+ -- Now reproducing the "best" error from [4 Jun 21] quite precisely (premo/
+    rotated dipole).  But this dataset requires fixture optimization in
+    check_poses() which gives a rather optimistic result.
+ -- We see significant benefit from check_poses() fixture optimization on
+    other datasets also.  See below for discussion on legitimacy of
+    check_poses() fixture optimization.
+ -- Experimented with doing fixture optimization in output_correction(), but
+    this was not clearly a win, and has been left turned off.
+ -- I am now pretty confident in the results that I am getting, that I have
+    not broken anything with the source fixture changes.  And I have fixed a
+    number of problems such as angle wrapping in check_poses() and
+    with the 'optimize' pose solution, initializing the state using kim18() so
+    that it converges on all test poses.
+ -- What we see with source fixtures is pretty much what we would expect:
+    calibrating over a larger workspace gives better results over that large
+    workspace, but at some cost to the small workspace accuracy.
+
 
 I'm now generating a summary table of the RMS/max errors in the
 test_output.txt, so not duplicating that here.
@@ -319,6 +342,12 @@ due to the use of check_poses() fixture optimization on that data.  But
 without the cp optimization, the results are really bad, due to motion in the
 setup, probably mainly the 17 mrad change in Rx.  So we can't really do this
 test "right" without retaking the data.
+
+It is somewhat more defensible to reoptimize only the stage fixture in
+check_poses() since we might deliberately vary this in our setup, and this is
+not pulling as many DOF out of the error.  Ideally the source and sensor
+fixture would not change, although in practice the sensor fixture is somewhat
+unstable, and our source attachment to the source mover is also not that good.
 
 It's possible that doing the calibration on the large data would give a better
 calibration, but then we would need even larger, or otherwise different test
