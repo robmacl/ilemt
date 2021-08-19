@@ -16,6 +16,8 @@ function [options] = check_poses_options (cal_options, key_value)
   
   % Method for pose calculation.  Values: 'optimize', 'kim18'.  See
   % pose_calculation().
+  % ### this conditional default doesn't work unless you get 'concentric'
+  % into cal_options either in the local_cal_options or key_value args.
   if (cal_options.concentric)
     options.pose_solution = 'kim18';
   else
@@ -53,11 +55,6 @@ function [options] = check_poses_options (cal_options, key_value)
   % automatically using the ground truth pose (which may not work if there
   % is a large change in the fixture poses from calibration time).
   options.hemisphere = 0;
-  
-  % axis_limits(6, 2): for each axis, the [min, max] range of data to
-  % analyze (mm, degrees).  Outside this range is discarded.  
-  % ### This was an Euler angles style stage pose, now placeholder
-  options.axis_limits = repmat([-inf, inf], 6, 1);
 
   % Parameters for Savitzky-Golay filter used to smooth and differentiate
   % the results: polynomial order and window width.

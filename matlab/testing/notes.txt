@@ -1,8 +1,4 @@
 Todo:
- -- Move cal_data to another repository
- -- linear correction is broken for concentric in cal_7_29_premo_dipole.  We
-    don't expect good results for non-concentric source, but the correction
-    shouldn't make it hideously worse.  This was working at one point, I think.
  -- Literature search for calibration and cross-coupling
  -- Lube stage.  New noise?
  -- Realtime code: signal processing and pose solution
@@ -33,7 +29,9 @@ Accuracy:
  -- Pick a few variations of source and sensor coil for paper, get fresh data
     with new best testing conditions
      - Try premo source
-
+ -- Try other approaches to linear coorrection.  DLT is horribly broken for
+    concentric in cal_7_29_premo_dipole, makes things much worse even on the
+    input data.  See [12 Aug 21].
  -- Normalization/weighting/sensitivity.  What is effect on accuracy if sensor
     ground truth rotation is wrong?
  -- Try low-rate calibration
@@ -106,6 +104,26 @@ approximation.  The pole will also deflect at +90/-90, but this effect should
 cancel.
  ==> with test indicator the indicator force deflection should be negligible,
      so change -60 um to zero in the above.
+
+
+[12 Aug 21]
+
+The DLT correction method is giving a barking mad result for concentric w/ the
+(non-concentric) dipole source.
+cal.linear_correction =
+     0.086618     -0.20997    -0.055111    -0.014904
+   -0.0075112   0.00087745  -0.00099007   0.00087315
+    -0.012606     0.015421     0.012537    0.0023218
+      0.34989     -0.87513     -0.22982    -0.059948
+
+This makes things much worse even on the exact input data.  'skew' method does
+not make things worse.  Worth exploring correction method variations, since
+while we do not care in this case, DLT may also be sub-optimal in useful
+cases.
+
+Could maybe do a better 6x6 transform correction computed from the error
+transform that we now have?  Other generalizations of output correction,
+correct rotation separately?
 
 
 [10-11 Aug 21]

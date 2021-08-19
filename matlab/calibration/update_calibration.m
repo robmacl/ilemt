@@ -26,10 +26,6 @@ for (f_ix = 1:length(files))
     calibration.linear_correction = eye(4);
   end
 
-  if (~isfield(calibration, 'bias'))
-    calibration.bias = zeros(3);
-  end
-
   if (~isfield(calibration, 'stage_fixture') ...
       || all(calibration.source_fixture == 0))
     % Existing source fixture becomes the stage fixture, 90 degree rotation

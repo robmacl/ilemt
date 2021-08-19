@@ -100,7 +100,8 @@ function [coupling] = forward_kinematics (P, calibration)
   end
 
   % This scaling is traditional.  Was once necessary?  IDK.  Sensor moments
-  % would presumably be this much bigger to get the right coupling w/o this
-  % scaling.
+  % would be this much smaller to get the right coupling w/o this scaling.
+  % This makes the source and sensor moments more similar in magnitude (closer
+  % to 1), which may help optimization, and is also convenient for printout.
   coupling = coupling./250;
 end

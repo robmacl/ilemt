@@ -24,6 +24,9 @@ function [poses, valid, resnorms] = pose_solution ...
 % valid(n):
 %    True if the result pose seems to be valid (based on residual error).
 
+  if (nargin < 3 || isempty(options))
+    options = calibration.options;
+  end
   if (nargin < 4 || isempty(hemisphere))
     hemisphere = repmat(options.hemisphere, size(couplings, 3), 1);
   end
