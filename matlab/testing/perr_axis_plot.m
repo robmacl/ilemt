@@ -17,15 +17,19 @@ function perr_axis_plot (perr, onax, options)
       unit = 'degrees';
       xunit = 'mm';
       col = ax - 3;
-      figure(4);
+      %figure(options.figure_base + 5);
+      figure();
       fig_ix = 2;
     else
       unit = 'mm';
       xunit = 'degrees';
       col = ax;
-      figure(3);
+      figure();
+      %figure(options.figure_base + 4);
       fig_ix = 1;
     end
+    set_fig_name(options);
+
     x = onax(ax).x;
 
     % left and right ylabels in plotyy

@@ -1,4 +1,4 @@
-function [calibration] = state2calibration (state)
+function [calibration] = state2calibration (state, options)
 % Given calibration optimizer state vector, return calibration struct.  See
 % also calibration2state().
 %
@@ -29,7 +29,7 @@ function [calibration] = state2calibration (state)
   calibration.d_source_moment = [...
       state(source_x_moment_slice)' ...
       state(source_y_moment_slice)' ...  
-      [0 0 1]'];
+      [0 0 state(source_z_gain)]'];
   
   % position and orientation of X Y Z sensor coils in sensor coordinates
   calibration.d_sensor_pos = [...
@@ -81,6 +81,13 @@ function [calibration] = state2calibration (state)
   
   % quadrupole sensor distance
   calibration.q_sensor_distance = state(qp_se_dist); 
-   
-      
+
+  % This is not part of the state, but is used in forward kinematics and
+  % pose solution, when we only have a calibration.
+  calibration.pin_quadrupole = options.pin_quadrupole;
+
+  % We save the options in the calibration for documentation.  Anything
+  % that actually affects the forward kinematics should be explicitly at
+  % top level.
+  calibration.options = options;
 end

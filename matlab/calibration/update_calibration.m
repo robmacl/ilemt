@@ -26,14 +26,14 @@ for (f_ix = 1:length(files))
     calibration.linear_correction = eye(4);
   end
 
-  if (~isfield(calibration, 'bias'))
-    calibration.bias = zeros(3);
-  end
-
-  if (~isfield(calibration, 'stage_fixture'))
-    % Existing source fixture becomes the stage fixture
-    calibration.stage_fixture = calibration.source_fixture;
-    calibration.source_fixture = zeros(1, 6);
+  if (~isfield(calibration, 'stage_fixture') ...
+      || all(calibration.source_fixture == 0))
+    % Existing source fixture becomes the stage fixture, 90 degree rotation
+    % is left in the source fixture, so stage offset is rotated.
+    so_f = calibration.source_fixture;
+    calibration.stage_fixture = ...
+        [-so_f(2) so_f(1) so_f(3) 0 0 0];
+    calibration.source_fixture = [zeros(1, 5) so_f(6)];
   end
 
   save(file1, '-struct', 'calibration');

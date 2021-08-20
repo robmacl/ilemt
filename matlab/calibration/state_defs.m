@@ -2,7 +2,7 @@
 %optimization state vector.
 
 %number of element in the state vector
-num_state = 81;
+num_state = 82;
 
 %dipole source position
 source_x_pos_slice = 1:3;
@@ -63,6 +63,8 @@ qp_se_dist = 75;
 stage_fixture_pos_slice = 76:78;
 stage_fixture_orientation_slice = 79:81;
 
+% source Z moment is gain * [0 0 1]'
+source_z_gain = 82;
 
 
 % Cell array state_parts{n, 2}, a dictionary of state parts.  Each row is:
@@ -71,9 +73,13 @@ stage_fixture_orientation_slice = 79:81;
 state_parts = {
 % Dipole:
     'd_so_pos' [source_x_pos_slice source_y_pos_slice]
-    'd_so_mo' [source_x_moment_slice source_y_moment_slice]
+    'd_so_mo' [source_x_moment_slice source_y_moment_slice source_z_gain]
     'd_se_pos' [sensor_x_pos_slice sensor_y_pos_slice]
     'd_se_mo' [sensor_x_moment_slice sensor_y_moment_slice sensor_z_gain]
+    
+    % One or the other of source and sensor Z gain must be fixed.
+    'd_so_z_gain' [source_z_gain]
+    'd_se_z_gain' [sensor_z_gain]
     
     % Y component of source or sense X moment, used to fix Rz rotation
     'd_so_y_co' [source_x_moment_slice(2)]

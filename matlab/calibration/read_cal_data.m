@@ -4,7 +4,7 @@ function [motions, couplings] = read_cal_data (options)
 % file names, see:
 %    ilemt/cal_data/input_patterns/test_plans.txt 
 % 
-% files: 
+% in_files: 
 %     Cell vector of file names.  If the name encodes fixture rotations, then
 %     these are incorporated into the 'motions' output.  Otherwise it is
 %     assumed there are no extra fixture rotations.
@@ -21,7 +21,9 @@ function [motions, couplings] = read_cal_data (options)
 %     motion.
 %
 % couplings: 
-%     complex, use real_coupling() or debias_residue()
+%     This is complex so that we can potentially remove hardware
+%     measurement bias, use real_coupling() to get signed real coupling
+%     values.
 
 files = options.in_files;
 if (~iscell(files))
@@ -61,7 +63,7 @@ for (f_ix = 1:length(files))
   signs = options.source_signs' * options.sensor_signs;
 
   for (ix = 1:size(data1, 1))
-    couplings1(:, :, ix) = signs .* reshape(data1(ix, slice), 3, 3) - options.bias;
+    couplings1(:, :, ix) = signs .* reshape(data1(ix, slice), 3, 3);
   end
   couplings_c{end+1} = couplings1;
   
@@ -72,7 +74,7 @@ for (f_ix = 1:length(files))
   if (all(data1(1, 1:6) == 0) && all(data1(end, 1:6) == 0))
     cdiff = couplings1(:,:,1) - couplings1(:,:,end);
     maxdiff = max(max(abs(cdiff), [], 2), [], 1);
-fprintf(1, 'drift: %s %g\n', file1, maxdiff);
+    %fprintf(1, 'drift: %s %g\n', file1, maxdiff);
     if (maxdiff > 1e-4)
       fprintf(1, 'Warning: drift check failed: %s %g\n', file1, maxdiff);
     end

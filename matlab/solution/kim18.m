@@ -3,7 +3,7 @@ function [pose] = kim18 (coupling, calibration, hemi)
 % Three-Axis Electromagnetic Tracking System", Wooyoung Kim, Jihoon Song,
 % Frank Park, 2018.  IEEE Transactions on Industrial Electronics
 %
-% Notation: variable ending in '_' are from the paper
+% Notation: variables ending in '_' are from the paper
 % 
 
 kim_cal = cal2kim18(calibration);

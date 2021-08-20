@@ -7,8 +7,10 @@ function [poses, valid, resnorms] = pose_solution ...
 % calibration: 
 %    calibration struct to use
 % 
-% options:
-%    may affect the solution.
+% options.pose_solution:
+%    Selects the solution method.
+% 
+% Other options.* may also have effect.
 % 
 % hemisphere:
 %   Optional, vector parallel to couplings.  What hemisphere the pose is
@@ -22,13 +24,16 @@ function [poses, valid, resnorms] = pose_solution ...
 % valid(n):
 %    True if the result pose seems to be valid (based on residual error).
 
+  if (nargin < 3 || isempty(options))
+    options = calibration.options;
+  end
   if (nargin < 4 || isempty(hemisphere))
     hemisphere = repmat(options.hemisphere, size(couplings, 3), 1);
   end
 
   if (strcmp(options.pose_solution, 'optimize'))
     [poses, resnorms] = ...
-        pose_solve_optimize(couplings, calibration, options, hemisphere);
+        pose_solve_optimize(couplings, calibration, hemisphere, options);
   elseif (strcmp(options.pose_solution, 'kim18'))
     [poses, resnorms] = ...
         pose_solve_kim18(couplings, calibration, hemisphere);
@@ -43,7 +48,7 @@ function [poses, valid, resnorms] = pose_solution ...
   if (sum(~valid) > 0)
     fprintf(1, '%d invalid points with residual > %g.\n', ...
             sum(~valid), options.valid_threshold);
-    bad_points = find(~valid)
+    %bad_points = find(~valid)
   end
 
   if (options.linear_correction && isfield(calibration, 'linear_correction'))

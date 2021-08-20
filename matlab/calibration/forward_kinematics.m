@@ -6,9 +6,9 @@ function [coupling] = forward_kinematics (P, calibration)
   state_defs;
   
   % Quadrupole source and sensor moments.  Axes are forced to zero if they are
-  % very small.
-  % ### the near-zero special case is preventing optimization from ever
-  % moving from a zero initial state.
+  % very small.  Because of our efficiency special case for near-zero
+  % quadrupole you need to give a nonzero initial value to the quadrupole
+  % moment order for any quadrupole optimization to happen.
   q_so_mo = calibration.q_source_moment;
   q_se_mo = calibration.q_sensor_moment;
 
@@ -100,7 +100,8 @@ function [coupling] = forward_kinematics (P, calibration)
   end
 
   % This scaling is traditional.  Was once necessary?  IDK.  Sensor moments
-  % would presumably be this much bigger to get the right coupling w/o this
-  % scaling.
+  % would be this much smaller to get the right coupling w/o this scaling.
+  % This makes the source and sensor moments more similar in magnitude (closer
+  % to 1), which may help optimization, and is also convenient for printout.
   coupling = coupling./250;
 end

@@ -1,9 +1,8 @@
 function [kim_cal] = cal2kim18 (calibration)
 % Convert our calibration model into the one expected by the algorithm.  The
 % biggest limitation is that it expects concentric source/sensor coils, so
-% will not work well with highly non-concentric arrangements.  Here we assume
-% source/sensor coordinates origin which the pose translation is computed from
-% is at this hypothetical common center, rather than at the Z coil.
+% will not work well with highly non-concentric arrangements.  The concentric
+% calibration forces all of the coils to be located at the origin.
 % 
 % For our stage testing, we (elsewhere) use the source/sensor fixture
 % transforms to the absorb the offset from the assumed center to the our
