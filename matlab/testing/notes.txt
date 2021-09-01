@@ -80,30 +80,37 @@ Maybe later:
 
 Notes on Rz runout test:
 
-Numbers don't seem to be reproducible to better than 20 um.  Also, there seems
-to be 10's of um of hysteresis with pushing on the pole in the Y direction,
-not so much in X.  This seemed to be improved somewhat by increasing the pole
-mount spring tension, and may be due to the tape I added for friction.
+Use the Mahr +/- 250 um test indicator, since it has low force, and does not
+deflect the pole.  (The Shars dial indicator deflects the pole ~70 um.)  The
+indicator reading varies as much as +/- 25 um as you move away from a Rz angle
+and then return.  This non-repeatable stage runout sets a limit on position
+accuracy, and also on when to say "good enough" with the axis offset.  (The
+runout due to XZ seems to be a good bit less, at least as tested by moving
+away from the setpoint and then coming back.  The on-axis Y non-repeatability
+is perhaps noticeable.)
+
+"Axis offsets" are applied to the raw axis positions set to the stage.  It is
+perhaps least confusing to adjust the axis offsets in "Absolute axis" mode on
+ilemt_ui, but then you have to consider which is the actual stage XY axis that
+you want to move to center up, since these rotate with Rz.
 
 Note that the indicator is pointing in stage +Y, so reading increases with -Y
 
-Measure runout at -90, 0, and +90 Rz
+Measure runout at -90, 0, and +90 Rz.  Can do +/- 45 also, which helps to get
+a sense of repeatability, and if far enough off to exceed range of the test
+indicator. 
 
-Desire is to equalize -90 and +90 readings.  Avoid zeroing the indicator after
-you start, because things may move.  If -90 is larger (positive of) +90, then
-increase the X axis offset by 1/2 the difference.
+Desire is to equalize -90 and +90 readings.  If -90 is larger (positive of)
++90, then increase the X axis offset by 1/2 the difference.
 
-After -90, +90 are fairly equal, we want to set the Y axis offset so that the
-indicator reading is -60 um wrt. whatever X null we ended at.  Eg zero degree
-reading should be -60 um below the mean of the +90 and -90 readings.  Increase
-the Y offset by the full difference between the between the +90/-90 midpoint
-and -60.  The purpose of the 60 um offset is to roughly compensate for the
-pole flex due to indicator pressure, about 60 um.  If we could read at 180
-degrees, or if the indicator had less pressure, then we would not need this
-approximation.  The pole will also deflect at +90/-90, but this effect should
-cancel.
- ==> with test indicator the indicator force deflection should be negligible,
-     so change -60 um to zero in the above.
+After -90, +90 are fairly equal, we want to set the Y axis offset so that we
+also read the same value at 0 degrees Rz.  Increase the Y offset by the full
+difference between the 0 degree reading and the +90/-90 reading.
+
+Read off of the ball on the sensor fixture alignment tool.  This has maybe 10
+um of runout wrt. the body, but is round.  The body has some flat spots.
+
+
 
 
 [1 Sep 21]

@@ -293,18 +293,17 @@
 			<Item Name="ni_home.vi" Type="VI" URL="../server/ni_home.vi"/>
 			<Item Name="ni_move.vi" Type="VI" URL="../server/ni_move.vi"/>
 			<Item Name="ni_move_backlash.vi" Type="VI" URL="../server/ni_move_backlash.vi"/>
+			<Item Name="ni_move_backlash_loop.vi" Type="VI" URL="../server/ni_move_backlash_loop.vi"/>
 			<Item Name="ni_open.vi" Type="VI" URL="../server/ni_open.vi"/>
 			<Item Name="nilvaiu.dll" Type="Document" URL="nilvaiu.dll">
 				<Property Name="NI.PreserveRelativePath" Type="Bool">true</Property>
 			</Item>
 			<Item Name="pose_to_vector.vi" Type="VI" URL="../../utilities/pose_to_vector.vi"/>
-			<Item Name="pose_to_vector.vi" Type="VI" URL="../../utilities/labview/pose_to_vector.vi"/>
 			<Item Name="rotation_to_euler.vi" Type="VI" URL="../../utilities/rotation_to_euler.vi"/>
 			<Item Name="spectral_measurement.vi" Type="VI" URL="../../micron/labview/testing/spectral_measurement.vi"/>
 			<Item Name="transform_axis_positions.vi" Type="VI" URL="../server/transform_axis_positions.vi"/>
 			<Item Name="transform_inverse.vi" Type="VI" URL="../../utilities/transform_inverse.vi"/>
 			<Item Name="vector_to_pose.vi" Type="VI" URL="../../utilities/vector_to_pose.vi"/>
-			<Item Name="vector_to_pose.vi" Type="VI" URL="../../utilities/labview/vector_to_pose.vi"/>
 		</Item>
 		<Item Name="Build Specifications" Type="Build"/>
 	</Item>
