@@ -76,7 +76,11 @@ function [options] = check_poses_options (cal_options, key_value)
   % correlation: test report of error correlations
   % workspace: 3D plot of error vectors.
   % sweep: axis sweep linearity tests, plots and excel.
-  options.reports = {'overall', 'workspace'};
+  options.reports = {'overall', 'workspace', 'drift'};
+  
+  % If drift is greater than this, then report drift.  Angular error is scaled
+  % using 'moment'.  (meters)
+  options.drift_threshold = 50e-6;
 
   % For sweep report, detailed cross coupling response from these axes.
   options.axis_response = [6];

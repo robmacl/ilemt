@@ -40,6 +40,10 @@ if (any(strcmp(options.reports, 'workspace')))
   perr_workspace_vol(perr, options);
 end
 
+if (any(strcmp(options.reports, 'drift')))
+  perr_report_drift(perr, options);
+end
+
 if (any(strcmp(options.reports, 'sweep')))
   onax = perr_on_axis(perr, options);
   perr_axis_plot(perr, onax, options);

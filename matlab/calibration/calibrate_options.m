@@ -45,7 +45,10 @@ options.base_calibration = [];
 % Is this a high rate calibration?
 options.ishigh = true;
 
-% Normalize residue by coupling magnitude?
+% Normalize residue by coupling magnitude?  The idea is that it makes the
+% calibration points equal weighted even though the coupling magnitude varies
+% quite a bit.  In limited testing, this maybe improves accuracy 3%, and
+% doesn't seem to hurt.
 options.normalize = true;
 
 % If true, then the quadrupole positions (source and sensor) are fixed to the

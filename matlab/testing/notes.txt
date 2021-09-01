@@ -106,6 +106,153 @@ cancel.
      so change -60 um to zero in the above.
 
 
+[1 Sep 21]
+
+Thinking on it a bit, I realized recency bias made me too concerned with
+mechanical issues.  The drift (and initial 1/f noise) seems to have been a
+problem with the the reference channel.  What was particularly suggestive was
+that yesterday the drift was reduced when the reference compensation was
+*off*.  It had only drifted another 40um overnight, and drift was worse
+without reference compensation, but 1/f was much better with the reference
+off.  Even then I was getting high rate 1/f similar in amplitude to the HF
+noise and vibration, which is not how it should be.
+
+I swapped the third input card into slot 0.  The first prototype with all the
+reference channel bodges was in slot 0, and reference issues could definitely
+explain noise and gain variation.  But possibly card 0 was loose in the
+socket?
+
+It is getting moderately hot inside the box, but not terrible.  The driver
+heatsinks are hot to the touch, and the DAC and input slot 0 are warm,
+decreasing away from the power section.  I expect that fan cooling would help
+the drift.  Probably also reliablity, especially given the DIY reflow process.
+
+re. the distance magnitude of drift threshold.  We can't set the drift
+threshold any tighter than the drift we are seeing when things are working
+right.  But it would be nice to know what the drift is in distance units.  The
+most direct way to get at that would be to compare the pose solutions for the
+drift in check_poses().
+
+ ==> After swapping cards, the drift was 7.5um (!) during a large collection.
+
+I added 'drift' report to check_poses(), and we were getting up to 60
+um drift with cal_5_28_premo_rotated_dipole.  Similar in cal_7_30_premo_cmu. 
+
+
+[31 Aug 21]
+
+Got the sensor fixture tweaked in.  The rotation center alignment with the
+setup ball alignment tool seems to be better than 25 um.
+
+I re-checked the source fixture, and it seems about where it was when I last
+tested.  The side panels are parallel within 10 um, and the worst deviation of
+the center (using source fixture ball tool) is 25 um.
+
+As part of getting the Rz offset, I looked at repeatability.  The sensor
+fixture is only repeatable to about 25 um, perhaps because of non-flat surface
+due to the spray lacquer I put on.  (Note that some of the source and sensor
+fixture internal error can be absorbed into the fixture transforms.)
+
+Also, as noted earlier, there is up to 25 um deviation in Y motion on the
+indicator when the Rz is moved and moved back.  Given the >100 um motion seen
+in the middle of Rz moves, we can't expect all that much repeatability.  The
+translation runout due to XZ moves seems much smaller, <= 10 um.  The on-axis
+Y non-repeatability is perhaps as much as 30 um?  Something moved, anyway.
+
+While this is somewhat disappointing, it should not be all that surprising.
+The sensor fixture is definitely a lot more accurate than it was before, now I
+tweaked it for center of rotation and squareness, and we have the side stop.
+It was almost certainly 100-200 um off before.
+
+I'd like to do tests of the stage accuracy and runout with surface plate and
+gauge blocks.
+
+
+Pulling back, so far as the *project* goals go, I've gotten the position
+accuracy into a range where the ground truth is starting to become limiting,
+even though position accuracy was never the primary goal anway.
+
+
+Given problems with fixture non-repeatability, I should really be folding
+re-fixturings into my process somehow.  It would be obvious to re-fixture
+between calibration and test data, but maybe this doesn't really make sense?
+That would surely increase the measured error somewhat.  While this is in part
+noise, it also stands in for the unknown inaccuracy of the ground truth, which
+is limiting on the genuine tracker accuracy.  Getting a calibration that
+precisely fits the error of the ground truth is not what the user wants.
+
+
+FWIW, the ilemt_ui radial distance measure drifts at least 10's of um over the
+course of a calibration collection.  Just now it is at 130 um, after doing
+medium and large data, on first fixture.  This may well be mechanical drifts
+in the setup due to room temperature and the new setup "settling down" after
+being modified.  It could also be actual drift of the tracker.  Whatever the
+source, this is another contributor to non-repeatability, and so to both
+measured and actual error.
+ ==> Hmmn.  It drifted another +125 um when I repeated large data?  Or I
+     forgot to "Set ref"?  I don't think so.  May need to let things settle
+     for a day or two.  I'm suspicious of the source slider setup.  But this
+     could also be electronics, IDK.
+ ==> And another +135 in the next sensor fixture, on big data.
+
+I had kind of forgotten about the magnitude of measurement drift I was seeing
+in ilemt_ui, in the process of trying to squeeze out the best calibration
+accuracy numbers.  This also points back to the project goals, and micron
+application, where a couple 100's of um drift over an hour was not a problem
+at all.
+
+For context, Delrin thermal expansion is ~ 1e-4 / degrees C.  So 1E-3 for 10C.
+Then 100mm of Delrin expands 100um over 10C.  10C seems large for an ambient
+temperature swing in the lab, but the source experiences more swing due to its
+self heating.  We can get at ILEMT intrinsic drift better when everything is
+on the surface plate, but it seems fairly plausible the fixtures+stage could
+drift 100um from thermal effects.
+
+
+What amplitude change corresponds to 125um/250mm?
+  B=r^-3
+  B=(1 + 125um/250mm)^-3
+
+So we take the power not the root, and 125 um should be -56 dB, which would be
+way over the drift threshold.  -80 dB should be 8 um.
+
+The drifts we got in cal_5_28_premo_rotated_dipole are:
+drift: soYoutZup_seYoutZup_ld.dat 4.92059e-05
+drift: soYoutZup_seZinYup_ld.dat 7.30418e-05
+drift: soYoutZup_seZinXdown_ld.dat 2.89979e-05
+
+Yep, the drift check failed:
+    drift: soYoutZup_seYoutZup_md.dat 4.0811e-05
+    drift: soYoutZup_seYoutZup_ld.dat 0.000194152
+    Warning: drift check failed: soYoutZup_seYoutZup_ld.dat 0.000194152
+    drift: soYoutZup_seZinYup_ld.dat 0.000206551
+    Warning: drift check failed: soYoutZup_seZinYup_ld.dat 0.000206551
+
+That's semi-encouraging.  But I got -74 dB in the check?  Ah, but the drift
+check is the max absolute difference, not the relative change.  Need to look
+into that more.
+
+
+Anyway, I don't want to do detailed characterization of drift until I get to
+the system paper, so for now the first resort is to just wait and see if the
+drift settles down.
+
+
+At this point, with all the concerns about fixture accuracy, drift, and so on,
+I am quite unsure whether the differences in calibrated accuracy I was seeing
+are real or not.  It's certainly possible that the rotated corner dipole/premo
+dataset was blessed by a planetary alignment.  When our error was >1mm all
+this stuff was in the noise, but no longer.
+
+
+[23 Aug 21]
+
+Oops, definitely problems with the sensor fixture.  For one thing,
+without the side stop, as seen in Rz alignment test, the position is
+only accurate to 100 um or so (200 um TIR).  So quite significant.
+Working on inspecting/tweaking the sensor fixture now.
+
+
 [12 Aug 21]
 
 The DLT correction method is giving a barking mad result for concentric w/ the

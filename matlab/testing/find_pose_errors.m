@@ -38,7 +38,8 @@ function [perr] = find_pose_errors (calibration, options)
   perr.so_fix = calibration.source_fixture;
   perr.st_fix = calibration.stage_fixture;
   perr.se_fix = calibration.sensor_fixture;
-  [motion_poses, couplings] = read_cal_data(options);
+  [motion_poses, couplings, file_map] = read_cal_data(options);
+  perr.in_files = options.in_files;
   
   if (options.hemisphere == 0)
     % Find hemisphere for pose solutions.  We use the ground truth pose and pick
@@ -65,6 +66,7 @@ function [perr] = find_pose_errors (calibration, options)
   perr.measured_source = so_measured(valid, :);
   perr.motion_poses = motion_poses(valid, :);
   perr.couplings = couplings(:, :, valid);
+  perr.file_map = file_map(valid);
   for (ix = 1:size(perr.couplings, 3))
     norms(ix) = norm(perr.couplings(:,:,ix));
   end

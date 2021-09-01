@@ -1,4 +1,4 @@
-function [motions, couplings] = read_cal_data (options)
+function [motions, couplings, file_map] = read_cal_data (options)
 % Read ILEMT calibration data from stage_calibration.vi.  All the arguments
 % are in the options struct.  For details on the fixture encoding in the
 % file names, see:
@@ -12,18 +12,22 @@ function [motions, couplings] = read_cal_data (options)
 % ishigh: If true, extract high rate couplings, otherwise low rate.
 %
 % Return values:
-% motions: 
-%     source fixture motion and (sensor) stage motion. Each row is:
-%         [source_motion sensor_motion]
+% motions(n, 18): 
+%     Each row is:
+%         [source_motion sensor_motion stage_motion]
 %
-%     with poses in vector2tr format, units (mm, degree).  We only need two
-%     motion poses because the sensor fixture motions are added to the stage
-%     motion.
+%     These are source fixture motion, total sensor motion (including
+%     sensor fixture motion), and stage motion only (less sensor fixture
+%     motion).  The poses are in vector2tr format, units (mm, degree).
 %
-% couplings: 
+% couplings(3, 3, n): 
 %     This is complex so that we can potentially remove hardware
 %     measurement bias, use real_coupling() to get signed real coupling
 %     values.
+% 
+% file_map(n):
+%     Parallel to the result data, the index in options.in_files of the
+%     file that the datapoint came from.
 
 files = options.in_files;
 if (~iscell(files))
@@ -50,6 +54,7 @@ for (f_ix = 1:length(files))
   data1 = dlmread(file1);
   motions1 = repmat(fix_motions, size(data1, 1), 1);
   motions1(:, 7:12) = motions1(:, 7:12) + data1(:, 1:6);
+  motions1(:, 13:18) = data1(:, 1:6);
   motions_c{end+1} = motions1;
 
   couplings1 = zeros(3, 3, size(data1, 1));
@@ -70,7 +75,9 @@ for (f_ix = 1:length(files))
   % Drift check.  Each file should have at least first and last points in the
   % null pose.  These measurements are ideally identical, and if they are too
   % different it suggests a problem, like something moved during the
-  % collection.
+  % collection.  A more precise check based on the pose change is made by
+  % check_poses() 'drift' report.  But this check is useful because it can
+  % be done when we don't yet have a calibration.
   if (all(data1(1, 1:6) == 0) && all(data1(end, 1:6) == 0))
     cdiff = couplings1(:,:,1) - couplings1(:,:,end);
     maxdiff = max(max(abs(cdiff), [], 2), [], 1);
@@ -85,6 +92,15 @@ end
 
 motions = cat(1, motions_c{:});
 couplings = cat(3, couplings_c{:});
+
+% Compute file map
+file_map = zeros(size(motions, 1), 1);
+prev_ix = 1;
+for (f_ix = 1:length(motions_c))
+  new_ix = prev_ix + length(motions_c{f_ix}) - 1;
+  file_map(prev_ix:new_ix) = f_ix;
+  prev_ix = new_ix + 1;
+end
 
 end % read_cal_data
 

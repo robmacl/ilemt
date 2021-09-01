@@ -66,13 +66,7 @@ function [state_err, perr] = find_pose_errors_objective(state, perr_in, options)
     % Errors in source coordinates (no coordinate transform).
     perr.measured = so_measured;
     perr.desired = so_desired;
-    so_errors = zeros(size(so_measured));
-    for (ix = 1:size(so_measured, 1))
-      so_measured1 = pose2trans(perr.measured(ix, :));
-      so_desired1 = pose2trans(perr.desired(ix, :));
-      so_errors(ix, :) = trans2pose(inv(so_desired1) * so_measured1);
-    end
-    perr.errors = so_errors;
+    perr.errors = pose_difference(perr.measured, perr.desired);
   end
 
   % Weight the angular error according to the moment.
