@@ -3,6 +3,8 @@ function [res] = check_poses (varargin)
 % struct.  Our main effect is printing and plots, but we return a result
 % struct of various interesting things.
 
+%%% Options processing:
+
 fprintf(1, '\nChecking from: %s\n', pwd());
 
 cal_options = calibrate_options('check_poses', varargin);
@@ -22,8 +24,12 @@ end
 
 disp(show);
 
+calibration = load_cal_file(options.cal_file);
 
-calibration = load(options.cal_file);
+
+%%% Main body:
+
+% Load data, optimize fixtures and find errors at each point.
 perr = find_pose_errors(calibration, options);
 
 if (any(strcmp(options.reports, 'overall')))
@@ -35,8 +41,8 @@ if (any(strcmp(options.reports, 'correlation')))
 end
 
 if (any(strcmp(options.reports, 'workspace')))
+  % Plot of 
   % Useful mainly for grid patterns, not axis sweeps.
-  % figure_base + 3
   perr_workspace_vol(perr, options);
 end
 
@@ -50,20 +56,17 @@ if (any(strcmp(options.reports, 'sweep')))
 
   % Write summary Excel file in data directory.  This uses the
   % check_poses.xslx template.
-  % figure_base + [4, 5]
   perr_axis_stats(perr, onax, options);
 
   % Response of every axis to an individual axis.  Not done on all axes by
   % default because it's too much clutter.
   for (ax = options.axis_response)
-    % figure_base + 10 + ax
     perr_axis_response(perr, onax, ax, options);
   end
 else
   onax = [];
 end
 
-% figure_base + 6
 if (any(strcmp(options.reports, 'scatter')))
   error_scatter(perr, options);
 end
@@ -73,4 +76,3 @@ res.options = options;
 res.perr = perr;
 res.onax = onax;
 res.calibration = calibration;
-

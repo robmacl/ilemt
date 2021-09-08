@@ -9,26 +9,28 @@ function perr_axis_plot (perr, onax, options)
   max_abs_y = zeros(2, 3, 2);
 
   for (ax = 1:6)
-    if (isempty(onax(ax).on_ax_ix))
-      continue;
-    end
-
-    if (ax > 3)
+    if (ax >= 4)
       unit = 'degrees';
       xunit = 'mm';
       col = ax - 3;
-      %figure(options.figure_base + 5);
-      figure();
+      if (ax == 4)
+        figure();
+      end
       fig_ix = 2;
     else
       unit = 'mm';
       xunit = 'degrees';
       col = ax;
-      figure();
-      %figure(options.figure_base + 4);
+      if (ax == 1)
+        figure();
+      end
       fig_ix = 1;
     end
     set_fig_name(options);
+
+    if (isempty(onax(ax).on_ax_ix))
+      continue;
+    end
 
     x = onax(ax).x;
 

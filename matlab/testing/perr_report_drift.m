@@ -19,6 +19,8 @@ function [res] = perr_report_drift (perr, options)
         fprintf(1, 'Warning: drift %.3g in %s: ', d_mag, file1);
         disp(dp);
       end
+    else
+      fprintf(1, 'No home poses, skipping drift check.\n');
     end
   end
 end

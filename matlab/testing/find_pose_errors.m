@@ -43,7 +43,11 @@ function [perr] = find_pose_errors (calibration, options)
   
   if (options.hemisphere == 0)
     % Find hemisphere for pose solutions.  We use the ground truth pose and pick
-    % the direction with the largest translation.
+    % the direction with the largest translation.  Using the ground truth
+    % in the solution might seem to be cheating, but it isn't.  In normal
+    % operation the hemisphere has to be fixed by the user.  When we add
+    % source fixture motion we are operating in multiple hemispheres, so
+    % we can't fix to a single hemisphere.
     desired1 = fk_pose_calculation(motion_poses, perr.so_fix, perr.st_fix, perr.se_fix);
     desired1 = desired1(:, 1:3);
     hemisphere = zeros(size(desired1, 1), 1);

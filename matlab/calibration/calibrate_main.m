@@ -82,7 +82,7 @@ disp(options)
 
 % create an input state for the optimization from the calibration values and
 % source and sensor fixtures
-base_cal = load(options.base_calibration);
+base_cal = load_cal_file(options.base_calibration);
 
 % If there is no quadrupole, then we need to kick ourselves out of the
 % zero/near-zero special case.  Giving a significant magnitude also usually
@@ -152,7 +152,7 @@ calibration = output_correction(calibration, options);
 
 fprintf(1, '\nCalibration result:\n');
 print_calibration(calibration)
-fprintf(1, 'RMS/point residue %g, sum square %g.\n', ...
+fprintf(1, 'RMS/point residue %.4f, sum square %.4f\n', ...
         sqrt(cal_residue/size(motion_poses, 1)), cal_residue);
 
 save_calibration(calibration, options.out_file);

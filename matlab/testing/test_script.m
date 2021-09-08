@@ -14,13 +14,13 @@ cp_variants = {
     };
 
 cp_opts = {
-    'reports', {'overall'}
+    'reports', {'overall', 'bias'}
     };
 
 
-% test_options.m in the calibration data directory decides what calibrations
-% and tests to run.
-run test_options.m;
+% local_test_options.m in the calibration data directory decides what
+% calibrations and tests to run.
+run local_test_options.m;
 
 
 %%% Calibration runs:
@@ -28,7 +28,7 @@ run test_options.m;
 clear cal_results;
 for (cal_ix = 1:length(cal_runs))
   [cal, options] = ...
-      calibrate_main(cal_runs{cal_ix}{1}, ...
+       calibrate_main(cal_runs{cal_ix}{1}, ...
                      'base_calibration', cal_runs{cal_ix}{2:end}, ...
                      cal_opts{:});
   res1.calibration = cal;

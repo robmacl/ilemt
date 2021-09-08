@@ -61,7 +61,7 @@ options.concentric = false;
 
 % Additional correction based on generated poses, eg. linear transform.
 % We have several correction modes, but 'DLT' is currently the best.
-% See output_correction().
+% See output_correction().  'none' means off.
 options.correct_mode = 'DLT';
 
 % If true, reoptimize the fixture poses in output_correction().
@@ -304,5 +304,10 @@ if (isempty(options.out_file))
   if (options.concentric)
     wot = [wot '_concentric'];
   end
-  options.out_file = [wot '_hr_cal'];
+  options.out_file = ['output' filesep wot '_hr_cal'];
+end
+
+path = fileparts(options.out_file);
+if (~isempty(path) && ~exist(path, 'dir'))
+  mkdir(path);
 end

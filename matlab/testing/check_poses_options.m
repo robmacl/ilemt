@@ -73,9 +73,13 @@ function [options] = check_poses_options (cal_options, key_value)
 
   % What reports and plots to generate:
   % overall: text report of RMS and max error
-  % correlation: test report of error correlations
-  % workspace: 3D plot of error vectors.
-  % sweep: axis sweep linearity tests, plots and excel.
+  % correlation: test report of error correlations, kind of useless
+  % workspace: 3D plots of error vectors and rot/trans cross-coupling
+  % drift: check the pose change between start and end of each input file
+  % sweep: axis sweep linearity tests: plots and excel.
+  % scatter: scatter plot of error vs. coupling magnitude etc.
+  %
+  % See check_poses() for more details on the reports.
   options.reports = {'overall', 'workspace', 'drift'};
   
   % If drift is greater than this, then report drift.  Angular error is scaled
