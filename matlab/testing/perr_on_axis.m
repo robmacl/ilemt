@@ -7,13 +7,7 @@ function [res] = perr_on_axis (perr, options)
   %
   %   res(ax).errs(kind, npoints, deriv):
   %     "same kind" means trans->trans or rot->rot coupling, "different kind"
-  %     means rot->trans or trans->rot.
-  %     kind:
-  %       1 on-axis error
-  %       2 off-axis same-kind (exclusive of on-axis)
-  %       3 different kind error magnitude
-  %       4 to Rz axis
-  %       5 same-kind error magnitude (both on and off axis)
+  %     means rot->trans or trans->rot.  See on_axis_kind.m definitions for kind.
   %     If deriv=1, then it is the base (INL) error, if deriv=2, then it is
   %     the DNL.  For other than on-axis, the values are the vector sums of
   %     the off-axis INL and DNL, so are non-negative.
@@ -29,6 +23,8 @@ function [res] = perr_on_axis (perr, options)
   % Note that the axis sweeps are defined in the stage coordinates, so
   % options.stage_coords must be true in order to get the errors on stage
   % coordinates also.
+
+  on_axis_kind; % definitions
   res = struct([]);
 
   stage_pos = perr.motion_poses(:, 13:18);
@@ -61,7 +57,6 @@ function [res] = perr_on_axis (perr, options)
     % on_ax_ix is the indices of poses (rows) where all of the off-axis
     % positions are zero.
     on_ax_ix = find(sum(zero_copy, 2) == 5);
-
     % We need to pick out the uniform step sweep part, dropping out leading
     % and trailing origin points.
     last_good = length(on_ax_ix);
@@ -80,9 +75,18 @@ function [res] = perr_on_axis (perr, options)
       end
     end
     on_ax_ix(1:first_good-1) = [];
+    dx = diff(stage_pos(on_ax_ix, ax));
+    bad_dx = (abs(dx - median(dx)) > zero_tol);
+    if (any(bad_dx))
+      bad_dx = [bad_dx(1); bad_dx];
+      on_ax_ix = on_ax_ix(~bad_dx);
+      fprintf(1, 'Axis %d: nonuniform step size, dropping %d poses.\n', ...
+              ax, sum(bad_dx)); 
+    end
     if (~all(diff(on_ax_ix) == 1))
        error('Holes in sweep.');
     end
+    
     %{
     lims = options.axis_limits(ax, :);
     clip = stage_pos(:, ax) < lims(1) | stage_pos(:, ax) > lims(2);
@@ -108,14 +112,20 @@ function [res] = perr_on_axis (perr, options)
     % Get on-axis error, and also the x values, which are in common across all of
     % the error kinds.
     [on_ax_err, res(ax).x] = perr_filt_onax(x, pose_err(on_ax_ix, ax), options);
+    res(ax).err = zeros(onax_num_kinds, length(on_ax_err), 2);
+    res(ax).err(onax_on_axis, :, :) = shiftdim(on_ax_err, -1);
+    
     % All the error kinds
-    res(ax).err = ...
-      [shiftdim(on_ax_err, -1)
-       shiftdim(perr_filt(x, pose_err(on_ax_ix, off_ax), options), -1)
-       shiftdim(perr_filt(x, pose_err(on_ax_ix, diff_ax), options), -1)
-       shiftdim(perr_filt(x, pose_err(on_ax_ix, Rz_ax), options), -1)
-       shiftdim(perr_filt(x, pose_err(on_ax_ix, same_ax), options), -1)];
-    for (kix = 1:5)
+    res(ax).err(onax_other_axes, :, :) = ...
+        shiftdim(perr_filt(x, pose_err(on_ax_ix, off_ax), options), -1);
+    res(ax).err(onax_same_axes, :, :) = ...
+        shiftdim(perr_filt(x, pose_err(on_ax_ix, same_ax), options), -1);
+    res(ax).err(onax_cross, :, :) = ...
+        shiftdim(perr_filt(x, pose_err(on_ax_ix, diff_ax), options), -1);
+    res(ax).err(onax_to_Rz, :, :) = ...
+       shiftdim(perr_filt(x, pose_err(on_ax_ix, Rz_ax), options), -1);
+    
+    for (kix = 1:onax_num_kinds)
       for (dix = 1:2)
 	res(ax).stats(kix, dix, 1) = sqrt(mean(squeeze(res(ax).err(kix, :, dix)).^2));
 	res(ax).stats(kix, dix, 2) = max(abs(squeeze(res(ax).err(kix, :, dix))));

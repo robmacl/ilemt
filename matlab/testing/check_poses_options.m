@@ -88,6 +88,9 @@ function [options] = check_poses_options (cal_options, key_value)
 
   % For sweep report, detailed cross coupling response from these axes.
   options.axis_response = [6];
+  
+  % If true, include on-axis response in perr_axis_plot()
+  options.plot_on_axis = false;
 
   % For read_cal_data()
   options.sensor_signs = cal_options.sensor_signs;
