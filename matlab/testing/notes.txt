@@ -115,8 +115,6 @@ more.  We still get many fewer failures with the concentric calibration than
 without.  This may be in part because the other path (based on the fixture
 transform) does not include the fixture motion.
 
-
-
 
 [1 Sep 21]
 

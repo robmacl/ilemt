@@ -47,6 +47,9 @@ for (col = 1:2)
       % plots.
       x = onax(ax).x;
       ydata = squeeze(onax(ax).err(kix, :, col));
+      if (col == 2)
+        ydata = ydata * ryscale;
+      end
       hold on;
       plot(x, ydata);
       leg_names{end+1} = ax_names{ax};

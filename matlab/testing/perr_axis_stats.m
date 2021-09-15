@@ -6,13 +6,8 @@ function [inl, dnl] = perr_axis_stats (perr, onax, options)
   % each kind.  Second is the axis.
   inl = zeros(onax_num_kinds*2, 6);
   dnl = zeros(onax_num_kinds*2, 6);
-  
-  % Assumes data directory is the working directory
-  in_path = fileparts(which('perr_axis_stats'));
-  fbase = 'check_poses.xlsx';
-  fout = [pwd filesep fbase];
-  fin = [in_path filesep fbase];
-  copyfile(fin, fout);
+
+  fout = copy_excel_template('axis_stats');
   
   for (ax_ix = 1:6)
     if (isempty(onax(ax_ix).on_ax_ix))

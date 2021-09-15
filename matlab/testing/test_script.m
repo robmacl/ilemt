@@ -1,4 +1,4 @@
-diary test_output.txt;
+diary output/test_output.txt;
 disp ________________________________________________________________
 fprintf(1, 'Test start: ');
 disp(datetime);
@@ -42,7 +42,7 @@ end
 clear cp_results;
 for (cal_ix = 1:length(cp_runs))
   for (var_ix = 1:length(cp_variants))
-    cp_results{cal_ix, var_ix} = ...
+    cp_results(cal_ix, var_ix) = ...
         check_poses('cal_file', cp_runs{cal_ix}{:}, ...
                     'variant', cp_variants{var_ix, 1}, ...
                     cp_variants{var_ix, 2}{:}, ...
@@ -50,16 +50,14 @@ for (cal_ix = 1:length(cp_runs))
   end
 end
 
-if (exist('cp_results', 'var'))
-  oa_fields = fieldnames(cp_results{1,1}.overall);
-  for (ix = 1:length(oa_fields))
-    fname = oa_fields{ix};
-    wot = array2table(cellfun(@(x)x.overall.(fname), cp_results));
-    wot.Properties.RowNames = cellfun(@(x) x{1}, cp_runs, 'uniformoutput', false);
-    wot.Properties.VariableNames = cp_variants(:,1)';
-    fprintf('\n%s:\n', fname);
-    disp(wot);
-  end
+if (~exist('cal_results', 'var'))
+  cal_results = [];
 end
 
-diary off;
+if (~exist('cp_results', 'var'))
+  cp_results = [];
+end
+
+save('output/test_results', 'cal_results', 'cp_results');
+
+gen_accuracy_table();
