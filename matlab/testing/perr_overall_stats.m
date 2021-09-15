@@ -1,4 +1,5 @@
-load('test_results');
+function [fout] = perr_overall_stats ()
+load('output/test_results');
 
 % String calibration file and variant names.
 cal_files = {};

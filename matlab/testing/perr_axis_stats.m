@@ -7,7 +7,7 @@ function [inl, dnl] = perr_axis_stats (perr, onax, options)
   inl = zeros(onax_num_kinds*2, 6);
   dnl = zeros(onax_num_kinds*2, 6);
 
-  fout = copy_excel_template('axis_stats');
+  fout = copy_excel_template('axis_stats.xlsx');
   
   for (ax_ix = 1:6)
     if (isempty(onax(ax_ix).on_ax_ix))

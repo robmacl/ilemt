@@ -41,7 +41,7 @@ end
 
 clear cp_results;
 for (cal_ix = 1:length(cp_runs))
-  for (var_ix = 1:length(cp_variants))
+  for (var_ix = 1:size(cp_variants, 1))
     cp_results(cal_ix, var_ix) = ...
         check_poses('cal_file', cp_runs{cal_ix}{:}, ...
                     'variant', cp_variants{var_ix, 1}, ...
@@ -60,4 +60,4 @@ end
 
 save('output/test_results', 'cal_results', 'cp_results');
 
-gen_accuracy_table();
+perr_overall_stats();
