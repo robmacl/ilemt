@@ -31,9 +31,14 @@ function [options] = check_poses_options (cal_options, key_value)
   % ishigh: if true, check high rate, otherwise low rate.
   options.ishigh = cal_options.ishigh;
 
-  % valid_threshold: if pose solution residue is greater than this, then discard
-  % the point as "invalid".
+  % valid_threshold: if pose solution residue is greater than this, then the
+  % point is "invalid".  Usually either the calibration is poor or the pose
+  % solution did not converge.  With 'optimize' solution method we will try
+  % different initial states to see if they work better.
   options.valid_threshold = 1e-5;
+
+  % Discard points with residual > valid_threshold.
+  options.discard_invalid = false;
 
   % optimize_fixtures: what fixture transforms we optimize to try to reduce
   % error.  Cell vector of any of 'source', 'stage', 'sensor'.  Default {}.
@@ -52,8 +57,15 @@ function [options] = check_poses_options (cal_options, key_value)
 
   % What hemisphere the pose is constrained to: 1, 2, 3 for XYZ, negative
   % if the minus hemisphere.  eg. -2 is the -X hemisphere.  If 0 then set
-  % automatically using the ground truth pose (which may not work if there
-  % is a large change in the fixture poses from calibration time).
+  % automatically using the ground truth pose.
+  % 
+  % NOTE: auto-hemisphere doesn't work if the initial fixture tranforms are so
+  % far off that "desired" is put in the wrong hemisphere.  This can happen if
+  % there is a fixturing error during data collection, or just large motion.
+  % With large fixture errors the true solution could be anywhere.  This is
+  % really mainly a problem with the source fixture, since the sensor fixture
+  % does not change the hemisphere, and in the stage setup the sensor is
+  % pretty much forced into the +Y hemisphere of the source fixture.
   options.hemisphere = 0;
 
   % Parameters for Savitzky-Golay filter used to smooth and differentiate
@@ -75,16 +87,19 @@ function [options] = check_poses_options (cal_options, key_value)
   % overall: text report of RMS and max error
   % correlation: test report of error correlations, kind of useless
   % workspace: 3D plots of error vectors and rot/trans cross-coupling
-  % drift: check the pose change between start and end of each input file
   % sweep: axis sweep linearity tests: plots and excel.
   % scatter: scatter plot of error vs. coupling magnitude etc.
   %
   % See check_poses() for more details on the reports.
-  options.reports = {'overall', 'workspace', 'drift'};
+  options.reports = {'overall', 'workspace'};
   
   % If drift is greater than this, then report drift.  Angular error is scaled
   % using 'moment'.  (meters)
-  options.drift_threshold = 50e-6;
+  options.drift_threshold = 20e-6;
+  
+  % If RMS moment error is greater than this for a particular input file, then
+  % report that file.  (meters)
+  options.error_threshold = 5e-2;
 
   % For sweep report, detailed cross coupling response from these axes.
   options.axis_response = [6];

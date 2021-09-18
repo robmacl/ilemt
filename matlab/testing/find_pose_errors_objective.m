@@ -70,7 +70,5 @@ function [state_err, perr] = find_pose_errors_objective(state, perr_in, options)
   end
 
   % Weight the angular error according to the moment.
-  npoints = size(perr.desired, 1);
-  mo_scale = [ones(npoints, 3) ones(npoints, 3) * options.moment];
-  state_err = perr.errors .* mo_scale;
+  state_err = weighted_error(perr, options);
 end

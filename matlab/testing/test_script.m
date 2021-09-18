@@ -14,7 +14,7 @@ cp_variants = {
     };
 
 cp_opts = {
-    'reports', {'overall', 'bias'}
+    'reports', {'overall'}
     };
 
 

@@ -20,7 +20,7 @@ function [res] = perr_report_drift (perr, options)
         disp(dp);
       end
     else
-      fprintf(1, 'No home poses, skipping drift check.\n');
+      fprintf(1, '%s: no home poses, skipping drift check.\n', file1);
     end
   end
 end

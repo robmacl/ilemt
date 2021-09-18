@@ -65,7 +65,9 @@ for (f_ix = 1:length(files))
   end
 
   % Sign flips at each coupling position.
-  signs = options.source_signs' * options.sensor_signs;
+  so_sign = find_sign_pattern(file1, options.source_signs, 'source_signs');
+  se_sign = find_sign_pattern(file1, options.sensor_signs, 'sensor_signs');
+  signs = so_sign' * se_sign;
 
   for (ix = 1:size(data1, 1))
     couplings1(:, :, ix) = signs .* reshape(data1(ix, slice), 3, 3);
@@ -155,3 +157,17 @@ function [angles] = fix_lookup (wot, fixture_to_mover)
   angles = tr2vector(T);
   angles = angles(4:6);
 end % non-nested fix_lookup
+
+function [res] = find_sign_pattern (file, patterns, what)
+% Find the sign pattern in options.source_signs or options.sensor_signs
+  for (ix = 1:size(patterns, 1))
+    if (~isempty(regexp(file, patterns{ix, 1})))
+      res = patterns{ix, 2};
+      fprintf(1, '%s: %s [%d %d %d]\n', file, what, res(1), res(2), res(3));
+      return
+    end
+  end
+  res = [1 1 1];
+end % non-nested find_sign_pattern
+
+

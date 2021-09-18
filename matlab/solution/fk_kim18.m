@@ -1,6 +1,8 @@
 function [coupling] = fk_kim18 (P, calibration)
-% This should return the same as calibration/forward_kinematics.m, after
-% correcting P for any non-concentric position of the coils.
+% Forward kinematics from kim18 paper.  The mismatch between this and the
+% measured coupling is what kim18 is supposed to be minimizing.  If
+% calibration is concentric dipole then this should give same result as
+% calibration/forward_kinematics.m (to within numeric error).
 
 kim_cal = cal2kim18(calibration);
 p_ = P(1:3, 4);

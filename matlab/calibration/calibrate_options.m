@@ -69,9 +69,18 @@ options.reoptimize_fixture = false;
 
 % These allow sign flip on sensor input (coupling column) or source
 % (coupling row).  These are only needed if the input signs or coupling
-% signs were wrong in labview ilemt_ui when the data was taken.
-options.sensor_signs = [1 1 1];
-options.source_signs = [1 1 1];
+% signs were wrong in labview ilemt_ui when the data was taken.  Since sign
+% flips may differ between files, we allow multiple regexp patterns on the
+% file name.  This is a cell array with rows {pattern signs}, where pattern
+% is a regexp char array and signs is a 3-vector [x y z] sign.  The first
+% pattern that matches is used.  If none matches, we return [1 1 1].
+% 
+% Example: 
+%    'soZoutYup_seYoutZup_(md|ld).dat' [-1 -1 1]
+%    'soXoutZup_seYoutZup_md.dat' [-1 -1 1]
+% 
+options.sensor_signs = {};
+options.source_signs = {};
 
 
 % Options to define the input data files:

@@ -11,6 +11,7 @@ cal_options = calibrate_options('check_poses', varargin);
 options = check_poses_options(cal_options, varargin);
 check_options({cal_options, options}, varargin);
 
+%{
 % Options display.  Don't show all the options.
 showopts = {'cal_file', 'variant', 'in_files', 'linear_correction', ...
             'pose_solution', 'optimize_fixtures'};
@@ -23,6 +24,8 @@ for (ix = 1:length(showopts))
 end
 
 disp(show);
+%}
+disp(options);
 
 calibration = load_cal_file(options.cal_file);
 
@@ -46,9 +49,8 @@ if (any(strcmp(options.reports, 'workspace')))
   perr_workspace_vol(perr, options);
 end
 
-if (any(strcmp(options.reports, 'drift')))
-  perr_report_drift(perr, options);
-end
+perr_report_drift(perr, options);
+perr_sanity_check(perr, options);
 
 if (any(strcmp(options.reports, 'sweep')))
   onax = perr_on_axis(perr, options);

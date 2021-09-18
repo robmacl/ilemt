@@ -3,10 +3,12 @@ function [poses, resnorms] = pose_solve_kim18 (couplings, calibration, hemispher
 
 npoints = size(couplings, 3);
 poses = zeros(npoints, 6);
+resnorms = zeros(npoints, 1);
 
 for (ix = 1:npoints)
-  poses(ix, :) = trans2pose(kim18(couplings(:, :, ix), calibration, hemisphere(ix)));
+  couplings1 = real_coupling(couplings(:, :, ix));
+  P = kim18(couplings1, calibration, hemisphere(ix));
+  poses(ix, :) = trans2pose(P);
+  fk = fk_kim18(P, calibration);
+  resnorms(ix) = sum(sum((fk - couplings1).^2));
 end
-
-% ### compute from coupling and forward kinematics
-resnorms = zeros(npoints, 1);
