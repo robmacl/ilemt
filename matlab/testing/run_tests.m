@@ -1,3 +1,21 @@
+function [cal_results, cp_results] = run_tests (clean)
+% Run calibrate_main() and check_poses() on the current directory.  
+% If clean is true then we delete everything in output/.
+
+if (nargin < 1)
+  clean = false;
+end
+
+if (~exist('output', 'file'))
+  mkdir output;
+elseif (clean)
+  % This may be necessary to be able to delete the old diary file.
+  diary off;
+  fclose all;
+
+  delete('output/*');
+end
+
 diary output/test_output.txt;
 disp ________________________________________________________________
 fprintf(1, 'Test start: ');
@@ -6,7 +24,7 @@ disp(datetime);
 
 % Some defaults for test options.  See a test_options.m script for the format.
 cal_runs = {};
-cal_opts = {'verbose', 1};
+cal_opts = {'verbose', 1, 'force', false};
 cp_runs = {};
 
 cp_variants = {
@@ -49,6 +67,8 @@ for (cal_ix = 1:length(cp_runs))
                     cp_opts{:});
   end
 end
+
+diary off;
 
 if (~exist('cal_results', 'var'))
   cal_results = [];

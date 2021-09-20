@@ -50,8 +50,6 @@ function [calibration, options] = calibrate_main (cal_mode, varargin)
 %     sensor fixture motions to solve for the sensor fixture.
 % 
 
-fprintf(1, '\nCalibrating from: %s\n', pwd());
-
 if (isstruct(cal_mode) && isfield(cal_mode, 'cal_mode'))
   options = cal_mode;
 else
@@ -64,6 +62,19 @@ global current_calibrate_options;
 current_calibrate_options = options;
 
 global last_calibration;
+
+fprintf(1, '\nCalibrating from: %s\n', pwd());
+
+if (~options.force)
+  found = load_cal_file(options.out_file, true);
+  if (~isempty(found))
+    fprintf('%s: output already exists, skipping.\n', ...
+            options.out_file);
+    calibration = found;
+    options = found.options;
+    return;
+  end
+end
 
 if (isempty(options.base_calibration))
   if (isempty(last_calibration))

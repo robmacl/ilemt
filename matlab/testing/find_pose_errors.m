@@ -61,8 +61,16 @@ function [perr] = find_pose_errors (calibration, options)
   end
   [so_measured, valid, resnorms] = ...
       pose_solution(couplings, calibration, options, hemisphere);
-  if (~options.discard_invalid)
-    valid = true(size(valid));
+  invalid = sum(~valid);
+  if (invalid > 0)
+    if (options.discard_invalid)
+      fprintf(1, 'Discarding %d invalid poses with residual > %g\n', ...
+              invalid, options.valid_threshold);
+    else
+      fprintf(1, 'Using %d invalid poses with residual > %g\n', ...
+              invalid, options.valid_threshold);
+      valid = true(size(valid));
+    end
   end
   %{
   figure(10)

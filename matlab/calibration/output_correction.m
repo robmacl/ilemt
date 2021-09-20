@@ -31,13 +31,15 @@ function [calibration] = output_correction (calibration, cal_options)
   %    to compute.
   % -- Pose error must be in ordinary output coordinates (source)
   % -- Use whatever input files we used for calibration.
+  % -- Drop any points where the pose solution did not converge.
   
   opts = {
       'linear_correction', false, ...
       'stage_coords', false, ...
       'in_files', cal_options.in_files, ...
       'cal_file', cal_options.out_file, ...
-      'optimize_fixtures', opt_fix
+      'optimize_fixtures', opt_fix, ...
+      'discard_invalid', true
          };
 
   % This stuff works using the check_poses() features, so we need a

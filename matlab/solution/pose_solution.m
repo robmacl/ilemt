@@ -23,6 +23,11 @@ function [poses, valid, resnorms] = pose_solution ...
 % 
 % valid(n):
 %    True if the result pose seems to be valid (based on residual error).
+% 
+% resnorms(n):
+%    The norm of the residual wrt. the coupling (sum squared of the coupling
+%    mismatch).  This is normalized by norm(coupling) to make the measure a
+%    relative fit measure, regardless of the coupling strength.
 
   if (nargin < 3 || isempty(options))
     options = calibration.options;
@@ -43,13 +48,8 @@ function [poses, valid, resnorms] = pose_solution ...
   else
     error('Unknown pose_solution method: %s', options.pose_solution);
   end
-
-  valid = resnorms <= options.valid_threshold;
-  if (sum(~valid) > 0)
-    fprintf(1, '%d invalid points with residual > %g.\n', ...
-            sum(~valid), options.valid_threshold);
-    %bad_points = find(~valid)
-  end
+  
+  valid = resnorms < options.valid_threshold;
 
   if (options.linear_correction && isfield(calibration, 'linear_correction'))
     % Transpose because we have row vectors.  linear_correction is in the more

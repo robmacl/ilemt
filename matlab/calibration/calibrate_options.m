@@ -132,6 +132,9 @@ options.in_files = {};
 % Output calibration file name, defaulted if empty.
 options.out_file = [];
 
+% If false, do not generate output when it already exists.
+options.force = true;
+
 
 % What to optimize: 'optimize' and 'freeze' arguments to state_bounds().
 
@@ -313,7 +316,12 @@ if (isempty(options.out_file))
   if (options.concentric)
     wot = [wot '_concentric'];
   end
-  options.out_file = ['output' filesep wot '_hr_cal'];
+  if (options.ishigh)
+    rate = 'hr';
+  else
+    rate = 'lr';
+  end
+  options.out_file = ['output' filesep wot '_' rate '_cal'];
 end
 
 path = fileparts(options.out_file);

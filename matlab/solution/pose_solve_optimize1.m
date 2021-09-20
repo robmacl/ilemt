@@ -33,7 +33,11 @@ end
 bounds = [bounds_tr, bounds_rot];
 Cdes = real_coupling(coupling);
 
-%1 and 2 row of bounds are respectively lower and upper bounds
-[pose_new, resnorm, ~, exitflag] = ...
+% Rows 1 and 2 of bounds are respectively lower and upper bounds
+% lsqnonlin is specified to return the sum-squared for resnorm.
+[pose_new, resnorm1, ~, exitflag] = ...
     lsqnonlin(@(pose) coupling_error(calibration, pose, Cdes), ...
               pose0, bounds(1,:), bounds(2,:), option);
+
+% Resnorm is normalized by coupling for scale-insensitive convergence test.
+resnorm = resnorm1 / norm(coupling);

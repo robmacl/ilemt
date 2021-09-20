@@ -1,0 +1,100 @@
+Notes on Rz runout test:
+
+Use the Mahr +/- 250 um test indicator, since it has low force, and does not
+deflect the pole.  (The Shars dial indicator deflects the pole ~70 um.)  The
+indicator reading varies as much as +/- 25 um as you move away from a Rz angle
+and then return.  This non-repeatable stage runout sets a limit on position
+accuracy, and also on when to say "good enough" with the axis offset.  (The
+runout due to XZ seems to be a good bit less, at least as tested by moving
+away from the setpoint and then coming back.  The on-axis Y non-repeatability
+is perhaps noticeable.)
+
+"Axis offsets" are applied to the raw axis positions set to the stage.  It is
+perhaps least confusing to adjust the axis offsets in "Absolute axis" mode on
+ilemt_ui, but then you have to consider which is the actual stage XY axis that
+you want to move to center up, since these rotate with Rz.
+
+Note that the indicator is pointing in stage +Y, so reading increases with -Y
+
+Measure runout at -90, 0, and +90 Rz.  Can do +/- 45 also, which helps to get
+a sense of repeatability, and if far enough off to exceed range of the test
+indicator. 
+
+Desire is to equalize -90 and +90 readings.  If -90 is larger (positive of)
++90, then increase the X axis offset by 1/2 the difference.
+
+After -90, +90 are fairly equal, we want to set the Y axis offset so that we
+also read the same value at 0 degrees Rz.  Increase the Y offset by the full
+difference between the 0 degree reading and the +90/-90 reading.
+
+Read off of the ball on the sensor fixture alignment tool.  This has maybe 10
+um of runout wrt. the body, but is round.  The body has some flat spots.
+
+
+What to do if pose solution is not converging or check_poses() error
+is terrible:
+
+Usually this is a problem with the data:
+ -- The data was not actually taken in the source/sensor fixtures encoded in
+    the filename.
+ -- There are sign errors in the data due to ilemt_ui misconfiguration:
+     - Input signs were wrong
+     - Coupling signs was wrong
+     - "ref calibrate" was done in the wrong pose (such as with a source
+       fixture).
+ -- These errors may be present in only *some* of the files.
+
+How to tell what is going on:
+ -- Try running calibration on just one input file, using 'Z_only'
+    mode.  You can also try a fixture-only calibration run, e.g. so_fixture or
+    se_fixture.  If you run multiple files at once, then inconsistency between
+    them will cause convergence failure.  Running one at a time, you can see
+    if the results are different.
+ -- If either source or sensor moments are negative, or go to zero, or if the
+    coil location runs away to infinity, then some sort of sign difficulty is
+    likely.
+ -- A coupling sign flip may appear directly as a negative source moment (but
+    the Z moment is forced positive). 
+ -- Sometimes the optimizer is clever enough to resolve sign inconsistency by
+    some combination of negative moments and fixture rotations.  This probably
+    requires *two* sign errors.
+ -- If you have some calibration that converged (based on one input
+    file, or a subset), then running check_poses() on the other files
+    will tell you which files have "excess error", see
+    options.error_threshold.
+ -- check_poses() will get a large error if one or more fixture transforms are
+    wrong.  Optimizing the fixture poses in check_poses() can fix minor
+    changes, but this will not work for large changes such as source fixture
+    rotation, since it can't correctly identify the pose hemisphere.
+    If you suspect fixture error, use calibrate_main() with 'Z_only',
+    'se_fixture', etc., which does not have to commit to a hemisphere before
+    optimizing.
+ -- Calibration convergence problems might also be due to very bad initial
+    values for the fixture transforms.  The hemisphere ambiguity is present
+    during calibration, not just pose solution, so the fixture transforms
+    might converge with the test data placed in the wrong hemisphere.  This
+    can be disambiguated by source fixture data, but correcting the
+    initial value will also work.
+ -- See "test signs on the hardware" below.
+
+With new source or sensor hardware:
+ -- With a new sensor, hardware sign flips are fairly likely.  (A swap in the
+    source wiring should not matter because we already compensate phase shifts
+    using the coupling signs calibration.  This doesn't work for the sensor
+    because the phase shift is attributed to the source.)
+ -- A new source or sensor also may come with a new orientation on the
+    fixture, which can change the "coupling signs". 
+ -- Test signs on the hardware: move the sensor around freehand, placing each
+    sensor axis straight in line with each source axis.  If the ilemt_ui input
+    signs and coupling signs are correct, then you should get a positive
+    coupling in each case (on the aligned axes).  Pay at attention to *which*
+    axes are affected, not just the sign.  You might be confused about which
+    axis is which.
+
+How to recover:
+ -- For a data problem with the signs or fixture identification, you can
+    usually recover by fixing the file names, and by setting source_signs and
+    sensor_signs in the local_cal_options.
+ -- You can also retake the data correctly, or even fix your swapped wires in
+    hardware.
+ 

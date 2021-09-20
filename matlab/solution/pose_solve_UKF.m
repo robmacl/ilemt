@@ -54,7 +54,8 @@ ukf = unscentedKalmanFilter(...
 % using the UKF as an optimizer.
 
 for (ix = 1:npoints)
-  y_n = reshape(couplings(:, :, ix), [], 1);
+  couplings1 = couplings(:, :, ix);
+  y_n = reshape(couplings1, [], 1);
 
   if (ix == 1 || ~options.continuous_motion)
     x0 = trans2pose(kim18(couplings(:, :, ix), calibration))';
@@ -67,7 +68,7 @@ for (ix = 1:npoints)
     end
   end
 
-  resnorms(ix) = sum(residual(ukf, y_n).^2);
+  resnorms(ix) = sum(residual(ukf, y_n).^2)/norm(couplings1);
   poses(ix, :) = correct(ukf, reshape(y_n, [], 1))';
   
   % If we had dynamics in our state transition (eg. constant velocity) then we

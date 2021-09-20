@@ -31,10 +31,11 @@ function [options] = check_poses_options (cal_options, key_value)
   % ishigh: if true, check high rate, otherwise low rate.
   options.ishigh = cal_options.ishigh;
 
-  % valid_threshold: if pose solution residue is greater than this, then the
-  % point is "invalid".  Usually either the calibration is poor or the pose
-  % solution did not converge.  With 'optimize' solution method we will try
-  % different initial states to see if they work better.
+  % valid_threshold: if pose solution normalized residue is greater than this,
+  % then the point is "invalid".  If this happens, then usually either the
+  % calibration is poor or the pose solution did not converge.  With
+  % 'optimize' solution method we will try different initial states to see if
+  % they work better.
   options.valid_threshold = 1e-5;
 
   % Discard points with residual > valid_threshold.

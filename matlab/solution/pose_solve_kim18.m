@@ -10,5 +10,5 @@ for (ix = 1:npoints)
   P = kim18(couplings1, calibration, hemisphere(ix));
   poses(ix, :) = trans2pose(P);
   fk = fk_kim18(P, calibration);
-  resnorms(ix) = sum(sum((fk - couplings1).^2));
+  resnorms(ix) = sum(sum((fk - couplings1).^2)) / norm(couplings1);
 end
