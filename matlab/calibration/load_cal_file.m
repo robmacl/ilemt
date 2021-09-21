@@ -2,6 +2,9 @@ function [calibration] = load_cal_file (fname, probe)
 % Load a calibration file.  Permit it to be in the output/ subdirectory, which
 % is where calibrate_main() by default leaves it.  If probe is true, then
 % return [] if the file can't be found, rather than erroring.
+if (nargin < 2)
+  probe = false;
+end
 [~, ~, ext] = fileparts(fname);
 if (isempty(ext))
   fname = [fname '.mat'];

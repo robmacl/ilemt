@@ -1,70 +1,11 @@
-close all 
-clc
+poses = load('track_poses');
 
-global calibration;
+% Time increment (high rate)
+dt = mean(diff(poses.timestamp(poses.entry_kind == 0)));
 
-load('gain_calibration');
-load('poses_ID');
-
-%{
-%dataNHM = dlmread('base noise value - no hand motion.txt');
-dataHM = dlmread('high-low test3.txt'); % moving
-
-dt = (dataHM(end,1) - dataHM(1,1))/size(dataHM,1);
-
-pose0 = [0.5,0.5,1,0.5,0.5,0.5];
-pose0 = [0,0,0,0.2,0,0];
-
-pose00 = [0.5,0.5,1,0.5,0.5,0.5];
-pose00 = [0,0,0,0.2,0,0];
-
-lb = [-inf,-inf,-inf,0,-inf,-inf];
-ub = [inf,inf,inf,inf,inf,inf];
-
-%poses_NHM = coupling2pose(dataNHM,pose0,lb,ub);
-
-poses_HM = coupling2pose(dataHM,pose0,lb,ub);
-
-poses_ID = [];
-
-for b = 1:size(dataHM,1)
-    poses_new = [dataHM(b,2) poses_HM(b,:)];
-    poses_ID = [poses_ID; poses_new];
-end 
-
-hf_poses = [];
-lhf_poses = [];
-
-for c = 1:length(poses_ID)
-    if dataHM(c,2) == 0; % for high rate data
-        pose1 = poses_ID(c,:);
-        hf_poses = [hf_poses; pose1];
-        
-    else % for high and low rate data
-        pose11 = poses_ID(c,:);
-        lhf_poses = [lhf_poses; pose11];
-    end
-end
-
-timeVec_hi = linspace(1,dataHM(end,1) - dataHM(1,1),length(hf_poses));
-timeVec_low = linspace(1,dataHM(end,1) - dataHM(1,1),length(lhf_poses));
-
-x_pos_hf = hf_poses(:,5);
-y_pos_hf = hf_poses(:,6);
-z_pos_hf = hf_poses(:,7);
-Rx_hf = hf_poses(:,2);
-Ry_hf = hf_poses(:,3);
-Rz_hf = hf_poses(:,4);
-
-x_pos_lf = lhf_poses(:,5);
-y_pos_lf = lhf_poses(:,6);
-z_pos_lf = lhf_poses(:,7);
-Rx_lf = lhf_poses(:,2);
-Ry_lf = lhf_poses(:,3);
-Rz_lf = lhf_poses(:,4);
-%}
-
-dt = (poses_ID(end,1) - poses_ID(1,1))/size(poses_ID,1);
+% ### fix below here to use 'poses', need to figure out how the 'collection'
+% works below.  I guess it is figuing out of this is a combined high/low
+% update, or high only.
 
 collection = zeros(size(poses_ID,1),20);
 

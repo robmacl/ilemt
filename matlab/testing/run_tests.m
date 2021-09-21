@@ -1,6 +1,7 @@
 function [cal_results, cp_results] = run_tests (clean)
 % Run calibrate_main() and check_poses() on the current directory.  
-% If clean is true then we delete everything in output/.
+% If clean is true then we delete output/{*.mat,*.xlsx} and truncate
+% output/test_output.txt
 
 if (nargin < 1)
   clean = false;
@@ -12,8 +13,15 @@ elseif (clean)
   % This may be necessary to be able to delete the old diary file.
   diary off;
   fclose all;
+  % Truncate the file rather than deleting it, matlab tends to keep it open
+  % so deleting or renaming doesn't work.
+  fid = fopen('output/test_output.txt', 'w');
+  if (fid > 0)
+    fclose(fid);
+  end
 
-  delete('output/*');
+  delete('output/*.mat');
+  delete('output/*.xlsx');
 end
 
 diary output/test_output.txt;
