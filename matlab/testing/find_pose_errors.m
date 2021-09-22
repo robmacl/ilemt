@@ -72,6 +72,9 @@ function [perr] = find_pose_errors (calibration, options)
       valid = true(size(valid));
     end
   end
+  if (~any(valid))
+    error('No valid poses?');
+  end
   %{
   figure(10)
   probplot(resnorms);

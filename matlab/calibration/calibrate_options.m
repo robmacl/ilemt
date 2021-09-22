@@ -60,9 +60,9 @@ options.pin_quadrupole = true;
 options.concentric = false;
 
 % Additional correction based on generated poses, eg. linear transform.
-% We have several correction modes, but 'DLT' is currently the best.
+% We have several correction modes, but 'optimize' is currently the best.
 % See output_correction().  'none' means off.
-options.correct_mode = 'DLT';
+options.correct_mode = 'optimize';
 
 % If true, reoptimize the fixture poses in output_correction().
 options.reoptimize_fixture = false;
