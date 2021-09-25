@@ -75,14 +75,11 @@ function [perr] = find_pose_errors (calibration, options)
   if (~any(valid))
     error('No valid poses?');
   end
-  %{
-  figure(10)
-  probplot(resnorms);
-  title('Pose solution residual');
-  %}
 
   perr.hemisphere = hemisphere;
-  perr.solution_residuals = resnorms;
+  perr.all_solution_residuals = resnorms;
+  perr.valid_pose = valid;
+  perr.solution_residuals = resnorms(valid);
   perr.measured_source = so_measured(valid, :);
   perr.motion_poses = motion_poses(valid, :);
   perr.couplings = couplings(:, :, valid);

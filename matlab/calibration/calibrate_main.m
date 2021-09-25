@@ -39,6 +39,7 @@ function [calibration, options] = calibrate_main (cal_mode, varargin)
 %     Sensor quadrupole, analogous to source quadrupole.
 % 
 % 'so_fixture'
+% 'so_fixture_all'
 % 'st_fixture'
 % 'se_fixture'
 %     Optimize only fixture transforms.  Useful preliminary if the fixture
@@ -157,6 +158,10 @@ ofun = @(state)calibrate_objective(state, motion_poses, measured_couplings, opti
 [state_new, cal_residue] = lsqnonlin(ofun,state0,bounds(1,:),bounds(2,:), opt_option);
 
 calibration = state2calibration(state_new, options);
+stats.rms_residue = sqrt(cal_residue/size(motion_poses, 1));
+stats.sum_squared_residue = cal_residue;
+stats.num_points = size(motion_poses, 1);
+calibration.stats = stats;
 
 % Apply output correction minimizing error in pose space (linear correction).
 calibration = output_correction(calibration, options);
@@ -164,7 +169,7 @@ calibration = output_correction(calibration, options);
 fprintf(1, '\nCalibration result:\n');
 print_calibration(calibration)
 fprintf(1, 'RMS/point residue %.4f, sum square %.4f\n', ...
-        sqrt(cal_residue/size(motion_poses, 1)), cal_residue);
+        stats.rms_residue, stats.sum_squared_residue);
 
 save_calibration(calibration, options.out_file);
 

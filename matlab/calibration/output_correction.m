@@ -4,6 +4,9 @@ function [calibration] = output_correction (calibration, cal_options)
 % calibration options.
 
   if (strcmp(cal_options.correct_mode, 'none'))
+    calibration.stats.num_invalid = 0;
+    calibration.stats.uncorrected = 0;
+    calibration.stats.corrected = 0;
     return;
   end
 

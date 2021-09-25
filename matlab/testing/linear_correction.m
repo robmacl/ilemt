@@ -65,6 +65,7 @@ fprintf(1, 'linear_correction: best direct method %s, %.3e m RMS.\n', ...
 
 if (strcmp(mode, 'auto'))
   transform = best_tf;
+  corrected_err = min_err;
 elseif (strcmp(mode, 'optimize'))
   option = optimset('Display', 'off');
   opt_tf = lsqnonlin(@objective, reshape(best_tf, 1, []), ...
@@ -79,6 +80,7 @@ elseif (strcmp(mode, 'optimize'))
             min_err, opt_err);
     transform = opt_tf;
   end
+  corrected_err = opt_err;
 else
   found = strcmp(mode, transforms(:, 1));
   if (any(found))
@@ -86,7 +88,11 @@ else
   else
     error('Unknown correct_mode: %s', mode);
   end
+  corrected_err = errors(found);
 end
 
 calibration.linear_correction = transform;
+calibration.stats.uncorrected = errors(1);
+calibration.stats.corrected = corrected_err;
+calibration.stats.num_invalid = sum(~perr.valid_pose);
 end

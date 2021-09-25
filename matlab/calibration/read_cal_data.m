@@ -14,11 +14,14 @@ function [motions, couplings, file_map] = read_cal_data (options)
 % Return values:
 % motions(n, 18): 
 %     Each row is:
-%         [source_motion sensor_motion stage_motion]
+%         [source_motion stage_motion XYZRz_motion]
 %
-%     These are source fixture motion, total sensor motion (including
-%     sensor fixture motion), and stage motion only (less sensor fixture
-%     motion).  The poses are in vector2tr format, units (mm, degree).
+%     These are source fixture motion, total "stage" motion (including sensor
+%     fixture motion), and motorized XYZRz motion only (less sensor fixture
+%     motion).  The poses are in vector2tr format, units (mm, degree).  We can
+%     roll the sensor fixture motion into stage motion because we force the
+%     null pose of the XYZRz linkage to be identical to the null pose of the
+%     sensor fixture by the Rz alignment procedure in the stage setup.
 %
 % couplings(3, 3, n): 
 %     This is complex so that we can potentially remove hardware

@@ -5,14 +5,15 @@ function [] = error_scatter (perr, options)
   trans_err_mag = sqrt(sum(perr.errors(:, 1:3).^2, 2));
   rot_err_mag = sqrt(sum(perr.errors(:, 4:6).^2, 2));
 
-  x_type = 'Coupling';
-  
-  if (strcmp(x_type, 'Coupling'))
+  x_type = options.scatter_x_axis;
+  if (strcmp(x_type, 'coupling'))
     xvals = perr.coupling_norms;
-  elseif (strcmp(x_type, 'Distance'))
+  elseif (strcmp(x_type, 'distance'))
     xvals = sqrt(sum(perr.desired(:, 1:3).^2, 2));
+  elseif (strcmp(x_type, 'residual'))
+    xvals = perr.solution_residuals;
   else
-    error('bad!');
+    error('error_scatter: unknown options.scatter_x_axis: %s', x_type);
   end
 
   %figure(options.figure_base + 6);

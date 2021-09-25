@@ -200,11 +200,11 @@ elseif (strcmp(options.cal_mode, 'XYZ'))
 elseif (strcmp(options.cal_mode, 'XYZ_all'))
   % Dipole calibration with all source and sensor fixtures.n
   options.optimize = cat(2, {'so_fix'}, options.optimize);
-  options.data_patterns = {'md' 'source'};
 
 elseif (strcmp(options.cal_mode, 'so_quadrupole'))
   % Preliminary optimization of source quadrupole parameters, without changing
   % sensor paramters.
+  % ### not clear the 'source' pattern is a good idea, even with quadrupole.
   options.data_patterns = {'source'};
   options.optimize = {'q_so_mo' 'so_fix' 'st_fix' 'd_so_pos' 'd_so_mo'};
   options.freeze = {'d_se_z_gain' 'd_so_y_co' 'd_se_y_co'};
@@ -213,7 +213,6 @@ elseif (strcmp(options.cal_mode, 'so_quadrupole'))
   if (~options.pin_quadrupole)
     options.optimize = cat(2, {'q_so_pos'}, options.optimize);
   end
-  options.data_patterns = {'source'};
 
 elseif (strcmp(options.cal_mode, 'so_quadrupole_reopt')) 
   % Reoptimize sensor parameters in source quadrupole optimization, while
@@ -246,7 +245,9 @@ elseif (strcmp(options.cal_mode, 'se_quadrupole_all'))
 % fixturing.
 elseif (strcmp(options.cal_mode, 'so_fixture'))
   options.sensor_fixtures = options.sensor_fixtures(1);
-  options.data_patterns = {'source'};
+  options.optimize = {'so_fix', 'st_fix'};
+  options.correct_mode = 'none';
+elseif (strcmp(options.cal_mode, 'so_fixture_all'))
   options.optimize = {'so_fix', 'st_fix'};
   options.correct_mode = 'none';
 elseif (strcmp(options.cal_mode, 'st_fixture'))

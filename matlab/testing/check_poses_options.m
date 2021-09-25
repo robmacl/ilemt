@@ -100,13 +100,16 @@ function [options] = check_poses_options (cal_options, key_value)
   
   % If RMS moment error is greater than this for a particular input file, then
   % report that file.  (meters)
-  options.error_threshold = 5e-2;
+  options.error_threshold = 2e-3;
 
   % For sweep report, detailed cross coupling response from these axes.
   options.axis_response = [6];
   
   % If true, include on-axis response in perr_axis_plot()
   options.plot_on_axis = false;
+  
+  % X axis in error_scatter() plot. 'coupling', 'distance' or 'residual'.
+  options.scatter_x_axis = 'residual';
 
   % For read_cal_data()
   options.sensor_signs = cal_options.sensor_signs;

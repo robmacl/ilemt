@@ -66,6 +66,99 @@ Maybe later:
        physically relevant coordinates, eg. coupling/magnetic
 
 
+[23 Sep 21]
+
+First look at cal_9_16_premo_rotated_dipole.  I was thinking this was
+bad data somehow, but maybe not?  The big difference is with the
+source fixture data, both in calibration and testing.  But it is
+reasonable that these results might change quite a bit because we are
+using very different data than before.  There is now far more data in
+other source fixtures.
+
+But if I include soXinYup_seYoutZup_ld then I am getting max rotation
+errors of ~180 degrees even in XYZ_all/so fix, and max XYZ errors of
+200-300 mm.  The file is however sane according to calibrate_main
+Z_only.
+
+There are solutions that fail the valid test, and maybe really did not
+converge.  I need more summary information so I don't have to wade
+through the test_output.txt, looking for invalid poses, excess drift,
+excess error.
+
+ ==> I get sane results with soXinYup if I discard invalid poses.
+ ==> Also, it seem something moved, since it is much better with
+     'optimize_fixtures', {'stage'}
+
+________________________________________________________________
+cp=check_poses('cal_file', 'XYZ_hr_cal', 'in_files',{'soXinYup_seYoutZup_ld.dat'}, 'discard_invalid', true, 'optimize_fixtures', {'stage'})
+
+Checking from: C:\Users\robma\Documents\Work\ilemt_cal_data\cal_9_16_premo_rotated_dipole
+               cal_file: 'XYZ_hr_cal'
+                variant: 'default'
+               in_files: {'soXinYup_seYoutZup_ld.dat'}
+      linear_correction: 1
+          pose_solution: 'optimize'
+    concentric_cal_file: 'XYZ_concentric_hr_cal'
+                 ishigh: 1
+        valid_threshold: 1e-05
+        discard_invalid: 1
+      optimize_fixtures: {'stage'}
+                 moment: 0.05
+             hemisphere: 0
+              sg_filt_N: 2
+              sg_filt_F: 11
+         xyz_exaggerate: [10 300 1 30]
+           stage_coords: 1
+                reports: {'overall'  'workspace'}
+        drift_threshold: 2e-05
+        error_threshold: 0.002
+          axis_response: 6
+           plot_on_axis: 0
+         scatter_x_axis: 'residual'
+           sensor_signs: {}
+           source_signs: {}
+Discarding 23 invalid poses with residual > 1e-05
+Optimizing fixture poses:
+    {'stage'}
+source_fix_delta =
+     0     0     0     0     0     0
+stage_fix_delta =
+  -0.00063613    -0.001314   -0.0072497    -0.037519   -0.0072311    0.0014609
+sensor_fix_delta =
+     0     0     0     0     0     0
+Position error (m): 1.01e-03 RMS, 2.28e-03 max.
+Orientation error (radians): 8.38e-03 RMS, 1.74e-02 max
+Warning: drift 3.16e-05 in soXinYup_seYoutZup_ld.dat:   -2.0418e-05   4.3726e-06   8.6832e-06   8.4073e-05   1.5442e-05   0.00015859
+________________________________________________________________
+
+Moved 7mm in Z and 2 degrees in Rx???
+
+ ==> Oops, here's a problem.  We don't have a correct source fixture
+     transform until we do an _all calibration (it is whatever we got
+     from the initial base_calibration).  If the source fixture
+     transform is wrong then it is totally not going to work when we
+     have source fixture motion.  This is exaggerating the benefit of
+     the _all calibration.
+
+
+So, what does make sense for the source fixture in the mismatch
+condition: XYZ_hr_cal, "source fixture" variant?
+
+We need to have some sort of newly estimated source fixture to get any kind of
+reasonable results.  So we want to have a source fixture, but without the
+magnetic calibration having been exposed to the source fixture data.
+
+So, remind me how using the calibration fixture transform is better than
+optimizing the fixture in check_poses?  Either one seems defensible, but
+check_poses() uses the actual test data, so clearly gives a lower error.
+[Not optimizing avoids runtime in check_poses.]
+
+The thing most in the spirit of using the calibration-time fixtures would be
+for XYZ to optimize source fixture only using the same source fixtures as will
+be in the test.  (FWIW, doesn't seem to make a lot of difference whether we
+use all the sensor fixtures or not, but might as well)
+
+
 [22 Sep 21]
 
 Got the low rate calibration mostly working.  For some reason there
