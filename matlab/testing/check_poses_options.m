@@ -68,6 +68,11 @@ function [options] = check_poses_options (cal_options, key_value)
   % does not change the hemisphere, and in the stage setup the sensor is
   % pretty much forced into the +Y hemisphere of the source fixture.
   options.hemisphere = 0;
+  
+  % If true then the ground truth pose is used as the initial value in the pose
+  % solution.  This avoids convergence problems, but is of course unrealistic
+  % as for evaluation of the pose solution algoithm's robustness.
+  options.true_initial = false;
 
   % Parameters for Savitzky-Golay filter used to smooth and differentiate
   % the results: polynomial order and window width.
@@ -86,6 +91,7 @@ function [options] = check_poses_options (cal_options, key_value)
 
   % What reports and plots to generate:
   % overall: text report of RMS and max error
+  % files: report of per-file drift and error
   % correlation: test report of error correlations, kind of useless
   % workspace: 3D plots of error vectors and rot/trans cross-coupling
   % sweep: axis sweep linearity tests: plots and excel.

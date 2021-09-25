@@ -3,10 +3,15 @@ function [calibration] = output_correction (calibration, cal_options)
 % Currently this is based on linear transforms.  'cal_options' is the
 % calibration options.
 
+  % set these now so that they are defined if we bail out (here or in
+  % linear_correction).
+  calibration.stats.num_invalid = 0;
+  calibration.stats.uncorrected = 0;
+  calibration.stats.corrected = 0;
+
+  % We may be suppressing correction because find_pose_errors() will break.  So
+  % bail out now.
   if (strcmp(cal_options.correct_mode, 'none'))
-    calibration.stats.num_invalid = 0;
-    calibration.stats.uncorrected = 0;
-    calibration.stats.corrected = 0;
     return;
   end
 
@@ -34,6 +39,7 @@ function [calibration] = output_correction (calibration, cal_options)
   %    to compute.
   % -- Pose error must be in ordinary output coordinates (source)
   % -- Use whatever input files we used for calibration.
+  % -- Use ground truth to initialize pose solution.
   % -- Drop any points where the pose solution did not converge.
   
   opts = {
@@ -42,6 +48,7 @@ function [calibration] = output_correction (calibration, cal_options)
       'in_files', cal_options.in_files, ...
       'cal_file', cal_options.out_file, ...
       'optimize_fixtures', opt_fix, ...
+      'true_initial', true, ...
       'discard_invalid', true
          };
 

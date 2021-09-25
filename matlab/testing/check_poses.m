@@ -35,8 +35,30 @@ calibration = load_cal_file(options.cal_file);
 % Load data, optimize fixtures and find errors at each point.
 perr = find_pose_errors(calibration, options);
 
-if (any(strcmp(options.reports, 'overall')))
-  res.overall = perr_report_overall(perr);
+res.cal_options = cal_options;
+res.options = options;
+res.perr = perr;
+res.onax = [];
+res.calibration = calibration;
+
+if (isempty(perr.errors))
+  fprintf(1, 'check_poses: no data to check, skipping...\n');
+  res.overall.trans_rms = NaN;
+  res.overall.trans_max = NaN;
+  res.overall.rot_rms = NaN;
+  res.overall.rot_max = NaN;
+  return;
+end
+
+% RMS/max summary statistics
+res.overall = perr_report_overall(perr, options);
+
+% These are per-file drift and moment error info
+res.overall.drift = perr_report_drift(perr, options);
+res.overall.moment_error = perr_sanity_check(perr, options);
+
+if (any(strcmp(options.reports, 'files')))
+  perr_report_files(perr, options, res);
 end
 
 if (any(strcmp(options.reports, 'correlation')))
@@ -44,13 +66,9 @@ if (any(strcmp(options.reports, 'correlation')))
 end
 
 if (any(strcmp(options.reports, 'workspace')))
-  % Plot of 
-  % Useful mainly for grid patterns, not axis sweeps.
   perr_workspace_vol(perr, options);
 end
 
-perr_report_drift(perr, options);
-perr_sanity_check(perr, options);
 
 if (any(strcmp(options.reports, 'sweep')))
   onax = perr_on_axis(perr, options);
@@ -65,16 +83,9 @@ if (any(strcmp(options.reports, 'sweep')))
   for (ax = options.axis_response)
     perr_axis_response(perr, onax, ax, options);
   end
-else
-  onax = [];
+  res.onax = onax;
 end
 
 if (any(strcmp(options.reports, 'scatter')))
   error_scatter(perr, options);
 end
-
-res.cal_options = cal_options;
-res.options = options;
-res.perr = perr;
-res.onax = onax;
-res.calibration = calibration;

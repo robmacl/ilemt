@@ -40,6 +40,11 @@ function [perr] = find_pose_errors (calibration, options)
   perr.se_fix = calibration.sensor_fixture;
   [motion_poses, couplings, file_map] = read_cal_data(options);
   perr.in_files = options.in_files;
+
+  % The ground truth pose before any fixture optimization, assuming that the
+  % fixtures are correct.  This can be used to influence the pose solution
+  % via "hemisphere" and "initial" arguments.
+  desired_initial = fk_pose_calculation(motion_poses, perr.so_fix, perr.st_fix, perr.se_fix);
   
   if (options.hemisphere == 0)
     % Find hemisphere for pose solutions.  We use the ground truth pose and pick
@@ -49,8 +54,7 @@ function [perr] = find_pose_errors (calibration, options)
     % source fixture motion we are operating in multiple hemispheres, so we
     % can't fix to a single hemisphere.  This which may not work if there
     % is a large change in the fixture poses from calibration time.
-    desired1 = fk_pose_calculation(motion_poses, perr.so_fix, perr.st_fix, perr.se_fix);
-    desired1 = desired1(:, 1:3);
+    desired1 = desired_initial(:, 1:3);
     hemisphere = zeros(size(desired1, 1), 1);
     for (ix = 1:size(desired1, 1))
       [~, m_ix] = max(abs(desired1(ix, :)), [], 2);
@@ -59,8 +63,19 @@ function [perr] = find_pose_errors (calibration, options)
   else
     hemisphere = [];
   end
+  
+  % Using the ground truth as the initial pose for optimization is more like
+  % cheating, but only evades convergence problems, and should not affect the
+  % accuracy in cases where the solution converges.  This is kind of a hack,
+  % but lets us evaluate accuracy without having a robust pose initialization.
+  if (options.true_initial)
+    initial = desired_initial;
+  else
+    initial = [];
+  end
+  
   [so_measured, valid, resnorms] = ...
-      pose_solution(couplings, calibration, options, hemisphere);
+      pose_solution(couplings, calibration, options, hemisphere, initial);
   invalid = sum(~valid);
   if (invalid > 0)
     if (options.discard_invalid)
@@ -72,9 +87,6 @@ function [perr] = find_pose_errors (calibration, options)
       valid = true(size(valid));
     end
   end
-  if (~any(valid))
-    error('No valid poses?');
-  end
 
   perr.hemisphere = hemisphere;
   perr.all_solution_residuals = resnorms;
@@ -84,10 +96,19 @@ function [perr] = find_pose_errors (calibration, options)
   perr.motion_poses = motion_poses(valid, :);
   perr.couplings = couplings(:, :, valid);
   perr.file_map = file_map(valid);
+  norms = zeros(size(perr.couplings, 3), 1);
   for (ix = 1:size(perr.couplings, 3))
     norms(ix) = norm(perr.couplings(:,:,ix));
   end
   perr.coupling_norms = norms;
+  
+  if (~any(valid))
+    fprintf(1, 'find_pose_errors: No valid poses?\n');
+    perr.measured = zeros(0, 6);
+    perr.desired = zeros(0, 6);
+    perr.errors = zeros(0, 6);
+    return;
+  end
 
   % State for minimization is: 
   %    [so_fixture_off(1:6) st_fixture_off(1:6) se_fixture_off(1:6)]

@@ -1,7 +1,9 @@
-function [pose0] = p_s_o_pose0 (coupling, calibration, con_cal, hemi)
+function [pose0] = p_s_o_pose0 (coupling, calibration, hemi, initial, con_cal)
 % Find initial pose for pose_solve_optimize.  Use kim18 concentric solution if
 % available.
-if (~isempty(con_cal))
+if (~isempty(initial))
+  pose0 = initial;
+elseif (~isempty(con_cal))
   pose0 = pose_solve_kim18(coupling, con_cal, hemi);
 else
   % We use the fixture poses to construct the sensor pose at the stage null

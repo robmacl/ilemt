@@ -1,4 +1,4 @@
-function [poses, resnorms] = pose_solve_optimize (couplings, calibration, hemisphere, options)
+function [poses, resnorms] = pose_solve_optimize (couplings, calibration, options, hemisphere, initial)
 % Pose solution by nonlinear optimization.
 
 if (~isempty(options.concentric_cal_file))
@@ -18,8 +18,13 @@ parfor (ix = 1:size(couplings, 3))
   coupling = couplings(:, :, ix);
   hemi = hemisphere(ix);
 
+  if (isempty(initial))
+    initial1 = [];
+  else
+    initial1 = initial(ix, :);
+  end
   [pose_new, resnorm] = ...
-      p_s_o_retry(coupling, calibration, hemi, con_cal, options);
+      p_s_o_retry(coupling, calibration, options, hemi, initial1, con_cal);
 
   % use last pose as initial value?  Doesn't work well with calibration
   % data points, which jump around.  And doesn't work with parfor.

@@ -1,8 +1,9 @@
-function [pose_new, resnorm] = p_s_o_retry (coupling, calibration, hemi, con_cal, options)
+function [pose_new, resnorm] = p_s_o_retry ...
+    (coupling, calibration, options, hemi, initial, con_cal)
 % Do pose solution optimization, using differently permuted initial states if
 % the first guess does not succeed.
 
-pose0 = p_s_o_pose0(coupling, calibration, con_cal, hemi);
+pose0 = p_s_o_pose0(coupling, calibration, hemi, initial, con_cal);
 [pose_new, resnorm] = pose_solve_optimize1(coupling, calibration, hemi, pose0);
 
 if (resnorm < options.valid_threshold)

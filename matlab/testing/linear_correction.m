@@ -4,9 +4,23 @@ function [calibration] = linear_correction(perr, cp_options, cal_options, calibr
 % This is actually used back in ../calibration/output_correction.m, but kind
 % of makes sense being here due to knowledge about the perr struct.
 
+% Check how many valid points we have.  If there are any significant number of
+% bad points then either something is wrong, or we are pressing on with a
+% terrible calibration.  So the arbitrary 75% threshold shouldn't be a
+% problem.  This is mainly to keep us from crashing or generating a completely
+% silly result.  It is possible that there are no valid points at all.
+npoints = size(perr.measured_source, 1);
+all_points = length(perr.all_solution_residuals);
+if (npoints / all_points < 0.75)
+  fprintf(1, 'linear_correction: too few valid points, skipping: %d/%d\n', ...
+          npoints, all_points);
+  return;
+end
+
 % Must be in source coordinates
 assert(~cp_options.stage_coords);
 
+% If we have options.reoptimize_fixtures set then these will be different.
 calibration.source_fixture = perr.so_fix;
 calibration.stage_fixture = perr.st_fix;
 calibration.sensor_fixture = perr.se_fix;
@@ -92,6 +106,7 @@ else
 end
 
 calibration.linear_correction = transform;
+
 calibration.stats.uncorrected = errors(1);
 calibration.stats.corrected = corrected_err;
 calibration.stats.num_invalid = sum(~perr.valid_pose);

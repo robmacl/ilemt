@@ -16,14 +16,11 @@ for (cal_ix = 1:length(cal_results))
   stats = cal1.calibration.stats;
   cal_names{cal_ix, 1} = cal1.options.out_file;
   cal_stats(cal_ix, 1) = stats.rms_residue;
-  % ### isfield temporary backward compatibility
-  if (isfield(stats, 'num_points'))
-    cal_stats(cal_ix, 2) = stats.num_points;
-    cal_stats(cal_ix, 3) = stats.num_invalid;
-    % Convert to mm
-    cal_stats(cal_ix, 4) = stats.uncorrected * 1e3;
-    cal_stats(cal_ix, 5) = stats.corrected * 1e3;
-  end
+  cal_stats(cal_ix, 2) = stats.num_points;
+  cal_stats(cal_ix, 3) = stats.num_invalid;
+  % Convert to mm
+  cal_stats(cal_ix, 4) = stats.uncorrected * 1e3;
+  cal_stats(cal_ix, 5) = stats.corrected * 1e3;
 end
 
 
