@@ -11,6 +11,7 @@ function [calibration] = linear_correction(perr, cp_options, cal_options, calibr
 % silly result.  It is possible that there are no valid points at all.
 npoints = size(perr.measured_source, 1);
 all_points = length(perr.all_solution_residuals);
+calibration.stats.num_invalid = all_points - npoints;
 if (npoints / all_points < 0.75)
   fprintf(1, 'linear_correction: too few valid points, skipping: %d/%d\n', ...
           npoints, all_points);
@@ -109,5 +110,4 @@ calibration.linear_correction = transform;
 
 calibration.stats.uncorrected = errors(1);
 calibration.stats.corrected = corrected_err;
-calibration.stats.num_invalid = sum(~perr.valid_pose);
 end

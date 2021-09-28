@@ -1,6 +1,6 @@
-function [summary] =  perr_report_files(perr, options, res)
-drift = res.overall.drift;
-m_err = res.overall.moment_error;
+function [summary] = perr_report_files(perr, options, res)
+drift = res.drift;
+m_err = res.moment_error;
 files = perr.in_files;
 
 for (ix = 1:length(files))

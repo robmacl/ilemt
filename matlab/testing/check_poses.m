@@ -41,21 +41,19 @@ res.perr = perr;
 res.onax = [];
 res.calibration = calibration;
 
+overall = perr_residue_stats(perr, options);
+
 if (isempty(perr.errors))
   fprintf(1, 'check_poses: no data to check, skipping...\n');
-  res.overall.trans_rms = NaN;
-  res.overall.trans_max = NaN;
-  res.overall.rot_rms = NaN;
-  res.overall.rot_max = NaN;
   return;
 end
 
 % RMS/max summary statistics
-res.overall = perr_report_overall(perr, options);
+res.overall = perr_report_overall(perr, options, overall);
 
 % These are per-file drift and moment error info
-res.overall.drift = perr_report_drift(perr, options);
-res.overall.moment_error = perr_sanity_check(perr, options);
+res.drift = perr_report_drift(perr, options);
+res.moment_error = perr_sanity_check(perr, options);
 
 if (any(strcmp(options.reports, 'files')))
   perr_report_files(perr, options, res);

@@ -1,10 +1,18 @@
-function [cal_results, cp_results] = run_tests (clean)
-% Run calibrate_main() and check_poses() on the current directory.  
-% If clean is true then we delete output/{*.mat,*.xlsx} and truncate
+function [cal_results, cp_results] = run_tests (option)
+% Run calibrate_main() and check_poses() on the current directory.  If
+% 'option' is is 'clean' then we delete output/{*.mat,*.xlsx} and truncate
 % output/test_output.txt
 
 if (nargin < 1)
+  option = 'default';
+end
+
+if (strcmp(option, 'clean'))
+  clean = true;
+elseif (strcmp(option, 'default'))
   clean = false;
+else
+  error('What are you even doing?');
 end
 
 if (~exist('output', 'file'))
