@@ -142,6 +142,7 @@ function [perr] = find_pose_errors (calibration, options)
     opt_options = optimset('lsqnonlin');
     opt_options = optimset(opt_options, 'Display', 'off');
     %opt_options = optimset(opt_options, 'PlotFcns', @optimplotresnorm);
+    %figure(666);
     allow_opt = [ones(1,3) * 0.5, ones(1,3) * 3*pi];
     bounds = zeros(1, 18);
     if (any(strcmp(options.optimize_fixtures, 'source')))
@@ -157,7 +158,6 @@ function [perr] = find_pose_errors (calibration, options)
     fprintf(1, 'Optimizing fixture poses:\n');
     disp(options.optimize_fixtures);
 
-    figure(1);
     [state,resnorm,residual,exitflag,output] = ...
 	lsqnonlin(ofun, state, -bounds, bounds, opt_options);
     close();

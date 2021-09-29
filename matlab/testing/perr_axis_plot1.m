@@ -52,9 +52,19 @@ for (col = 1:2)
       end
       hold on;
       plot(x, ydata);
+      
       leg_names{end+1} = ax_names{ax};
     end
+
     hold off;
+    % Force the vector magnitude plots to start at zero.  on-axis plots are
+    % signed.
+    if (kix ~= onax_on_axis)
+      yl = get(gca, 'Ylim');
+      yl(1) = 0;
+      set(gca, 'Ylim', yl);
+    end
+
     if (row == 1 && col == 1);
       legend(leg_names, 'location', 'southwest');
     end

@@ -74,10 +74,10 @@ function [options] = check_poses_options (cal_options, key_value)
   % as for evaluation of the pose solution algoithm's robustness.
   options.true_initial = false;
 
-  % Parameters for Savitzky-Golay filter used to smooth and differentiate
-  % the results: polynomial order and window width.
+  % Parameters for Savitzky-Golay filter used to differentiate the axis sweep
+  % results: polynomial order and window width.
   options.sg_filt_N = 2;
-  options.sg_filt_F = 11;
+  options.sg_filt_F = 21;
 
   % xyz_exaggerate: exaggeration to use in 3D error views.  See
   % perr_workspace_vol().

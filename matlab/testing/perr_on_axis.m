@@ -27,28 +27,53 @@ function [res] = perr_on_axis (perr, options)
   on_axis_kind; % definitions
   res = struct([]);
 
-  stage_pos = perr.motion_poses(:, 13:18);
-  % Mask for zero elements in the stage position, used to separate out the
-  % different axis sweeps.
-  zero_tol = 1e-4;
-  zero_ax = abs(stage_pos) < zero_tol;
-
+  % Errors are expressed in the coordinates of the stage input (so include the
+  % source fixture transform, source fixture motion, and stage transform).
   if (~options.stage_coords)
     error('For sweep, options.stage_coords must be true (I think).');
   end
   
-  % This is maybe kinda dubious?  Perhaps we should convert the pose vector into
-  % the stage representation?  But the rotation vector (quaternion magnitude)
-  % is really a better measure of angular displacement, and this should be
-  % fine as long as the rotation errors are small.  Thing is, when rotation is
-  % not small then the idea of "on axis" breaks down because we are not
-  % actually using the same representation for the sweep position and the
-  % error.
+  % This is some funky stuff related to dealing with sensor fixtures.  The
+  % problem is that we want to identify sweeps on the Rz axis as being sweeps
+  % about the rotated sensor mover axis.  (Not the sensor axis per-se because
+  % we don't want to introduce the sensor fixture transform misalignments.)
+  % This is probably only pseudo-general, but works for the current stage
+  % setup.
+  %
+  % stage_pos is the "stage position" that we look at to decide what axis we are
+  % sweeping.  Can be understood as a pose vector.
+  stage_pos = zeros(size(perr.desired, 1), 6);
+  for (ix = 1:size(stage_pos, 1))
+    % Actual stage motion, where the sweep happens
+    XYZRz_mo = perr.motion_poses(ix, 13:18);
+    % Stage motion composed with sensor fixture.
+    stage_mo = perr.motion_poses(ix, 7:12);
+    % Sensor fixture motion only.  Inverse transforms vectors into the sensor
+    % fixture coordinates.
+    se_fix_tr_inv = inv(vector2tr(stage_mo - XYZRz_mo));
+    XYZRz_po = trans2pose(vector2tr(XYZRz_mo));
+    % rotate the rotation (vector) by the (fixture) rotation, also converting to
+    % degrees/mm.
+    RxRyRz = se_fix_tr_inv * [XYZRz_po(4:6) 0]' * (180/pi);
+    % Likewise, the translation.
+    xyz = se_fix_tr_inv * [XYZRz_po(1:3) 1]' * 1e3;
+    
+    stage_pos(ix, :) = [xyz(1:3)' RxRyRz(1:3)'];
+  end
+
+  % Mask for zero elements in the stage position, used to separate out the
+  % different axis sweeps.
+  zero_tol = 1e-4;
+  zero_ax = abs(stage_pos) < zero_tol;
+  
+  % Scale pose error to mm/degree. 
   pose_err = [perr.errors(:, 1:3)*1e3, perr.errors(:, 4:6)*(180/pi)];
 
   for (ax = 1:6)
     % Is there any sweep on this axis?
     if (all(zero_ax(:, ax)))
+      fprintf(1, 'Axis %d: no sweep, skipping.\n', ax);
+      res(ax).on_ax_ix = [];
       continue;
     end
     
@@ -75,6 +100,12 @@ function [res] = perr_on_axis (perr, options)
       end
     end
     on_ax_ix(1:first_good-1) = [];
+    isjump = diff(on_ax_ix) ~= 1;
+    if (any(isjump))
+      fprintf(1, 'Axis %d: holes in sweep or multiple sweeps, using first chunk.\n', ax);
+      on_ax_ix = on_ax_ix(1:(find(isjump, 1) - 1));
+    end
+
     dx = diff(stage_pos(on_ax_ix, ax));
     bad_dx = (abs(dx - median(dx)) > zero_tol);
     if (any(bad_dx))
@@ -83,10 +114,7 @@ function [res] = perr_on_axis (perr, options)
       fprintf(1, 'Axis %d: nonuniform step size, dropping %d poses.\n', ...
               ax, sum(bad_dx)); 
     end
-    if (~all(diff(on_ax_ix) == 1))
-       error('Holes in sweep.');
-    end
-    
+
     %{
     lims = options.axis_limits(ax, :);
     clip = stage_pos(:, ax) < lims(1) | stage_pos(:, ax) > lims(2);
@@ -135,15 +163,17 @@ function [res] = perr_on_axis (perr, options)
 end
 
 function [res, x_out] = perr_filt_onax (x, y, options)
-  [smooth, deriv, x_out] = ...
+  [~, deriv, x_out, x_ix_out] = ...
     sg_filt(x, y, options.sg_filt_N, options.sg_filt_F);
-  res = [smooth deriv];
+  res = [y(x_ix_out) deriv];
 end
 
 % The columns of Y are multiple axis signals.  The result is the vector sum.
-% res(:, 1) is the smoothed signal, and res(:, 2) is the derivitive.
+% res(:, 1) is the input signal (clipped for filter ends), and res(:, 2) is
+% the derivitive.  We don't use the filter "smoothed" output since it doesn't
+% need it, allowing higher smoothing on the derivative.
 function [res, x_out] = perr_filt (x, y, options)
-  [smooth, deriv, x_out] = ...
+  [~, deriv, x_out, x_ix_out] = ...
     sg_filt(x, y, options.sg_filt_N, options.sg_filt_F);
-  res = [sqrt(sum(smooth.^2, 2)) sqrt(sum(deriv.^2, 2))];
+  res = [sqrt(sum(y(x_ix_out, :).^2, 2)), sqrt(sum(deriv.^2, 2))];
 end

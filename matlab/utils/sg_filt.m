@@ -1,4 +1,4 @@
-function [smooth, deriv, x_out] = sg_filt (x, y, N, F)
+function [smooth, deriv, x_out, x_ix_out] = sg_filt (x, y, N, F)
   % Use Savitzky-Golay filter to smooth data and first derivitive.  X must be
   % regularly spaced.  If Y is 2D, then the signals are in the columns.  N is
   % the order of polynomial fit and F is the window length.  See sgolay.

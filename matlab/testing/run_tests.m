@@ -97,3 +97,12 @@ end
 save('output/test_results', 'cal_results', 'cp_results');
 
 perr_overall_stats();
+
+
+%%% Local test script
+
+optfile = './local_test_script.m';
+if (exist(optfile, 'file'))
+  fprintf(1, '\nRunning %s\n', optfile);
+  run(optfile);
+end

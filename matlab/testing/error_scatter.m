@@ -16,7 +16,6 @@ function [] = error_scatter (perr, options)
     error('error_scatter: unknown options.scatter_x_axis: %s', x_type);
   end
 
-  %figure(options.figure_base + 6);
   figure();
   subplot(2, 1, 1);
   scatter(xvals, trans_err_mag);

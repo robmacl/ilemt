@@ -1,6 +1,5 @@
 function perr_workspace_vol(perr, options)
 % 3D plot of error vectors
-  %figure(options.figure_base + 3);
   figure();
   errors = perr.errors;
   desired = perr.desired;
