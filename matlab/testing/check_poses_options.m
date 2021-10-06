@@ -82,7 +82,8 @@ function [options] = check_poses_options (cal_options, key_value)
   % xyz_exaggerate: exaggeration to use in 3D error views.  See
   % perr_workspace_vol().
   % 
-  % Vector [trans->trans rot->trans trans->rot rot->rot].   
+  % Vector [trans->trans rot->trans trans->rot rot->rot].  If scalar, then
+  % show only the first plot.
   options.xyz_exaggerate = [10 300 1 30];
 
   % If true, transform error to stage coordinates.  Gives a prettier picture

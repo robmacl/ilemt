@@ -1,4 +1,4 @@
-function [] = print_calibration (cal)
+function [out] = print_calibration (cal)
 % Print a calibration result struct in human readable format
 
 dipole.d_source_pos = cal.d_source_pos; 
@@ -10,11 +10,17 @@ qpole.q_source_moment = cal.q_source_moment;
 qpole.q_sensor_pos = cal.q_sensor_pos; 
 qpole.q_sensor_moment = cal.q_sensor_moment;
 
-% display dipole calibration and quadrupole calibration in two separate rows
-disp(struct2table(dipole));
+% display dipole calibration and quadrupole calibration in two separate
+% rows
+dipole_t = struct2table(dipole);
+disp(dipole_t);
 qpole_t = struct2table(qpole);
 if (~all(all(table2array(qpole_t) == 0)))
   disp(qpole_t);
+end
+
+if (nargout > 0)
+  out = dipole_t;
 end
 
 print_fix('Source', cal.source_fixture);
