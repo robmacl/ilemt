@@ -25,6 +25,7 @@
 		<Item Name="stage_calibration.vi" Type="VI" URL="../../motion/client/stage_calibration.vi"/>
 		<Item Name="ilemt_vars.lvlib" Type="Library" URL="../main/ilemt_vars.lvlib"/>
 		<Item Name="dac_test_pattern.vi" Type="VI" URL="../testing/dac_test_pattern.vi"/>
+		<Item Name="averaged_ilemt_data.vi" Type="VI" URL="../calibration/averaged_ilemt_data.vi"/>
 		<Item Name="Dependencies" Type="Dependencies">
 			<Item Name="vi.lib" Type="Folder">
 				<Item Name="BuildHelpPath.vi" Type="VI" URL="/&lt;vilib&gt;/Utility/error.llb/BuildHelpPath.vi"/>
@@ -166,7 +167,6 @@
 			<Item Name="on_axis_coupling.vi" Type="VI" URL="../processing/on_axis_coupling.vi"/>
 			<Item Name="display_options.ctl" Type="VI" URL="../gui/display_options.ctl"/>
 			<Item Name="card_carrier_amplitudes.ctl" Type="VI" URL="../processing/card_carrier_amplitudes.ctl"/>
-			<Item Name="averaged_ilemt_data.vi" Type="VI" URL="../calibration/averaged_ilemt_data.vi"/>
 			<Item Name="coupling_matrix.ctl" Type="VI" URL="../processing/coupling_matrix.ctl"/>
 			<Item Name="distance_processing.vi" Type="VI" URL="../calibration/distance_processing.vi"/>
 			<Item Name="Tc filter.vi" Type="VI" URL="../processing/Tc filter.vi"/>
