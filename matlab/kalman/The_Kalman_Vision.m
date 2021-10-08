@@ -1,32 +1,38 @@
-poses = load('track_poses');
+% Poses: struct containing:
+% - poses: N x 6 array of poses
+% - valid: N x 1 array of booleans
+% - timestamp: N x 1 array of timestamps
+% - entry_type: N x 1 array of integers. 0 = high freq, 1 = low freq, 2 =
+% high at low freq
+%poses = load('track_poses');
 
 % Time increment (high rate)
-dt = mean(diff(poses.timestamp(poses.entry_kind == 0)));
+dt = mean(diff(poses.timestamp(poses.entry_type == 0)));
 
 % ### fix below here to use 'poses', need to figure out how the 'collection'
 % works below.  I guess it is figuing out of this is a combined high/low
 % update, or high only.
 
-collection = zeros(size(poses_ID,1),20);
+collection = zeros(size(poses.poses,1),20);
 
 ix = 1;
 collection_ix = 1;
 
 % Separate low and high information
-while ix < length(poses_ID)
+while ix < length(poses.poses)
 
     ix;
     
-    timestamp = poses_ID(ix,1);
+    timestamp = poses.timestamp(ix);
     
-    if poses_ID(ix+1,2) == 1
+    if poses.entry_type(ix+1) == 1
         combined_update = true;
-        p = [poses_ID(ix,3:end), poses_ID(ix+1,3:end), poses_ID(ix+2,3:end)];
+        p = [poses.poses(ix, :), poses.poses(ix+1, :), poses.poses(ix+2, :)];
         ix = ix + 3; % point to next high rate input with a 0 ID marker
          
     else 
         combined_update = false;
-        p = [poses_ID(ix,3:end), zeros(1,12)];
+        p = [poses.poses(ix,:), zeros(1,12)];
         ix = ix + 1;
     end
     
@@ -71,8 +77,10 @@ M = 0.05;
 % Measurement noise
 % Using high rate noise for bias because this dominates the noise in the
 % bias.
-R = blkdiag(eye(3)*calibration.high_rate.w_trans, eye(3)*calibration.high_rate.w_rot, ...
-    eye(3)*calibration.low_rate.w_trans, eye(3)*calibration.low_rate.w_rot).^2;
+% TODO: get the actual calibration matrices
+% R = blkdiag(eye(3)*calibration.high_rate.w_trans, eye(3)*calibration.high_rate.w_rot, ...
+%     eye(3)*calibration.low_rate.w_trans, eye(3)*calibration.low_rate.w_rot).^2;
+R = eye(12);
 
 % Process noise parameters.
 process_trans_hi = 1e-5;
@@ -105,7 +113,7 @@ Q(state_Rx_low:state_Rz_low, state_Rx_hi:state_Rz_hi) = Q_rc;
 Q = Q.^2 * dt;
 
 x_est = zeros(state_size, 1);
-init_pose = poses_ID(1,3:8); 
+init_pose = poses.poses(1,:); 
 ip_rot = init_pose(4:end);
 ip_trans = init_pose(1:3);
 x_est(state_x_hi:state_z_hi) = ip_trans;
@@ -113,7 +121,7 @@ x_est(state_x_low:state_z_low) = ip_trans;
 x_est(state_Rx_hi:state_Rz_hi) = ip_rot;
 x_est(state_Rx_low:state_Rz_low) = ip_rot;
 
-x_est = [poses_ID(1,3:8) zeros(1,15)]'; % initialize location
+x_est = [poses.poses(1,:) zeros(1,15)]'; % initialize location
 % x_est_save = [];
 
 P = eye(state_size)*1000; % initialize state covariance

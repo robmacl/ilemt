@@ -1,18 +1,18 @@
-lhf_poses = zeros(size(poses_ID(:,2),1),8);
+lhf_poses = zeros(size(poses.entry_type(:),1),8);
 hf_poses = lhf_poses;
 
 hf_ix = 1;
 lhf_ix = 1;
 
-for c = 1:length(poses_ID)
-    if poses_ID(c,2) == 0; % for high rate data
-        pose1 = poses_ID(c,:);
+for c = 1:length(poses.poses)
+    if poses.entry_type(c) == 0; % for high rate data
+        pose1 = [poses.timestamp(c,:), poses.entry_type(c,:), poses.poses(c,:)];
         hf_poses(hf_ix, :) = pose1;
         hf_ix = hf_ix + 1;
         % hf_poses = [hf_poses; pose1];
         
-    elseif poses_ID(c,2) == 1; % for low rate data
-        pose11 = poses_ID(c,:);
+    elseif poses.entry_type(c) == 1; % for low rate data
+        pose11 = [poses.timestamp(c,:), poses.entry_type(c,:), poses.poses(c,:)];
         lhf_poses(lhf_ix, :) = pose11;
         lhf_ix = lhf_ix + 1;
         % lhf_poses = [lhf_poses; pose11];
