@@ -8,6 +8,11 @@ Todo:
     terrible. 
 
 Don't forget:
+ -- Would be better if cal data was not effectively a subset of test
+    data, eg. slight rotation/translation.  We add only interior XYZ points.
+ -- Source lead wires may be having significant effect, source cross
+    coupling changed quite a bit when I relocated the source on the
+    source mover.
  -- worry about trans2pose, change to using tr2angvec and orthonormal test.
  -- quadrupole calibration anomaly between cal_7_21_premo_dipole and
     cal_7_29_premo_dipole.  See [3 Aug 21].  Note that I was not using the

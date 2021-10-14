@@ -7,5 +7,5 @@ delta = zeros(size(measured));
 for (ix = 1:size(measured, 1))
   so_measured1 = pose2trans(measured(ix, :));
   so_desired1 = pose2trans(desired(ix, :));
-  delta(ix, :) = trans2pose(inv(so_desired1) * so_measured1);
+  delta(ix, :) = trans2pose(inv(so_measured1) * so_desired1);
 end
