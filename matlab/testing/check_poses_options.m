@@ -121,6 +121,7 @@ function [options] = check_poses_options (cal_options, key_value)
   % For read_cal_data()
   options.sensor_signs = cal_options.sensor_signs;
   options.source_signs = cal_options.source_signs;
+  options.compensate_stage = cal_options.compensate_stage;
 
   optfile = './local_check_options.m';
   if (exist(optfile, 'file'))

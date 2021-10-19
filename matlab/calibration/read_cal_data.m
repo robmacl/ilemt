@@ -28,7 +28,7 @@ function [motions, couplings, file_map] = read_cal_data (options)
 %     measurement bias, use real_coupling() to get signed real coupling
 %     values.
 % 
-% file_map(n):
+% file_map(n, 1):
 %     Parallel to the result data, the index in options.in_files of the
 %     file that the datapoint came from.
 
@@ -56,8 +56,12 @@ for (f_ix = 1:length(files))
   % Read file data
   data1 = dlmread(file1);
   motions1 = repmat(fix_motions, size(data1, 1), 1);
-  motions1(:, 7:12) = motions1(:, 7:12) + data1(:, 1:6);
-  motions1(:, 13:18) = data1(:, 1:6);
+  stage_mo = data1(:, 1:6);
+  if (options.compensate_stage)
+    stage_mo = compensate_stage(stage_mo);
+  end
+  motions1(:, 7:12) = motions1(:, 7:12) + stage_mo;
+  motions1(:, 13:18) = stage_mo;
   motions_c{end+1} = motions1;
 
   couplings1 = zeros(3, 3, size(data1, 1));
@@ -83,7 +87,7 @@ for (f_ix = 1:length(files))
   % collection.  A more precise check based on the pose change is made by
   % check_poses() 'drift' report.  But this check is useful because it can
   % be done when we don't yet have a calibration.
-  if (all(data1(1, 1:6) == 0) && all(data1(end, 1:6) == 0))
+  if (all(data1(1, 1:6) == data1(end, 1:6), 2))
     cdiff = couplings1(:,:,1) - couplings1(:,:,end);
     maxdiff = max(max(abs(cdiff), [], 2), [], 1);
     %fprintf(1, 'drift: %s %g\n', file1, maxdiff);
