@@ -63,7 +63,9 @@ function [res] = perr_on_axis (perr, options)
 
   % Mask for zero elements in the stage position, used to separate out the
   % different axis sweeps.
-  zero_tol = 1e-4;
+  % ### We need this rather large value because of stage error
+  % compensation resulting in non-zero values.
+  zero_tol = 0.3;
   zero_ax = abs(stage_pos) < zero_tol;
   
   % Scale pose error to mm/degree. 
