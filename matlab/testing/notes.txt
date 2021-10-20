@@ -71,6 +71,235 @@ Maybe later:
        physically relevant coordinates, eg. coupling/magnetic
 
 
+[20 Oct 21]
+
+See ilemt_papers/calibration/stage_uncertainty.xlsx for computation of stage
+position uncertainty.  By the specs it is not too bad for our purposes, 118
+um/1.9 mrad, but this is not very credible, both because the stage is not
+calibrated, and also because the specs do include the off-axis effects from
+the large pole moment.
+
+I dived into checking the stage accuracy, and of course it was not always as
+good as I would have liked.  See notebook #2 pages 10-12, and also the tables
+in compensate_stage() (described below).
+
+Many of the measurements are quite good, within the specs even though we are
+including the pole and extra moment from the indicator reach-out.  Good
+measurements are:
+    X->Y
+    Y->X (including XY non-square)
+    XY->Z
+    Rz repeatability
+    Rz accuracy
+
+I haven't evaluated the stage components individually, without the pole, but
+it seems that in particular the XY off-axis and the Rz accuracy are much
+better than the spec.  The Rz accuracy spec is terrible, but with only +/- 90
+degree tests we can't really contradict it.  The Rz repeatability ia similar
+to the spec.
+
+But these are ugly:
+    Z->X (220 um TIR)
+    Z->Z (130 um TIR)
+    X->X (155 um TIR)
+    (haven't measured Y->Y yet)
+
+If these are present right at the stage axes (without the pole moment), then
+these are way out of spec.  The from-Z effects have been visible all along in
+the calibration results, but I had supposed that it was a magnetic effect.
+"Why does it all go bad at Z<0?"
+
+Wrote ilemt/matlab/calibration/compensate_stage.m, which adds the measured
+errors into the commanded stage position to increase the effective stage
+accuracy.  This seems to "work"; it reduces the calibration residual (10%) and
+the calibration error (especially w/o output correction).  The function can
+deal with any of the 9 XYZ interactions, but I am thinking that it is
+reasonable to only correct the bad ones.  Anything less than 15 um uncertainty
+(30 um TIR) is not going to have any significant contribution.  The Z->X and
+Z->Z corrections noticeably help, while the X->X effect is not so much (but if
+the sign is swapped it increases the residue).
+
+Of course it is not necessarily the case that positioning error will degrade
+these internal measures; the whole point of characterizing the stage
+uncertainty is that positioning errors can go undetected by the residual.  But
+if the calibration model (dipole) can't absorb these errors, then some of it
+is going to appear in the residual and calibration error.
+
+For the actual accuracy the problem is not the positioning error that ends up
+in the residue, but rather the error that *doesn't*.  As I had suspected, the
+linear correction is rather good at absorbing stage error, since compensating
+the stage error improves the uncorrected calibration error (13%) more than it
+improves the corrected error (8%).  This "improvement" from the output
+correction is precisely the process of absorbing positioning error into the
+calibration.
+
+Given the "ugliness" (nonlinearity) of the bad responses it is kind of hard to
+be confident how stable those deviations will be.  eg. for the X on-axis
+error, most of the error (100 um) is between -25 and -50, and Z issues are
+mainly in ther -Z range.  Whether this is wear or misalignment or just dirt,
+who knows.
+
+These errors are big enough that it's certainly going to be better to correct
+than to not correct, but we should repeat the stage error measurements before
+any critical calibration.  The reduction in residue on the calibration data
+from a month ago shows that things haven't changed too much.
+
+As you would expect, with the CMU concentric source (and its higher error) the
+compensation has basically no effect on calibration error and residual.  This
+level of stage error is really only visible when the tracker accuracy is
+higher.
+
+
+[11 Oct 21]
+
+Not sure what to say about stage accuracy.  I need to say something, but going
+into detail also seems rather too much for this context.  I guess it could be
+an appendix.  The component specs are not tremendously helpful. The on-axis
+and perpendicular error specs for the linear axes are decent, but there isn't
+any rock-n-roll moment error spec.
+
+For the Rz axis there is a wobble spec which is 60 arc sec (290 urad), which
+over the pole moment of 0.7 m gives 200 um.  Rz does seem to be the biggest
+contributor to non-reproducible off-axis error, but what I've typically seen
+is more like 25 um, sometimes more, but well less than 50 um.
+
+Not sure how they define wobble, it may be the perpendicularity with respect
+to the base, in which case we would largely cancel any repeatable first order
+effect through the sensor fixture transform.  That is, a centered pole normal
+to the turntable will to some degree sweep out a cone, but at any particular
+height (such as our pole length) this will amount to a circle of a particular
+radius.  Since we already allow for an offset between the sensor and the Rz
+axis we will absorb the circular error by making the offset moment larger or
+smaller.
+
+I think that the Rz alignment also must have a similar effect.  The thing is
+that the pole itself is only very roughly normal to any axis, so the top of
+the pole is going to be experiencing all sorts of wobble.  But I have aligned
+the sensor fixture to the Z (translation) axis to insure that the fixture Z
+axis is parallel to the stage Z axis.  Then the Rz alignment makes the Z axes
+cooincident.  This makes the non-perpendicular of the pole itself irrelevant,
+because we place the fixture origin over the Rz origin.  The pole could be at
+any angle.
+
+But what happens with non-parallelism between the Rz and Z?  Then we will see
+a circular XY movement of the fixture under Rz motion that varies by the Z
+offset (opposite in phase above and below the workspace center).  Insofar as
+this exists (and is not somehow compensated) it seems to be smaller than other
+errors, since we don't see a clear interaction between Rz and XY error in the
+grid data tests.  For the axis sweep we would not expect to see much because
+it is done at the center of the workspace (and we do not see any such).
+
+How much would we expect given the wobble spec?  Now the moment is only the Z
+offset, 50mm, giving 15 um for 290 urad wobble.  This is indeed small enough
+to be lost in the other errors.
+
+
+Here are the specs:
+Z axis:
+    Daedal 806004CT
+    Positional accuracy: 15 um
+    Straight line: 8 um
+    Flatness: 8 um
+    Repeatability: 5 um
+
+XY axis:
+   Daedal 300 AT series, 310062AT
+   Positional repeatability (bidirectional): +/- 12 um
+   X-Y squareness: 60 arc sec (291 urad)
+   Positional accuracy: 24 um
+   Straightness and flatness: 76 um
+
+Rz axis:
+   Daedal 200RT series, 20801RTES
+   Positional repeatability (unidirectional): 0.5 arc min (145 urad)
+   Runout: +/- 75 um
+   Concentricity: +/- 127 um
+   Wobble: 60 arc sec (291 urad)
+   Accuracy: 10 arc min (2900 urad)
+[I'm guessing that "concentricity" is how far the rotation axis is from the
+center of the stage, and "runout" is the residual indication after you have
+nulled the concentricity.  That is, it is higher order error or noise.  What
+I've actually seen in Rz alignment is non-reproducible noise, probably mostly
+"wobble".] 
+
+These specs are for "standard precision", many "precision grade" specs are 2x
+or more better.  
+
+Taking just the XYZ linear specs and combining vector sum:
+   sqrt(sum(([15 8 8 12 24 76]*1e-6).^2))
+   = 83 um
+
+If we add the Rz runout and 50mm moment effects for XY non-square and Rz
+wobble, then we get:
+   sqrt(sum(([15 8 8 12 24 76 75 291*50e-3 291*50e-3]*1e-6).^2))
+   = 114 um
+(This assumes that Rz alignment has caused the effective wobble moment to be
+the 50mm Z motion rather than the 700mm sensor height.)
+
+This seems kind of bad, but if we add it to a 200 um tracker error, the
+combined error is only increased 15%:
+   sqrt(sum(([15 8 8 12 24 76 75 291*50e-3 291*50e-3 200]*1e-6).^2))
+   = 230 um
+
+We are ignoring the unspecified rock-n-roll of the XYZ axes, but this does
+seem to be pretty small (hard to see compared to Rz effect).  Also on the wiki
+page I claim that the XY orthogonality is out of spec.  But our uncertaintly
+is heavily dominated by the 76 um XY "straightness and flatness" and the 75 um
+Rz "runout".
+
+The stage specs would be max specs, not RMS, would make them conservative when
+set beside the RMS tracker error.  That is, we are combining them as though
+they were RMS. But supposing that the stage error was Gaussian then RMS would
+be a fraction of the max.
+
+Should also consider error in the source and sensor fixtures, where there is
+no "spec".
+
+
+ ==> I hadn't realized that root-sum-square was considered the default way to
+     combine uncertainties, and how this affects the required positioning
+     accuracy.  If the assumption of uncorrelated errors is justified, then we
+     don't need as much accuracy as I was thinking.  That is, 3x better is
+     quite reasonable, where I had hoped for up to 10x.
+
+Is the assumption of uncorrelated errors justified here?  For the stage itself
+it is as justified as in any other general situation.  But post-calibration
+the tracker error *is* correlated with the stage error.  That is, it will have
+a component that mirrors the stage error, rather than being unrelated.  But if
+the calibration could track the stage error quite closely then the calibration
+error would appear quite small, and the total uncertainty would be (correctly)
+dominated by the stage uncertainty.  Insofar as the tracker calibration is
+modelling the stage error, these do not add together.  So I guess it does work
+for the calibration result as well.
+
+While an error of 15% in the uncertainty spec seems fine from an engineering
+perspective, you would need care to rigorously make fine distinctions between
+the performance of different calibrations, hardware configurations, or
+trackers.  If the difference is in this range then you would have to consider
+the possibility that it is non-reproducible.  Given that the stage error specs
+are conservative, and that some of the stage error is reproducible, then it is
+likely that differences on this scale *will* be reproduced, but if this is
+important the you really should show that it is reproducible by reproducing it.
+
+
+A thought here is that I don't entirely understand how the fixture transforms
+may be cancelling deterministic stage error.  But I think that this also
+doesn't matter as long as we are just incorporating stage error into the
+fixture transforms (and not into the calibration).
+
+The general linear output correction probably *is* incorporating stage error
+into the calibration.  At least, it is fairly well positioned to incorporate
+translation non-orthogonality and scale factor error. (But it is in source
+coordinates, which are rotated wrt. the stage, at least with rotated
+dipole. And the translation axes rotate dynamically with Rz.)
+
+
+Although this is not a rigorous assertion, non-reproducible error is not as
+big a problem as reproducible, because (unless it is reproduced by chance) it
+will mainly inflate the measured error.  This is sort of adjacent to the
+uncorrelated-error assumption underlying the root-sum-square rule.
+
+
 [23 Sep 21]
 
 First look at cal_9_16_premo_rotated_dipole.  I was thinking this was

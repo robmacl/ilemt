@@ -83,7 +83,7 @@ options.sensor_signs = {};
 options.source_signs = {};
 
 % Apply compensation to stage motion to remove measured stage errors.
-options.compensate_stage = false;
+options.compensate_stage = true;
 
 % Options to define the input data files:
 % 
