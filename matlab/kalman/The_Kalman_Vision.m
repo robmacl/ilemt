@@ -18,6 +18,12 @@ collection = zeros(size(poses.poses,1),20);
 ix = 1;
 collection_ix = 1;
 
+% Step input
+step = true;
+step_size = 0.001; % m
+step_time = 1; % s
+start_time = poses.timestamp(1);
+
 % Separate low and high information
 while ix < length(poses.poses)
 
@@ -29,11 +35,21 @@ while ix < length(poses.poses)
         combined_update = true;
         p = [poses.poses(ix, :), poses.poses(ix+1, :), poses.poses(ix+2, :)];
         ix = ix + 3; % point to next high rate input with a 0 ID marker
-         
+        
+        if step && timestamp - start_time >= step_time
+            % Add step input to Zs
+            p(3) = p(3) + step_size;
+            p(9) = p(9) + step_size;
+            p(15) = p(15) + step_size;
+        end
     else 
         combined_update = false;
         p = [poses.poses(ix,:), zeros(1,12)];
         ix = ix + 1;
+        if step && timestamp - start_time >= step_time
+            % Add step input to Zs
+            p(3) = p(3) + step_size;
+        end
     end
     
     collection(collection_ix, :) = [timestamp, combined_update, p];
@@ -77,22 +93,21 @@ M = 0.05;
 % Measurement noise
 % Using high rate noise for bias because this dominates the noise in the
 % bias.
-% TODO: get the actual calibration matrices
-% R = blkdiag(eye(3)*calibration.high_rate.w_trans, eye(3)*calibration.high_rate.w_rot, ...
-%     eye(3)*calibration.low_rate.w_trans, eye(3)*calibration.low_rate.w_rot).^2;
-R = eye(12);
+R = blkdiag(eye(3)*calibration.high_rate.w_trans, eye(3)*calibration.high_rate.w_rot, ...
+     eye(3)*calibration.low_rate.w_trans, eye(3)*calibration.low_rate.w_rot).^2;
 
 % Process noise parameters.
-process_trans_hi = 1e-5;
+base_process_noise = 2e-6;
+process_trans_hi = base_process_noise;
 process_trans_corr = 0;
-process_rot_hi = 1e-5;
+process_rot_hi = base_process_noise;
 process_rot_corr = 0;
-process_vel = 1e-4;
-process_acc = 1e-3;
-process_w = 1e-4;
+process_vel = base_process_noise * 10;
+process_acc = base_process_noise * 100;
+process_w = base_process_noise * 10;
 
-process_trans_low = 1e-5; % for bias
-process_rot_low = 1e-5; % for bias
+process_trans_low = base_process_noise; % for bias
+process_rot_low = base_process_noise; % for bias
 
 
 % Start with diagonal process noise.
