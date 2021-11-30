@@ -20,7 +20,7 @@ Don't forget:
     identification?  Or the 'source' pattern just gives worse results, such as
     from larger translation than used in the test?  But also maybe just bad
     setup on 7/21.
-
+      ==> source pattern is larger span, but doesn't have more interior points.
 
 Accuracy:
  -- Test ascension tracker accuracy in same setup
