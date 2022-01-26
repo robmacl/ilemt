@@ -54,11 +54,13 @@ ukf = unscentedKalmanFilter(...
 % using the UKF as an optimizer.
 
 for (ix = 1:npoints)
+  ix
+
   couplings1 = couplings(:, :, ix);
   y_n = reshape(couplings1, [], 1);
 
   if (ix == 1 || ~options.continuous_motion)
-    x0 = trans2pose(kim18(couplings(:, :, ix), calibration))';
+    x0 = trans2pose(kim18(couplings(:, :, ix), calibration, 1))';
     ukf.State = x0;
     ukf.StateCovariance = ones(6) * initial_variance;
     x_init = zeros(initialize_iterations, 6);

@@ -19,7 +19,7 @@ ix = 1;
 collection_ix = 1;
 
 % Step input
-step = true;
+step = false;
 step_size = 0.001; % m
 step_time = 1; % s
 start_time = poses.timestamp(1);
@@ -97,7 +97,7 @@ R = blkdiag(eye(3)*calibration.high_rate.w_trans, eye(3)*calibration.high_rate.w
      eye(3)*calibration.low_rate.w_trans, eye(3)*calibration.low_rate.w_rot).^2;
 
 % Process noise parameters.
-base_process_noise = 2e-6;
+base_process_noise = 1e-5;
 process_trans_hi = base_process_noise;
 process_trans_corr = 0;
 process_rot_hi = base_process_noise;

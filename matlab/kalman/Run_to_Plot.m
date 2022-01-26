@@ -71,7 +71,7 @@ figure(2)
 hold on
 h = [];
 subplot(4,1,1)
-plot(timeVec_hi, x_pos_hf, timeVec_low, x_pos_lf, timeVec, x_est_hi,timeVec, x_est_unbias);
+plot(timeVec_hi, x_pos_hf, timeVec_low, x_pos_lf, timeVec, x_est_hi, '-', timeVec, x_est_unbias, '--');
 h(1) = gca;
 xlabel('Time (s)')
 ylabel('Position (m)')
