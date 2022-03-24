@@ -1,4 +1,4 @@
-function [poses, resnorms] = pose_solve_UKF (couplings, calibration, options)
+function [poses, resnorms] = pose_solve_UKF_low (couplings, calibration, options)
 % Pose solution using Unscented Kalman Filter.  The state representation is
 % the pose vector, and the measurement is the (real) coupling matrix.
 
@@ -15,9 +15,9 @@ options.measurement_noise = 1e-7; % from couplings
 % 
 % Constant position model for motion (random walk).  Units are
 % meters/radians.
-base_process_noise = 1e-5;
+base_process_noise = 2e-3;
 options.process_noise_trans = base_process_noise;
-options.process_noise_rot = base_process_noise;
+options.process_noise_rot = base_process_noise * 2;
 options.process_noise_vel = base_process_noise * 10;
 options.process_noise_acc = base_process_noise * 100;
 options.process_noise_w = base_process_noise * 10;
@@ -31,47 +31,16 @@ initial_variance = 0.001^2;
 % On initialization, the number of times to iterate the measurement step 
 initialize_iterations = 20;
 
-% State vector format
-  state_info.x_hi = 1;
-  state_info.y_hi = 2;
-  state_info.z_hi = 3;
-  state_info.vel_x = 4;
-  state_info.vel_y = 5;
-  state_info.vel_z = 6;
-  state_info.acc_x = 7;
-  state_info.acc_y = 8;
-  state_info.acc_z = 9;
-  state_info.Rx_hi = 10;
-  state_info.Ry_hi = 11;
-  state_info.Rz_hi = 12;
-  state_info.w_x = 13;
-  state_info.w_y = 14;
-  state_info.w_z = 15;
- 
-%   % bias terms
-%   state_info.x_low = 16;
-%   state_info.y_low = 17;
-%   state_info.z_low = 18;
-%   state_info.Rx_low = 19;
-%   state_info.Ry_low = 20;
-%   state_info.Rz_low = 21;
-
- state_info.size = 15;
-
 npoints = size(couplings, 3);
 poses = zeros(npoints, 6);
-state_vec = zeros(npoints, state_info.size);
 resnorms = zeros(1, npoints);
 
 process_cov = [repmat(options.process_noise_trans, 1, 3), ...
-               repmat(options.process_noise_vel, 1, 3), ...
-               repmat(options.process_noise_acc, 1, 3), ...
-               repmat(options.process_noise_rot, 1, 3), ...
-               repmat(options.process_noise_w, 1, 3)].^2;
+               repmat(options.process_noise_rot, 1, 3)].^2;
 
 ukf = unscentedKalmanFilter(...
-    @(x_k) UKF_state_transition(x_k, state_info), ...
-    @(x_k) UKF_measurement(x_k([state_info.x_hi:state_info.z_hi state_info.Rx_hi:state_info.Rz_hi]), calibration), ...
+    @(x_k) x_k, ...
+    @(x_k) UKF_measurement(x_k, calibration), ...
     'MeasurementNoise', options.measurement_noise.^2, ...
     'ProcessNoise', diag(process_cov) ...
 );
@@ -94,17 +63,13 @@ for (ix = 1:npoints)
     opt = track_options();
     opt.cal_file_base = '../cal_9_1_premo_rotated_dipole/output/XYZ';
     opt.concentric_cal_file = [opt.cal_file_base '_concentric_hr_cal'];
-    [pose0, ~, ~] = pose_solution(couplings(:, :, ix), calibration, opt, 3);
-    x0 = zeros(1, state_info.size);
-    x0([state_info.x_hi:state_info.z_hi state_info.Rx_hi:state_info.Rz_hi]) = pose0;
+    [x0, ~, ~] = pose_solution(couplings(:, :, ix), calibration, opt, 3);
     ukf.State = x0; % include vel/acc
-    ukf.StateCovariance = ones(state_info.size) * initial_variance;
+    ukf.StateCovariance = ones(6) * initial_variance;
   end
 
   resnorms(ix) = sum(residual(ukf, y_n).^2)/norm(couplings1);
-  state_ix = correct(ukf, reshape(y_n, [], 1))';
-  poses(ix, :) = state_ix([state_info.x_hi:state_info.z_hi state_info.Rx_hi:state_info.Rz_hi]);
-  state_vec(ix, :) = state_ix;
+  poses(ix, :) = correct(ukf, reshape(y_n, [], 1))';
   
   % If we had dynamics in our state transition (eg. constant velocity) then we
   % could reduce latency by using the predicted state as the output.  We
@@ -113,5 +78,3 @@ for (ix = 1:npoints)
   predict(ukf);
   %keyboard
 end
-
-assignin('base','state_vec',state_vec);

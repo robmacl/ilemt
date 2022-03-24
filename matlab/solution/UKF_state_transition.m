@@ -10,5 +10,8 @@ lin_rates_upd_2 = eye(3)*dt;
 F(state_info.x_hi:state_info.z_hi, state_info.vel_x:state_info.acc_z) = lin_rates_upd_1;
 F(state_info.vel_x:state_info.vel_z, state_info.acc_x:state_info.acc_z) = lin_rates_upd_2;
 
+rot_rates_upd = eye(3)*dt;
+F(state_info.Rx_hi:state_info.Rz_hi, state_info.w_x:state_info.w_z) = rot_rates_upd;
+
 % Matrix multiplication to predict next state
 x_k1 = F*x_k;
