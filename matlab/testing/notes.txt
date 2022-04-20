@@ -71,6 +71,123 @@ Maybe later:
        physically relevant coordinates, eg. coupling/magnetic
 
 
+[25 Jan 21]
+
+I guess the way to integrate ASAP collection into our test flow is to not
+really integrate ASAP with ILEMT at all at data collection time.  ASAP needs
+to run on the realtime target.
+
+For the accuracy testing and calibration the collection driver is almost the
+same, although the per-point data output is completely different. So we can
+use the same input point file, and can collect for each sensor in its
+accustomed way.  If I want to recalibrate ASAP camera parameters, then I do
+that using the old code.
+
+The Matlab code for the ilemt/matlab/testing will need to be smashed together
+with the ASAP code at least to some degree.  And we need yet another output
+format for the medsafe.  We have to get all these data formats into
+find_pose_errors(), which will require some conditionalization to skip ILEMT
+specific stuff, as well as reading the other formats.
+
+
+For logging of free motion (in-vivo) to directly compare ASAP and magnetic, we
+probably need three machines:
+
+ 1] The Micron box for ASAP
+ 2] The micron desktop for video logging (possibly all logging)
+ 3] Another machine (my laptop) run the labview for ILEMT signal processing.
+
+We will need to rely largely on clock synchronization to make things work, but
+we can also hack this with cross correlation if necessary.  Some of the stuff
+from the Micron in-vivo testing might be useful, like trace_viewer.vi?  IDK
+
+Maybe it would make sense to stream all the log data over the net to the
+micron desktop.  If the ASAP logging on the micron PC is working properly at
+full rate, then we could probably get away with not streaming ILEMT data, and
+just log on the ILEMT PC (likely my desktop).  Since the ILEMT Microzed is
+running linux we can easily run NTP on the ILEMT realtime, the ILEMT PC and
+the Micron PC, getting them in good synch.  We can roughly synch the micron
+realtime using 'Get TimeStamp from NTP.vi'.
+
+I don't think the realtime is currently in the trace data, though it could be
+added.  I would hope that we are logging the realtime on the micron machine.
+This is probably not compensating for buffering, but should still be good
+enough to roughly synch ASAP and ILEMT.
+
+Maybe just give up on trying to precisely time the tracker streams down to the
+sample level?  What that enables is comparing the relative latency, but
+without a realtime implementation ILEMT latency isn't even defined.
+
+For the in-vivo comparison we are mainly interested in the agreement between
+the trackers and how often ASAP tracking is lost.  May require a bit of
+cleverness to sync up the data streams using cross-correlation since the data
+rates are different and there is also going to be some drift in the rates.
+Maybe do the comparison on overlapping windowed blocks?  I guess the
+resampling filter would run continuously on the full stream, mapping eg. the
+ASAP data rate to the ILEMT rate.  Then on each block you would
+cross-correlate and use FFT time shift to get aligned samples.  The sum
+squared match error can then be summed across blocks (normalization for
+overlap needed).
+
+We can evaluate bandwidth/rise time, but this is going to be a lab test
+anyway, and does not require simultaneous operation (assuming we can get a
+reproducible stimulus).  Probably a spring-loaded mover with a hard stop to
+generate an impulse.  Mass of the sensor will affect the achieved
+speed/acceleration, so ideally we would mount all the sensors at once, but
+there might be interference issues.  But as long as the impact step is
+instantaneous wrt. the tracker timescale there is little affect on the
+frequency content from minor variation in acceleration.
+
+This step does not need to be "bullet shot from a gun".  I'd think that 10mm
+at maybe 5 g's would be enough.  Hmmn, that would give 20ms, 1 m/s velocity.
+20ms may not be long enough to fully register.  If we reduce to 1g then we get
+0.45 m/s and 45 ms, which is probably long enough, but I'd rather have a
+higher acceleration?
+
+If we are just letting it fall then the mass is no longer a variable, which is
+nice.  But at the micron output we do see multi-g accelerations.
+
+Impact is not going to be well-damped, of course, which would make it
+difficult to distinguish between the bouncing and an underdamped tracker
+response.  Only thing I can think of is to have a ground truth measurement of
+the impact response, which would be tricky.  Maybe could use one of the fiber
+optic distance probes mounted in the impact anvil.
+
+Another possibility would be to use a high acceleration and then use the
+start of acceleration as the stimulus.
+
+I guess it would also be interesting to look at the accuracy of the trajectory
+under abrupt acceleration, and perhaps rotation.  It would be easier to create
+a well-defined rotation path, and any filter we are likely to see is not going
+to be able to "discover" the rotation.  Would also give some testing of
+rotation dynamics.  Could use a pot or optical encoder to measure the
+rotation.
+
+For the dynamics experiments we would probably want to make a tester that logs
+individual short single shots of a test as seperate files.  This could be a
+different VI for medsafe vs. ILEMT.  Don't really need a unified logger with
+new ILEMT logging capability, though this would be convenient, especially if
+add ground truth measurements or more trackers.
+
+Could potentially use the same apparatus for rotation and impact test.  We can
+use a long arm with short travel to get roughly linear motion, while a shorter
+arm would give more circular motion.  It's two, two, two tests in one.
+Rotation and then impact.
+
+A pot on the pivot gives ground truth.  Maybe separate measure and drive arms
+so that arm flex is not an error?
+
+
+What comparison stats do we want?
+ -- Accuracy
+ -- Noise
+ -- Dynamic response: frequency response and accuracy during motion.
+
+Accuracy is under control, noise is pretty obvious, although last time we
+tested the Ascension did not have enough output resolution to see noise.
+Dynamic response is the main new thing.  Need to look a the literature.
+
+
 [20 Oct 21]
 
 See ilemt_papers/calibration/stage_uncertainty.xlsx for computation of stage
