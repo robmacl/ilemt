@@ -1,4 +1,4 @@
-function [poses, biases, resnorms] = pose_solve_dual_UKF (couplings_hi, couplings_lo, calibration_hi, calibration_lo, options)
+function [poses, biases, resnorms] = pose_solve_dual_UKF_low (couplings_hi, couplings_lo, calibration_hi, calibration_lo, options)
 % Pose solution using Unscented Kalman Filter.  The state representation is
 % the pose vector, and the measurement is the (real) coupling matrix.
 
@@ -92,12 +92,12 @@ for (ix = 1:npoints)
     opt.concentric_cal_file = [opt.cal_file_base '_concentric_lr_cal'];
     [pose0, ~, ~] = pose_solution(couplings_lo(:, :, ix), calibration_lo, opt, 3);
     x0 = zeros(1, state_info.size);
-    x0(state_info.x:state_info.Rz) = pose0;
+    x0(state_info.x:state_info.Rz) = pose0
     ukf.State = x0; % include vel/acc
     ukf.StateCovariance = ones(state_info.size) * initial_variance;
   end
 
-  resnorms(ix) = sum(residual(ukf, y_n).^2)/norm(couplings1);
+%   resnorms(ix) = sum(residual(ukf, y_n).^2)/norm(couplings1);
   state_ix = correct(ukf, reshape(y_n, [], 1))';
   poses(ix, :) = state_ix(state_info.x:state_info.Rz);
   biases(ix, :) = state_ix(state_info.bias_1:state_info.bias_9);
