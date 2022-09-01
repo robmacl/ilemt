@@ -86,6 +86,7 @@ ukf = unscentedKalmanFilter(...
 
 for (ix = 1:npoints)
   ix
+  tic
 
   couplings1 = couplings(:, :, ix);
   y_n = reshape(couplings1, [], 1);
@@ -112,6 +113,7 @@ for (ix = 1:npoints)
   % part of the filter, for example to incorporate the process noise
   predict(ukf);
   %keyboard
+  tElapsed = toc
 end
 
 assignin('base','state_vec',state_vec);

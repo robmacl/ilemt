@@ -85,6 +85,7 @@ ukf = unscentedKalmanFilter(...
 % using the UKF as an optimizer.
 
 for (ix = 1:npoints)
+  tic
   ix
 
   couplings1 = couplings(:, :, ix);
@@ -112,6 +113,7 @@ for (ix = 1:npoints)
   % part of the filter, for example to incorporate the process noise
   predict(ukf);
   %keyboard
+  toc
 end
 
 assignin('base','state_vec',state_vec);
