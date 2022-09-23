@@ -71,7 +71,7 @@ figure(2)
 hold on
 h = [];
 subplot(4,1,1)
-plot(timeVec_hi, x_pos_hf, timeVec_low, x_pos_lf, timeVec, x_est_hi, '-', timeVec, x_est_unbias, '--');
+plot(timeVec_hi, x_pos_hf, timeVec_low, x_pos_lf, timeVec, x_est_hi,timeVec, x_est_unbias);
 h(1) = gca;
 xlabel('Time (s)')
 ylabel('Position (m)')
@@ -112,16 +112,14 @@ linkaxes(h,'x');
 hold off
 
 % Step response parameters
-if step
-    [~, z_unbias_max_i] = max(z_est_unbias); % Max overshoot index
-    z_unbias_steady_state = z_est_unbias(end); % Steady state value
-    z_unbias_start_value = z_est_unbias(find(timeVec > start_time, 1)); % Start value before step
-    z_unbias_time_constant_bound = z_unbias_start_value + (1 - 1/exp(1)) * (z_unbias_steady_state - z_unbias_start_value); % Lower bound for value at time constant
-    z_unbias_time_constant_i = find(z_est_unbias > z_unbias_time_constant_bound, 1); % Time constant index
-    
-    z_unbias_max_overshoot = z_est_unbias(z_unbias_max_i) - z_unbias_steady_state % Max overshoot
-    z_unbias_time_constant = timeVec(z_unbias_time_constant_i) - (start_time + step_time) % Time constant
-end
+[~, z_unbias_max_i] = max(z_est_unbias); % Max overshoot index
+z_unbias_steady_state = z_est_unbias(end); % Steady state value
+z_unbias_start_value = z_est_unbias(find(timeVec > start_time, 1)); % Start value before step
+z_unbias_time_constant_bound = z_unbias_start_value + (1 - 1/exp(1)) * (z_unbias_steady_state - z_unbias_start_value); % Lower bound for value at time constant
+z_unbias_time_constant_i = find(z_est_unbias > z_unbias_time_constant_bound, 1); % Time constant index
+
+z_unbias_max_overshoot = z_est_unbias(z_unbias_max_i) - z_unbias_steady_state % Max Ov
+z_unbias_time_constant = timeVec(z_unbias_time_constant_i) - (start_time + step_time) % Time constant
 
 figure(4)
 hold on

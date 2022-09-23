@@ -1,4 +1,4 @@
-function [poses, resnorms] = pose_solve_UKF (couplings, calibration, options)
+function [poses, resnorms] = pose_solve_dual_UKF_high (couplings, calibration, options)
 % Pose solution using Unscented Kalman Filter.  The state representation is
 % the pose vector, and the measurement is the (real) coupling matrix.
 
@@ -85,8 +85,8 @@ ukf = unscentedKalmanFilter(...
 % using the UKF as an optimizer.
 
 for (ix = 1:npoints)
-  tic
   ix
+  tic
 
   couplings1 = couplings(:, :, ix);
   y_n = reshape(couplings1, [], 1);
@@ -113,7 +113,7 @@ for (ix = 1:npoints)
   % part of the filter, for example to incorporate the process noise
   predict(ukf);
   %keyboard
-  toc
+  tElapsed = toc
 end
 
 assignin('base','state_vec',state_vec);
