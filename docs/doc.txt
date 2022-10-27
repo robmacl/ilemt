@@ -1,4 +1,78 @@
+Calibration data collection procedures:
+
+[See also ilemt_cal_data/input_patterns/test_plans.txt for discussion
+of fixture coordinate systems and notation, and what test patterns to
+collect.]
+
+Data collection checklist:  
+ - Warm up an hour or more.  
+ - If source change, do frequency response. Turn on calibration/freq
+   response cal, then turn it off after it settles (3 seconds is
+   plenty). 
+ - Check/update off axis compensation. With "card" set to "current",
+   then on levels tab, select "Carrier levels" "dB". Off diagonal
+   currents should be small (<-120 dB). This should happen
+   automatically after frequency response calibration, with <10 second
+   delay.    
+ - Set input channel signs and coupling signs (see below)
+ - With sensor in home pose,   
+ - Go to home pose and reference calibrate, do "Calibration/Ref cal".  
+ - Do "Set ref" to get sensible display after source) sensor change,
+   may repeat as desired.  
+ - check for any position drift over 15 minutes, warm up until stable
+   at 10um or so.  
+ - Optional: check Rz runout on the stage  
+ - Check output directory
+
+Input signs are sign flip errors in the sensor:  
+ - CMU corner dipole sensor: -++  
+ - Premo sensor: ++-
+
+Coupling signs have to do with source/sensor orientation in home pose.
+In the home pose the source mover is aligned with the source fixture
+and the sensor mover with the sensor fixture, but the source and
+sensor orientation vary across the versions.  See "coupling signs"
+page below.
+
+With CMU cube or non-rotated corner dipole source:  
+    Dipole sensor: coupling signs +--  
+    Premo: +++  
+With rotated corner dipole source:  
+    Premo: +++
+
+For each fixture:  
+Check source fixture orientation:
+ - check by pushing that the source mover is pressed up against stops
+Check sensor fixture orientation:
+ - check sensor mover with penlight for no light visible between
+   sensor post and both stops.
+
+Run stage_calibration.vi and:
+ - Check for the correct output file name
+ - Press "Run"
+
+
+To set ilemt_ui.vi defaults for a source/sensor so it will start up
+configured for that combination:
+
+On front panel:  
+Set defaults for channel signs  
+Set defaults for coupling signs  
+
+In ilemt_globals:  
+Set defaults for:
+    Reference amplitude
+    Source frequency response
+
+
 Notes on Rz runout test:
+
+It's important that Rz actually rotates around (x,y) = (0,0).  Since
+the pole can move wrt. the stage this has to be tested and adjusted.
+This is done by using an indicator to measure the Rz runout using a
+cylinder test fixture that mounts on the pole in the place of the
+sensor.  The runout is then adjusted by modifying the "Axis offsets"
+in the labview code.
 
 Use the Mahr +/- 250 um test indicator, since it has low force, and does not
 deflect the pole.  (The Shars dial indicator deflects the pole ~70 um.)  The
@@ -30,6 +104,49 @@ difference between the 0 degree reading and the +90/-90 reading.
 Read off of the ball on the sensor fixture alignment tool.  This has maybe 10
 um of runout wrt. the body, but is round.  The body has some flat spots.
 
+
+Coupling signs:
+
+Again, see ilemt_cal_data/input_patterns/test_plans.txt for coordinate
+discussion.
+
+The coupling signs have to do with the actual alignment of the source
+and sensor axes, and not with the fixture coordinates.  For primarily
+historic reasons we place the sensor home pose in the +X hemisphere,
+while (to align with the stage axes) the fixture +Y is "out" in the
+home pose.  So the source is rotated wrt. the axes of the source
+mover.  And the Premo sensor is also rotated wrt the sensor mover
+(upside down), so sensor also matters.
+
+Magnetically, for the source and sensor axes that are aligned
+(collinear, translated along the axis) then the coupling is positive,
+while for the other two axes (which are mutually parallel, but
+translated normal to the axis) the coupling is negative (and nominally
+1/2 as strong).
+
+
+Concerning the steps of the above data collection checklist when
+operating outside of the calibration stage setup:
+
+
+The source frequency response calibration should not change much, but
+there is no harm in repeating.  The off-axis coupling check is still
+relevant.  Off axis coupling will vary somewhat as metal is moved
+around the source, so you can wait for it to settle.
+
+The input signs are part of the hardware, and not affected by the
+source/sensor pose.
+
+To do the "ref cal" phase calibration, for the above coupling signs to
+be correct:
+ -- With CMU cube source, orient X out Z up.
+ -- Place the sensor "out", ie. we are in the +X hemisphere.
+ -- With Premo sensor, orient X out Z down.  For version with the
+    printed cap and strain relief, this is cap up and cable leading
+    out to the left, as seen from the source position.
+
+
+Using the Matlab calibration codes:
 
 What to do if pose solution is not converging or check_poses() error
 is terrible:
