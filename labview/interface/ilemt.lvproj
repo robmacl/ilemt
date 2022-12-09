@@ -26,6 +26,9 @@
 		<Item Name="ilemt_vars.lvlib" Type="Library" URL="../main/ilemt_vars.lvlib"/>
 		<Item Name="dac_test_pattern.vi" Type="VI" URL="../testing/dac_test_pattern.vi"/>
 		<Item Name="averaged_ilemt_data.vi" Type="VI" URL="../calibration/averaged_ilemt_data.vi"/>
+		<Item Name="read_raw_file.vi" Type="VI" URL="../system/read_raw_file.vi"/>
+		<Item Name="read_raw_record.vi" Type="VI" URL="../system/read_raw_record.vi"/>
+		<Item Name="read_n_raw_records.vi" Type="VI" URL="/D/experiment/read_n_raw_records.vi"/>
 		<Item Name="Dependencies" Type="Dependencies">
 			<Item Name="vi.lib" Type="Folder">
 				<Item Name="BuildHelpPath.vi" Type="VI" URL="/&lt;vilib&gt;/Utility/error.llb/BuildHelpPath.vi"/>
