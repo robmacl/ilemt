@@ -1,5 +1,5 @@
 ﻿<?xml version='1.0' encoding='UTF-8'?>
-<Project Type="Project" LVVersion="14008000">
+<Project Type="Project" LVVersion="18008000">
 	<Property Name="NI.LV.All.SourceOnly" Type="Bool">true</Property>
 	<Property Name="varPersistentID:{705F2019-9CCA-48A5-8669-8F6E919898EE}" Type="Ref">/My Computer/ilemt_vars.lvlib/Stop</Property>
 	<Item Name="My Computer" Type="My Computer">
