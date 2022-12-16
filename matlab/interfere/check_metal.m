@@ -11,4 +11,4 @@ else
 end
 
 [~, couplings] = read_cal_data(options);
-[poses, valid] = pose_solution(couplings, cal, options);
+[poses, valid, resnorms] = pose_solution(couplings, cal, options);
