@@ -10,5 +10,5 @@ else
   cal = load_cal_file([prefix '_lr_cal']);
 end
 
-[~, couplings] = read_cal_data(options);
+[motions, couplings] = read_cal_data(options);
 [poses, valid, resnorms] = pose_solution(couplings, cal, options);
