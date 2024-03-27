@@ -1,7 +1,18 @@
 function [cal_results, cp_results] = run_tests (option)
-% Run calibrate_main() and check_poses() on the current directory.  If
-% 'option' is is 'clean' then we delete output/{*.mat,*.xlsx} and truncate
-% output/test_output.txt
+
+% This is the top-level entry for doing calibration and then testing
+% calibration accuracy. To run, change your working directory to a data
+% directory such as ilemt_cal_data/cal_9_15_premo_cmu/ and then run_tests().
+% 
+% What this script does is determined by local_test_options.m in the data
+% directory. That file configures a series of calibrate_main() and
+% check_poses() calls with various options needed for bootstrapping the
+% calibration, generating calibrations using various models, and then
+% testing those calibrations on various data.
+%
+% All the results are accumulated in the output/ directory, both
+% calibrations and test results.  If our argument 'option' is is 'clean'
+% then we delete output/{*.mat,*.xlsx} and truncate output/test_output.txt
 
 if (nargin < 1)
   option = 'default';
