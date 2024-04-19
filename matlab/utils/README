@@ -1,0 +1,9 @@
+These are various general utilities which are mostly not specific to the
+tracker use.
+
+Many of these files have been copied from the Peter Corke spatialmath-matlib
+library, if you run into an undefined function with a cryptic name, try
+looking in that library or download the full library and add it to the matlab
+path.  I've copied the files that we seem to be using to reduce the
+dependencies and because updates to the libary have sometimes caused things to
+stop working.
