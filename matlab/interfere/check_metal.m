@@ -1,4 +1,13 @@
 options = interfere_options();
+options.in_files = {'output_file.dat'}
+
+
+% lookup = {
+%     'thing i map from', 'thing I map to'
+%     'another thing', 'other'
+% }
+%        
+    
 
 prefix = [options.cal_directory options.cal_file_base];
 
