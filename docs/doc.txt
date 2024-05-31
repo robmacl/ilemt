@@ -110,6 +110,33 @@ Coupling signs:
 Again, see ilemt_cal_data/input_patterns/test_plans.txt for coordinate
 discussion.
 
+The coupling signs parameter is used in phase_correct_coupling.vi to
+compute the correct coupling signs.  It is used together with the
+phase reference captured by "Calibration/Ref cal" calibration. "Ref
+cal" sets the nominal zero phase angle of each coupling, compensating
+for fixed phase lags in the hardware signal path. Depending on the
+source and sensor orientation in the home pose some of the couplings
+may be negative and we need to know this in order for the couplings to
+be logged with the correct signs.
+
+WARNING:
+    The situation with "Calibration/Ref cal" vs "Set ref" is a bit
+    confused.  "Set ref" is now just a user interface feature which
+    does not affect data logging, and that we often use to just reset
+    the zero in the chart display (even though it also sets "GUI
+    reference" and maybe other things).  "Ref cal" is used when
+    logging coupling data.  This does not really do the right thing
+    when displaying coupling levels in ilemt_ui when "Ref cal" is
+    different from "Set ref".  In particular, "Coupling signs" always
+    immediately affects coupling sign calcuation, either for logging
+    or level display.
+
+    If "Set ref" has been done in a different orientation than the
+    sensor home pose then the displayed coupling signs may be wrong.
+    In particular this means that the ilemt_ui levels display can't
+    reliably be used to check that "Ref cal" and "Coupling signs" are
+    correct because "Ref cal" has no effect on the levels display.
+
 The coupling signs have to do with the actual alignment of the source
 and sensor axes, and not with the fixture coordinates.  For primarily
 historic reasons we place the sensor home pose in the +X hemisphere,
@@ -117,6 +144,13 @@ while (to align with the stage axes) the fixture +Y is "out" in the
 home pose.  So the source is rotated wrt. the axes of the source
 mover.  And the Premo sensor is also rotated wrt the sensor mover
 (upside down), so sensor also matters.
+
+NOTE:
+    Because of how phase_correct_coupling.vi is implemented it is
+    required that in the home pose used for "Ref cal" that the strong
+    amplitudes be on the diagonal.  This means that source X must
+    align with sensor X, etc., but there can be an overall rotation so
+    that some of the coupling signs are negative.
 
 Magnetically, for the source and sensor axes that are aligned
 (collinear, translated along the axis) then the coupling is positive,

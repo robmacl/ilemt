@@ -1,14 +1,11 @@
-options = interfere_options();
+options = interfere_options('concentric', true);
+[cal, options] = load_interfere_cal(options);
 
-prefix = [options.cal_directory options.cal_file_base];
+options.in_files = {'output_files_x_moving_solid0.dat'}
+[motions, couplings] = read_cal_data(options);
+[poses, valid, resnorms] = pose_solution(couplings, cal, options);
 
-if (options.ishigh)
-  options.concentric_cal_file = [prefix '_concentric_hr_cal'];
-  cal = load_cal_file([prefix '_hr_cal']);
-else
-  options.concentric_cal_file = [prefix '_concentric_lr_cal'];
-  cal = load_cal_file([prefix '_lr_cal']);
-end
-
-%[motions, couplings] = read_cal_data(options);
-%[poses, valid, resnorms] = pose_solution(couplings, cal, options);
+delta = pose_difference(poses(2:end, :), repmat(poses(1,:), size(poses, 1) - 1, 1));
+delta2 = delta.^2;
+err_trans = sqrt(sum(sum(delta2(:,1:3)))/size(delta2, 1))
+err_rot = sqrt(sum(sum(delta2(:,4:6)))/size(delta2, 1))

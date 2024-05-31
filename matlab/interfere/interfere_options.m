@@ -7,9 +7,11 @@ options.cal_directory = '../../ilemt_cal_data/cal_9_15_premo_cmu/output/';
 % Prefix of the calibration file, less _lr_cal, _hr_cal, etc.
 options.cal_file_base = 'XYZ';
 
+% This controls whether we use the concetric calibration and kim18 solution.
+options.concentric = false;
+
 % These options are passed to pose_solution(), see check_poses_options()
 % for description.
-options.pose_solution = 'optimize';
 options.valid_threshold = 1e-5;
 options.hemisphere = 1;
 options.linear_correction = true;
