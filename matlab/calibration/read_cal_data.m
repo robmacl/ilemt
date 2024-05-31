@@ -42,7 +42,7 @@ end
 motions_c = {};
 couplings_c = {};
 
-for (f_ix = 1:length(files))
+for f_ix = 1:length(files)
   file1 = files{f_ix};
   % Parse fixtures out of the file name
   [tokens, ~] = regexp(file1, 'so(.*)_se(.*)_(.*)\.dat', 'tokens', 'match');
@@ -76,8 +76,8 @@ for (f_ix = 1:length(files))
   se_sign = find_sign_pattern(file1, options.sensor_signs, 'sensor_signs');
   signs = so_sign' * se_sign;
 
-  for (ix = 1:size(data1, 1))
-    couplings1(:, :, ix) = signs .* reshape(data1(ix, slice), 3, 3);
+  for ix = 1:size(data1, 1)
+    couplings1(:, :, ix) = signs.* reshape(data1(ix, slice), 3, 3);
   end
   couplings_c{end+1} = couplings1;
   
@@ -89,7 +89,9 @@ for (f_ix = 1:length(files))
   % be done when we don't yet have a calibration.
   if (all(data1(1, 1:6) == data1(end, 1:6), 2))
     cdiff = couplings1(:,:,1) - couplings1(:,:,end);
+%     disp(cdiff);
     maxdiff = max(max(abs(cdiff), [], 2), [], 1);
+%     disp(maxdiff);
     %fprintf(1, 'drift: %s %g\n', file1, maxdiff);
     if (maxdiff > 1e-4)
       fprintf(1, 'Warning: drift check failed: %s %g\n', file1, maxdiff);
@@ -105,7 +107,7 @@ couplings = cat(3, couplings_c{:});
 % Compute file map
 file_map = zeros(size(motions, 1), 1);
 prev_ix = 1;
-for (f_ix = 1:length(motions_c))
+for f_ix = 1:length(motions_c)
   new_ix = prev_ix + length(motions_c{f_ix}) - 1;
   file_map(prev_ix:new_ix) = f_ix;
   prev_ix = new_ix + 1;
@@ -167,7 +169,7 @@ end % non-nested fix_lookup
 
 function [res] = find_sign_pattern (file, patterns, what)
 % Find the sign pattern in options.source_signs or options.sensor_signs
-  for (ix = 1:size(patterns, 1))
+  for ix = 1:size(patterns, 1)
     if (~isempty(regexp(file, patterns{ix, 1})))
       res = patterns{ix, 2};
       fprintf(1, '%s: %s [%d %d %d]\n', file, what, res(1), res(2), res(3));
