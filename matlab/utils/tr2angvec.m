@@ -98,13 +98,8 @@ function [theta_, n_] = tr2angvec(R, varargin)
         
         % check the determinant
         % ### ram 6-Aug-21: was10*eps
-<<<<<<< HEAD
         % ### ram 16-Dev-22: check did not work if det(Ri) == -1,
         assert(abs(det(Ri)) -1 < 30*eps, 'SMTB:tr2angvec:badarg', 'matrix is not orthonormal');
-=======
-        % ### ram 16-Dev-22: check did not work if det(Ri) == -1, 
-        assert( abs(det(Ri)) - 1 < 30*eps, 'SMTB:tr2angvec:badarg', 'matrix is not orthonormal');
->>>>>>> 931fb8e811053f5ca2a4daae65ca7ebfec0557b9
         
         [th,v] = trlog(Ri);
         theta(i) = th;

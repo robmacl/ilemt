@@ -15,7 +15,9 @@
 		<Property Name="specify.custom.address" Type="Bool">false</Property>
 		<Item Name="Shortcuts" Type="Folder">
 			<Property Name="NI.SortType" Type="Int">0</Property>
+			<Item Name="averaged_ilemt_data.vi" Type="VI" URL="../calibration/averaged_ilemt_data.vi"/>
 			<Item Name="carrier_waveforms.vi" Type="VI" URL="../processing/carrier_waveforms.vi"/>
+			<Item Name="dac_test_pattern.vi" Type="VI" URL="../testing/dac_test_pattern.vi"/>
 			<Item Name="extract_carriers.vi" Type="VI" URL="../gui/extract_carriers.vi"/>
 			<Item Name="fft_demodulator.vi" Type="VI" URL="../processing/fft_demodulator.vi"/>
 			<Item Name="ilemt_globals.vi" Type="VI" URL="../main/ilemt_globals.vi"/>
@@ -24,8 +26,6 @@
 		<Item Name="ilemt_ui.vi" Type="VI" URL="../ilemt_ui.vi"/>
 		<Item Name="stage_calibration_todo demo.vi" Type="VI" URL="../../motion/client/stage_calibration_todo demo.vi"/>
 		<Item Name="ilemt_vars.lvlib" Type="Library" URL="../main/ilemt_vars.lvlib"/>
-		<Item Name="dac_test_pattern.vi" Type="VI" URL="../testing/dac_test_pattern.vi"/>
-		<Item Name="averaged_ilemt_data.vi" Type="VI" URL="../calibration/averaged_ilemt_data.vi"/>
 		<Item Name="Dependencies" Type="Dependencies">
 			<Item Name="vi.lib" Type="Folder">
 				<Item Name="BuildHelpPath.vi" Type="VI" URL="/&lt;vilib&gt;/Utility/error.llb/BuildHelpPath.vi"/>
