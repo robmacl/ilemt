@@ -1,4 +1,4 @@
-function [resultArray, data] = ExtractData(fileDirectory, op_ishigh)  
+function [resultArray, data, disArray] = ExtractData(fileDirectory, op_ishigh)  
     format longE
     %% Create a table according to the dat files
     % Specify the directory where the DAT file is located
@@ -40,6 +40,8 @@ function [resultArray, data] = ExtractData(fileDirectory, op_ishigh)
     %% Define a cell array to accumulate results for each file
     % store poses result
     resultArray = [];
+    disArray = [];   
+    matrix_couplings = []; 
 
     % check_metal.m
     options = interfere_options('concentric', true);
@@ -55,6 +57,11 @@ function [resultArray, data] = ExtractData(fileDirectory, op_ishigh)
         
         % Read data from the file
         [motion, couplings] = read_cal_data(options);
+        matrix_couplings(:,:,:,i) = couplings;
+        different = abs(matrix_couplings(:,:,1,i)- matrix_couplings(:,:,:,i));
+        distance = squeeze(sqrt(sum(sum(different.^2))));
+        disArray = [disArray; distance(2:size(distance,1)-1)];
+        
         % Solve pose for the metal
         [poses, valid] = pose_solution(couplings, cal, options);
          if strcmp(match(1,1), 'sheet')
@@ -65,8 +72,8 @@ function [resultArray, data] = ExtractData(fileDirectory, op_ishigh)
             % Accumulate the results in the cell array
             resultArray = [resultArray; poses];
          end
-         
     end
+
     % Now the results in resultsArray and the file/metal table in data
     
     %% Validity Check Process
@@ -128,8 +135,4 @@ function [resultArray, data] = ExtractData(fileDirectory, op_ishigh)
     fprintf('median mismatch of translation error: %.6e\n', medTrans);
     fprintf('maximum mismatch of rotation error: %.6e\n', maxRot);
     fprintf('median mismatch of rotation error: %.6e\n', medRot);    
-%     fprintf('maximum mismatch of translation error: %f\n', maxTrans);
-%     fprintf('median mismatch of translation error: %f\n', medTrans);
-%     fprintf('maximum mismatch of rotation error: %f\n', maxRot);
-%     fprintf('median mismatch of rotation error: %f\n', medRot);
 end

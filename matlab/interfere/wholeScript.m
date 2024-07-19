@@ -2,13 +2,8 @@ clear all
 close all
 clc
 
-% import the file directory needed to analyze
-% fileDirectory = 'D:\ilemt_cal_data\output_files\May_x5y0'
-% fileDirectory = 'D:\ilemt_cal_data\output_files\May Y=0'
 fileDirectory = pwd
-% fileDirectory = 'D:\ilemt_cal_data\output_files\May Test'
-% fileDirectory = 'D:\ilemt_cal_data\output_files\May sheet'
-%fileDirectory = 'D:\ilemt_cal_data\output_files\May_x15y0'
+
 
 disp('Choice to do:')
 disp('1.High and Low carrier comparison')
@@ -24,24 +19,36 @@ switch choice
         
     case 2
         deg = input('Any orientation?(0 or 90): ');
-        if deg == 0 || deg == 90
-            [resultArray, data, resultArrayLow, transResult, rotResult, transResultLow, rotResultLow] = valid(fileDirectory);
-            axis_moving = dlmread(fileDirectory+"\"+string(data.FileName(1)));
-            axis = axis_moving(2:end-1,1);
-        % plot
-            plotxmoving(transResult, rotResult,transResultLow, rotResultLow, data, deg, axis);
+        if deg == 0 || deg == 90        
+            skip_control = input('Would you like to include the control test in the plot?(Yes=1 or No=0):');
+            if skip_control == 1 || skip_control == 0
+                [resultArray, data, resultArrayLow, transResult, rotResult, transResultLow, rotResultLow, disArray, disArrayLow] = valid(fileDirectory);
+                axis_moving = dlmread(fileDirectory+"\"+string(data.FileName(1)));
+                axis = axis_moving(2:end-1,1);
+                % plot
+                plotxmoving(transResult, rotResult,transResultLow, rotResultLow, data, deg, axis, disArray, disArrayLow, skip_control);
+            else
+                disp('Error in assigned control test in plot')
+            end
+
         else
             disp('Error in orientation input')
         end
+
         
     case 3
         deg = input('Any orientation?(0 or 90): ');
         if deg == 0 || deg == 90
-            [resultArray, data, resultArrayLow, transResult, rotResult, transResultLow, rotResultLow] = valid(fileDirectory);
-            axis_moving = dlmread(fileDirectory+"\"+string(data.FileName(1)));
-            axis = axis_moving(2:end-1,2);
-        % plot
-            plotymoving(transResult, rotResult,transResultLow, rotResultLow, data, deg, axis);
+            skip_control = input('Would you like to include the control test in the plot?(Yes=1 or No=0):');
+            if skip_control == 1 || skip_control == 0
+                [resultArray, data, resultArrayLow, transResult, rotResult, transResultLow, rotResultLow, disArray, disArrayLow] = valid(fileDirectory);
+                axis_moving = dlmread(fileDirectory+"\"+string(data.FileName(1)));
+                axis = axis_moving(2:end-1,2);
+                % plot
+                plotymoving(transResult, rotResult,transResultLow, rotResultLow, data, deg, axis, disArray, disArrayLow, skip_control);
+            else
+                disp('Error on assigned control test in plot')
+            end
         else
             disp('Error in orientation input')
         end
@@ -49,11 +56,16 @@ switch choice
     case 4
         deg = input('Any orientation?(0 or 90): ');
         if deg == 0 || deg == 90
-            [resultArray, data, resultArrayLow, transResult, rotResult, transResultLow, rotResultLow] = valid(fileDirectory);
-            axis_moving = dlmread(fileDirectory+"\"+string(data.FileName(1)));
-            axis = axis_moving(2:end-1,1);
-        % plot
-            plotsheet(transResult, rotResult, transResultLow, rotResultLow, data, deg, axis);
+            skip_control = input('Would you like to include the control test in the plot?(Yes=1 or No=0):');
+            if skip_control == 1 || skip_control == 0
+                [resultArray, data, resultArrayLow, transResult, rotResult, transResultLow, rotResultLow, disArray, disArrayLow] = valid(fileDirectory);
+                axis_moving = dlmread(fileDirectory+"\"+string(data.FileName(1)));
+                axis = axis_moving(2:end-1,1);
+                % plot
+                plotsheet(transResult, rotResult, transResultLow, rotResultLow, data, deg, axis, disArray, disArrayLow, skip_control);
+            else
+                disp('Error in assigned control test in plot')
+            end
         else
             disp('Error in orientation input')
         end
@@ -63,11 +75,11 @@ switch choice
 end
 
 %% Function
-function [resultArray, data, resultArrayLow, transResult, rotResult, transResultLow, rotResultLow] = valid(fileDirectory)
+function [resultArray, data, resultArrayLow, transResult, rotResult, transResultLow, rotResultLow, disArray, disArrayLow] = valid(fileDirectory)
     % do the validity check and print out the summary statistitcs 
 %     [resultArray, resultArrayLow, data] = ExtractData(fileDirectory);
-    [resultArray, data] = ExtractData(fileDirectory, true);
-    [resultArrayLow, data] = ExtractData(fileDirectory, false);
+    [resultArray, data, disArray] = ExtractData(fileDirectory, true);
+    [resultArrayLow, data, disArrayLow] = ExtractData(fileDirectory, false);
     % Run the data process
     [transResult, rotResult] = dataProcess(resultArray, data);
     % Run the data process of low carrier data on x5y0
