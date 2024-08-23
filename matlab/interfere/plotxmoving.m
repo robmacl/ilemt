@@ -1,256 +1,150 @@
-function plotxmoving(transResult, rotResult, transResultLow, rotResultLow, data, deg, axis, disArray, disArrayLow, skip_control)
-    % x axis
-    x0=axis;
-    
-    %limit
-%     x_trans = [0 50];
-%     y_trans = [1e-6 2e-2];
-    
-%     x_rot = [0 50];
-%     y_rot = [1e-5 2e-1];
-    
-    %% Parameter for translation - HIGH CARRIER
-    step = numel(transResult) / size(data, 1);
+%% Plot x-moving Function for Hollow and Solid metal
+function plotxmoving(result_all, data, input_param)
+    %% Parameter preparation and data extraction
+    step = numel(result_all.High.transResult) / size(data, 1);
     
     % Initialize an array of cells to store the split subset
-    num_subsets = floor(length(transResult) / step);
+    num_subsets = floor(length(result_all.High.transResult) / step);
     subsets = cell(1, num_subsets);
     
     % Split data and convert to row vectors using for loops
     for i = 1:num_subsets
         start_idx = (i - 1) * step + 1;
         end_idx = i * step;
-        subset = transResult(start_idx:end_idx);
-        subset_row_vector = subset'; 
-        subsets{i} = subset_row_vector;
-    end
-    %% Parameter for rotation  - HIGH CARRIER
-    % Initialize an array of cells to store the split subset
-    num_subsetsRot = floor(length(rotResult) / step);
-    subsetsRot = cell(1, num_subsetsRot);
-    
-    % Split data and convert to row vectors using for loops
-    for i = 1:num_subsetsRot
-        start_idx = (i - 1) * step + 1;
-        end_idx = i * step;
-        subsetRot = rotResult(start_idx:end_idx);
-        subset_row_vector_rot = subsetRot'; 
-        subsetsRot{i} = subset_row_vector_rot;
+        
+        subset.High.trans = result_all.High.transResult(start_idx:end_idx);
+        subset.High.rot = result_all.High.rotResult(start_idx:end_idx);
+        subset.Low.trans = result_all.Low.transResult(start_idx:end_idx);
+        subset.Low.rot = result_all.Low.rotResult(start_idx:end_idx);
+        
+        subset_High_trans{i} = subset.High.trans';
+        subset_High_rot{i} = subset.High.rot';
+        subset_Low_trans{i} = subset.Low.trans';
+        subset_Low_rot{i} = subset.Low.rot';
     end
     
-    %%
-    if skip_control ==1
-        hollow = 1:numel(subsets)/2;
-        solid = numel(subsets)/2 + 1:numel(subsets);
-        name = (data.MetalName(1:numel(subsets)/2));
+    % Assign index in the array of double if the control sample will be presented
+    if input_param.skip_control == "no_skip"
+        idx.Hollow = 1:numel(subsets)/2;
+        idx.Solid = numel(subsets)/2 + 1:numel(subsets);
+        idx.name = (data.MetalName(1:numel(subsets)/2));
     else
-        hollow = 2:numel(subsets)/2;
-        solid = numel(subsets)/2 + 2:numel(subsets);
-        name = (data.MetalName(2:numel(subsets)/2));
+        idx.Hollow = 2:numel(subsets)/2;
+        idx.Solid = numel(subsets)/2 + 2:numel(subsets);
+        idx.name = (data.MetalName(2:numel(subsets)/2));
     end
-    %% HIGH CARRIER HOLLOW METAL
-    % Plot translation error 
-    figure;
-    subplot(2,1,1)
-    for j = hollow 
-        semilogy(x0, subsets{j}, '.-', 'MarkerSize', 8)
-        hold on
-    end
-    grid on
-    title("All Hollow Metals High Carrier Effects Translation Error on y = 0 and Rotate "+string(deg)+" Degree")
-    ylabel('Translation Error(m)') 
-    xlabel('X Position(cm)') 
-    legend(name)
-%     xlim(x_trans)
-%     ylim(y_trans)
     
-    % Plot rotation error
-    subplot(2,1,2)
-    for j = hollow 
-        semilogy(x0, subsetsRot{j}, '.-', 'MarkerSize', 8)
-        hold on
+    %% Create the x-moving plot    
+    shape_choice = {'Hollow', 'Solid'};
+    carrier_choice = {'High', 'Low'};
+    data_xmoving = {subset_High_trans,subset_Low_trans,subset_High_rot,subset_Low_rot};
+   
+    % Loop for doing all plots
+    for j = 1:2
+        for i = 1:2
+            % Identify shape and carrier types
+            idx.shape = shape_choice{i};
+            idx.carrier = carrier_choice{j};
+            
+            xmoving_errorPlot(idx, data_xmoving{j}, data_xmoving{j+2}, input_param)
+            xmoving_coupling(idx, result_all.(idx.carrier).coupling, step, input_param)
+        end
     end
-    grid on
-    title("All Hollow Metals High Carrier Effects Rotation Error on y = 0 and Rotate "+string(deg)+" Degree")
-    ylabel('Rotation Error(rad)') 
-    xlabel('X Position(cm)') 
-    legend(name)
-%     xlim(x_rot)
-%     ylim(y_rot)   
-    
-%     % Save the translation error plot
-%     saveas(gcf, savePath1, 'fig');
+end
 
-    %% HIGH CARRIER SOLID METAL
-    % Plot translation error 
-    figure;
-    subplot(2,1,1)
+%% Sub-function for translation and rotational error 
+function xmoving_errorPlot(idx, data_trans, data_rot, input_param)
+% Input arguments:
+% idx:
+%   Struct of related index as listed:
+%     - idx.shape: metal shape of that plot in character format including Hollow and Solid 
+%     - idx.carrier: carrier type of that plot in character format including High and Low
+%     - idx.(idx.shape): the sub-struct of double array indicating all file index of that 
+%                        sample
+%     - idx.name: cell array of metal shape and type of sample
+% 
+% data_trans:
+%   Cell array of the translational data in double vector format for each file/cell.  
+% 
+% data_rot:
+%   Cell array of the rotational data in double vector format for each file/cell.
+% 
+% input_param:
+%     The struct of essential parameters. See input_params.m for more information
 
-    for j = solid
-        semilogy(x0, subsets{j}, '.-', 'MarkerSize', 8)
-        hold on
-    end
-    grid on
-    title("All Solid Metals High Carrier Effects Translation Error on y = 0 and Rotate "+string(deg)+" Degree")
-    ylabel('Translation Error(m)') 
-    xlabel('X Position(cm)') 
-    legend(name)
-%     xlim(x_trans)
-%     ylim(y_trans)
-    
-    % Plot rotation error
-    subplot(2,1,2)    
-    for j = solid  
-        semilogy(x0, subsetsRot{j}, '.-', 'MarkerSize', 8)
-        hold on
-    end
-    grid on
-    title("All Solid Metals High Carrier Effects Rotation Error on y = 0 and Rotate "+string(deg)+" Degree")
-    ylabel('Rotation Error(rad)') 
-    xlabel('X Position(cm)') 
-    legend(name)
-%     xlim(x_rot)
-%     ylim(y_rot) 
-    
-%     % Save the translation error plot
-%     saveas(gcf, savePath2, 'fig');
-
-    %% Parameter for translation - LOW CARRIER
-    step = numel(transResultLow) / size(data, 1);
-    
-    % Initialize an array of cells to store the split subset
-    num_subsets = floor(length(transResultLow) / step);
-    subsets = cell(1, num_subsets);
-    
-    % Split data and convert to row vectors using for loops
-    for i = 1:num_subsets
-        start_idx = (i - 1) * step + 1;
-        end_idx = i * step;
-        subset = transResultLow(start_idx:end_idx);
-        subset_row_vector = subset'; 
-        subsets{i} = subset_row_vector;
+    % Assign the axis limit
+    if input_param.deg == 0
+        limit.x_trans = [0 50];
+        limit.y_trans = [1e-6 2e-2];
+        limit.x_rot = [0 50];
+        limit.y_rot = [1e-5 2e-1];    
+    else
+        limit.x_trans = 'auto';
+        limit.y_trans = 'auto';
+        limit.x_rot = 'auto';
+        limit.y_rot = 'auto';         
     end
     
-    %% Parameter for rotation  - LOW CARRIER
-    % Initialize an array of cells to store the split subset
-    num_subsetsRot = floor(length(rotResultLow) / step);
-    subsetsRot = cell(1, num_subsetsRot);
+    lim_axis = {limit.x_trans, limit.x_rot, limit.y_trans limit.y_rot};
+    errorType = {'Translation','Rotation'};
     
-    % Split data and convert to row vectors using for loops
-    for i = 1:num_subsetsRot
-        start_idx = (i - 1) * step + 1;
-        end_idx = i * step;
-        subsetRot = rotResultLow(start_idx:end_idx);
-        subset_row_vector_rot = subsetRot'; 
-        subsetsRot{i} = subset_row_vector_rot;
-    end
-    
-    %% LOW CARRIER HOLLOW METAL
-    %Plot translation error 
     figure;
-    subplot(2,1,1)
-    for j = hollow 
-        semilogy(x0, subsets{j}, '.-', 'MarkerSize', 8)
-        hold on
+    % Loop for plotting translational and rotational errors
+    for i = 1:2
+        x_lim = lim_axis{i};
+        y_lim = lim_axis{i+2};
+        if i == 1 
+            data = data_trans;
+        else
+            data = data_rot;
+        end
+        subplot(2,1,i)
+        for j = idx.(idx.shape)
+            semilogy(input_param.x_axis, data{j}, '.-', 'MarkerSize', 8)
+            hold on
+        end
+        grid on
+        title("All " +string(idx.shape)+ " Metals "+string(idx.carrier)+" Carrier Effects "+string(errorType{i})+" Error on y = "+string(input_param.y_axis(1))+" and Rotate "+string(input_param.deg)+" Degree")
+        ylabel(string(errorType{i})+' Error(m)') 
+        xlabel('X Position(cm)') 
+        legend(idx.name)
+        xlim(x_lim);
+        ylim(y_lim);
     end
-    grid on
-    title("All Hollow Metals Low Carrier Effects Translation Error on y = 0 and Rotate "+string(deg)+" Degree")
-    ylabel('Translation Error(m)') 
-    xlabel('X Position(cm)') 
-    legend(name)
-%     xlim(x_trans)
-%     ylim(y_trans)
-    
-    % Plot rotation error
-    subplot(2,1,2)  
-    for j = hollow
-        semilogy(x0, subsetsRot{j}, '.-', 'MarkerSize', 8)
-        hold on
-    end
-    grid on
-    title("All Hollow Metals Low Carrier Effects Rotation Error on y = 0 and Rotate "+string(deg)+" Degree")
-    ylabel('Rotation Error(rad)') 
-    xlabel('X Position(cm)') 
-    legend(name)
-%     xlim(x_rot)
-%     ylim(y_rot)  
 
-    %% LOW CARRIER SOLID METAL
-    %Plot translation error 
-    figure;
-    subplot(2,1,1)
-    
-    for j = solid
-        semilogy(x0, subsets{j}, '.-', 'MarkerSize', 8)
-        hold on
-    end
-    grid on
-    title("All Solid Metals Low Carrier Effects Translation Error on y = 0 and Rotate "+string(deg)+" Degree")
-    ylabel('Translation Error(m)') 
-    xlabel('X Position(cm)') 
-    legend(name)
-%     xlim(x_trans)
-%     ylim(y_trans)
-    
-    % Plot rotation error
-    subplot(2,1,2)   
-    for j = solid  
-        semilogy(x0, subsetsRot{j}, '.-', 'MarkerSize', 8)
-        hold on
-    end
-    grid on
-    title("All Solid Metals Low Carrier Effects Rotation Error on y = 0 and Rotate "+string(deg)+" Degree")
-    ylabel('Rotation Error(rad)') 
-    xlabel('X Position(cm)') 
-    legend(name)
-%     xlim(x_rot)
-%     ylim(y_rot)
-    
-%     % Save the translation error plot
-%     saveas(gcf, savePath2, 'fig');
+    savefig(fullfile(input_param.directory, "TransRotError_"+string(idx.shape)+"_"+string(idx.carrier)+".fig"))
+end
 
-%% Couplings different plot for HIGH carrier
+%% Sub-function for coupling magnitude plot
+function xmoving_coupling(idx, data, step, input_param)
+% Input arguments:
+% idx:
+%   Struct of related index as listed:
+%     - idx.shape: metal shape of that plot in character format including Hollow and Solid 
+%     - idx.carrier: carrier type of that plot in character format including High and Low
+%     - idx.(idx.shape): the sub-struct of double array indicating all file index of that 
+%                        sample
+%     - idx.name: cell array of metal type of sample
+% 
+% data:
+%   Double array of coupling magnitude of all output files
+% 
+% step:
+%   Double indicating the amount of point data in each output file
+% 
+% input_param:
+%   The struct of essential parameters. See input_params.m for more information
+
     figure;
-    for j = hollow
-        semilogy(x0, disArray((j-1)*step+1:j*step), '.-', 'MarkerSize', 8)
+    for j = idx.(idx.shape)
+        semilogy(input_param.x_axis, data((j-1)*step+1:j*step), '.-', 'MarkerSize', 8)
         hold on
     end
     grid on
-    title("All Hollow Metals High Carrier Effects Coupling Magnitude on y = 0 and Rotate "+string(deg)+" Degree")
+    title("All "+string(idx.shape)+" Metals "+string(idx.carrier)+" Carrier Effects Coupling Magnitude on y = "+string(input_param.y_axis(1))+" and Rotate "+string(input_param.deg)+" Degree")
     ylabel('Coupling Magnitude') 
     xlabel('X Position(cm)') 
-    legend(name)
-    
-    figure;
-    for j = solid
-        semilogy(x0, disArray((j-1)*step+1:j*step), '.-', 'MarkerSize', 8)
-        hold on
-    end
-    grid on
-    title("All Solid Metals High Carrier Effects Coupling Magnitude on y = 0 and Rotate "+string(deg)+" Degree")
-    ylabel('Coupling Magnitude') 
-    xlabel('X Position(cm)') 
-    legend(name)
-    
-    figure;
-    for j = hollow
-        semilogy(x0, disArrayLow((j-1)*step+1:j*step), '.-', 'MarkerSize', 8)
-        hold on
-    end
-    grid on
-    title("All Hollow Metals Low Carrier Effects Coupling Magnitude on y = 0 and Rotate "+string(deg)+" Degree")
-    ylabel('Coupling Magnitude') 
-    xlabel('X Position(cm)') 
-    legend(name)
-    
-    figure;
-    for j = solid
-        semilogy(x0, disArrayLow((j-1)*step+1:j*step), '.-', 'MarkerSize', 8)
-        hold on
-    end
-    grid on
-    title("All Solid Metals Low Carrier Effects Coupling Magnitude on y = 0 and Rotate "+string(deg)+" Degree")
-    ylabel('Coupling Magnitude') 
-    xlabel('X Position(cm)') 
-    legend(name)
+    legend(idx.name)
+
+    savefig(fullfile(input_param.directory, "Coupling_"+string(idx.shape)+"_"+string(idx.carrier)+".fig"))    
 end
