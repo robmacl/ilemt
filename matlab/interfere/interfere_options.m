@@ -2,7 +2,7 @@ function [options] = interfere_options (varargin)
 % Return options struct for interference testing (metal, EMI)
 
 % Where to find calibration files
-options.cal_directory = 'd:/ilemt_cal_data/cal_9_15_premo_cmu/output/';
+options.cal_directory = '../../../ilemt_cal_data/cal_9_15_premo_cmu/output/';
 
 % Prefix of the calibration file, less _lr_cal, _hr_cal, etc.
 options.cal_file_base = 'XYZ';

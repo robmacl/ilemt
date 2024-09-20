@@ -26,6 +26,9 @@
 		<Item Name="ilemt_ui.vi" Type="VI" URL="../ilemt_ui.vi"/>
 		<Item Name="stage_calibration_todo demo.vi" Type="VI" URL="../../motion/client/stage_calibration_todo demo.vi"/>
 		<Item Name="ilemt_vars.lvlib" Type="Library" URL="../main/ilemt_vars.lvlib"/>
+		<Item Name="read_n_raw_records.vi" Type="VI" URL="../system/read_n_raw_records.vi"/>
+		<Item Name="read_raw_file.vi" Type="VI" URL="../system/read_raw_file.vi"/>
+		<Item Name="relative_and_absolute_ts.ctl" Type="VI" URL="../system/relative_and_absolute_ts.ctl"/>
 		<Item Name="Dependencies" Type="Dependencies">
 			<Item Name="vi.lib" Type="Folder">
 				<Item Name="BuildHelpPath.vi" Type="VI" URL="/&lt;vilib&gt;/Utility/error.llb/BuildHelpPath.vi"/>
@@ -80,12 +83,6 @@
 				<Item Name="Read From Spreadsheet File (string).vi" Type="VI" URL="/&lt;vilib&gt;/Utility/file.llb/Read From Spreadsheet File (string).vi"/>
 				<Item Name="Space Constant.vi" Type="VI" URL="/&lt;vilib&gt;/dlg_ctls.llb/Space Constant.vi"/>
 				<Item Name="Trim Whitespace One-Sided.vi" Type="VI" URL="/&lt;vilib&gt;/Utility/error.llb/Trim Whitespace One-Sided.vi"/>
-				<Item Name="NI_XML.lvlib" Type="Library" URL="/&lt;vilib&gt;/xml/NI_XML.lvlib"/>
-				<Item Name="DAQmx Create Virtual Channel.vi" Type="VI" URL="/&lt;vilib&gt;/DAQmx/create/channels.llb/DAQmx Create Virtual Channel.vi"/>
-				<Item Name="DAQmx Create Channel (AI-Voltage-Basic).vi" Type="VI" URL="/&lt;vilib&gt;/DAQmx/create/channels.llb/DAQmx Create Channel (AI-Voltage-Basic).vi"/>
-				<Item Name="DAQmx Timing.vi" Type="VI" URL="/&lt;vilib&gt;/DAQmx/configure/timing.llb/DAQmx Timing.vi"/>
-				<Item Name="DAQmx Timing (Sample Clock).vi" Type="VI" URL="/&lt;vilib&gt;/DAQmx/configure/timing.llb/DAQmx Timing (Sample Clock).vi"/>
-				<Item Name="DAQmx Start Task.vi" Type="VI" URL="/&lt;vilib&gt;/DAQmx/configure/task.llb/DAQmx Start Task.vi"/>
 			</Item>
 			<Item Name="apply_cal.vi" Type="VI" URL="../calibration/apply_cal.vi"/>
 			<Item Name="cal_error.vi" Type="VI" URL="../calibration/cal_error.vi"/>
@@ -186,36 +183,10 @@
 			<Item Name="move_to.vi" Type="VI" URL="../../motion/client/move_to.vi"/>
 			<Item Name="Motion status.vi" Type="VI" URL="../../motion/client/Motion status.vi"/>
 			<Item Name="averaged_asap_signals.vi" Type="VI" URL="../../micron/labview/calibration/averaged_asap_signals.vi"/>
-			<Item Name="ATI_Force_Set.vi" Type="VI" URL="/C/Users/jiahuiz2/Documents/Micron Nerve Hook/Main_Force_Track_v2&amp;4_LV14-20220215T002333Z-001/Main_Force_Track_v2_4_LV14/Program/Main_Force_Track_v2_4_0807_18/ATI Force sensor/ATI_Force_Set.vi"/>
-			<Item Name="CWrapATC3DG_Setting.vi" Type="VI" URL="/C/Users/jiahuiz2/Documents/Micron Nerve Hook/Main_Force_Track_v2&amp;4_LV14-20220215T002333Z-001/Main_Force_Track_v2_4_LV14/Program/Main_Force_Track_v2_4_0807_18/NDI tracker/ATCtrakstar labview_kiwi/CWrapATC3DG_Setting.vi"/>
-			<Item Name="setSelectedTransmitter.vi" Type="VI" URL="/C/Users/jiahuiz2/Documents/Micron Nerve Hook/Main_Force_Track_v2&amp;4_LV14-20220215T002333Z-001/Main_Force_Track_v2_4_LV14/Program/Main_Force_Track_v2_4_0807_18/NDI tracker/ATCtrakstar labview_kiwi/CWrapATC3DG.llb/setSelectedTransmitter.vi"/>
-			<Item Name="getAsynchronousSensorPositionAngles.vi" Type="VI" URL="/C/Users/jiahuiz2/Documents/Micron Nerve Hook/Main_Force_Track_v2&amp;4_LV14-20220215T002333Z-001/Main_Force_Track_v2_4_LV14/Program/Main_Force_Track_v2_4_0807_18/NDI tracker/ATCtrakstar labview_kiwi/CWrapATC3DG.llb/getAsynchronousSensorPositionAngles.vi"/>
-			<Item Name="CWrapATC3DG.dll" Type="Document" URL="/C/Users/jiahuiz2/Documents/Micron Nerve Hook/Main_Force_Track_v2&amp;4_LV14-20220215T002333Z-001/Main_Force_Track_v2_4_LV14/NDI tracker/ATCtrakstar labview_kiwi/CWrapATC3DG-master/CWrapATC3DG-master/Release/CWrapATC3DG.dll"/>
-			<Item Name="errorCode2errorBus.vi" Type="VI" URL="/C/Users/jiahuiz2/Documents/Micron Nerve Hook/Main_Force_Track_v2&amp;4_LV14-20220215T002333Z-001/Main_Force_Track_v2_4_LV14/Program/Main_Force_Track_v2_4_0807_18/NDI tracker/ATCtrakstar labview_kiwi/ATC3DG.llb/errorCode2errorBus.vi"/>
-			<Item Name="mxChannelList.vi" Type="VI" URL="/C/Users/jiahuiz2/Documents/Micron Nerve Hook/Main_Force_Track_v2&amp;4_LV14-20220215T002333Z-001/Main_Force_Track_v2_4_LV14/Program/Main_Force_Track_v2_4_0807_18/ATI Force sensor/atidaqft-mx.llb/mxChannelList.vi"/>
-			<Item Name="LoadCalibrationFromFile.vi" Type="VI" URL="/C/Users/jiahuiz2/Documents/Micron Nerve Hook/Main_Force_Track_v2&amp;4_LV14-20220215T002333Z-001/Main_Force_Track_v2_4_LV14/Program/Main_Force_Track_v2_4_0807_18/ATI Force sensor/atidaqft-mx.llb/LoadCalibrationFromFile.vi"/>
-			<Item Name="DOMUserDefRef.dll" Type="Document" URL="DOMUserDefRef.dll">
-				<Property Name="NI.PreserveRelativePath" Type="Bool">true</Property>
-			</Item>
-			<Item Name="ApplyToolTransformation.vi" Type="VI" URL="/C/Users/jiahuiz2/Documents/Micron Nerve Hook/Main_Force_Track_v2&amp;4_LV14-20220215T002333Z-001/Main_Force_Track_v2_4_LV14/Program/Main_Force_Track_v2_4_0807_18/ATI Force sensor/atidaqft-mx.llb/ApplyToolTransformation.vi"/>
-			<Item Name="systemCfg.ctl" Type="VI" URL="/C/Users/jiahuiz2/Documents/Micron Nerve Hook/Main_Force_Track_v2&amp;4_LV14-20220215T002333Z-001/Main_Force_Track_v2_4_LV14/Program/Main_Force_Track_v2_4_0807_18/NDI tracker/ATCtrakstar labview_kiwi/CWrapATC3DG.llb/systemCfg.ctl"/>
-			<Item Name="resetOnInit.vi" Type="VI" URL="/C/Users/jiahuiz2/Documents/Micron Nerve Hook/Main_Force_Track_v2&amp;4_LV14-20220215T002333Z-001/Main_Force_Track_v2_4_LV14/Program/Main_Force_Track_v2_4_0807_18/NDI tracker/ATCtrakstar labview_kiwi/CWrapATC3DG.llb/resetOnInit.vi"/>
-			<Item Name="initializeAscension.vi" Type="VI" URL="/C/Users/jiahuiz2/Documents/Micron Nerve Hook/Main_Force_Track_v2&amp;4_LV14-20220215T002333Z-001/Main_Force_Track_v2_4_LV14/Program/Main_Force_Track_v2_4_0807_18/NDI tracker/ATCtrakstar labview_kiwi/CWrapATC3DG.llb/initializeAscension.vi"/>
-			<Item Name="setMetric.vi" Type="VI" URL="/C/Users/jiahuiz2/Documents/Micron Nerve Hook/Main_Force_Track_v2&amp;4_LV14-20220215T002333Z-001/Main_Force_Track_v2_4_LV14/Program/Main_Force_Track_v2_4_0807_18/NDI tracker/ATCtrakstar labview_kiwi/CWrapATC3DG.llb/setMetric.vi"/>
-			<Item Name="setMeasurementRate.vi" Type="VI" URL="/C/Users/jiahuiz2/Documents/Micron Nerve Hook/Main_Force_Track_v2&amp;4_LV14-20220215T002333Z-001/Main_Force_Track_v2_4_LV14/Program/Main_Force_Track_v2_4_0807_18/NDI tracker/ATCtrakstar labview_kiwi/CWrapATC3DG/setMeasurementRate.vi"/>
-			<Item Name="getSystemConfiguration.vi" Type="VI" URL="/C/Users/jiahuiz2/Documents/Micron Nerve Hook/Main_Force_Track_v2&amp;4_LV14-20220215T002333Z-001/Main_Force_Track_v2_4_LV14/Program/Main_Force_Track_v2_4_0807_18/NDI tracker/ATCtrakstar labview_kiwi/CWrapATC3DG.llb/getSystemConfiguration.vi"/>
-			<Item Name="setSensorAngleAlign.vi" Type="VI" URL="/C/Users/jiahuiz2/Documents/Micron Nerve Hook/Main_Force_Track_v2&amp;4_LV14-20220215T002333Z-001/Main_Force_Track_v2_4_LV14/Program/Main_Force_Track_v2_4_0807_18/NDI tracker/ATCtrakstar labview_kiwi/CWrapATC3DG.llb/setSensorAngleAlign.vi"/>
-			<Item Name="getSensorAngleAlign.vi" Type="VI" URL="/C/Users/jiahuiz2/Documents/Micron Nerve Hook/Main_Force_Track_v2&amp;4_LV14-20220215T002333Z-001/Main_Force_Track_v2_4_LV14/Program/Main_Force_Track_v2_4_0807_18/NDI tracker/ATCtrakstar labview_kiwi/CWrapATC3DG.llb/getSensorAngleAlign.vi"/>
-			<Item Name="getSensorXYZOffset.vi" Type="VI" URL="/C/Users/jiahuiz2/Documents/Micron Nerve Hook/Main_Force_Track_v2&amp;4_LV14-20220215T002333Z-001/Main_Force_Track_v2_4_LV14/Program/Main_Force_Track_v2_4_0807_18/NDI tracker/ATCtrakstar labview_kiwi/CWrapATC3DG.llb/getSensorXYZOffset.vi"/>
-			<Item Name="setTransmiterAngleAlign.vi" Type="VI" URL="/C/Users/jiahuiz2/Documents/Micron Nerve Hook/Main_Force_Track_v2&amp;4_LV14-20220215T002333Z-001/Main_Force_Track_v2_4_LV14/Program/Main_Force_Track_v2_4_0807_18/NDI tracker/ATCtrakstar labview_kiwi/CWrapATC3DG.llb/setTransmiterAngleAlign.vi"/>
-			<Item Name="getTransmitterAngleAlign.vi" Type="VI" URL="/C/Users/jiahuiz2/Documents/Micron Nerve Hook/Main_Force_Track_v2&amp;4_LV14-20220215T002333Z-001/Main_Force_Track_v2_4_LV14/Program/Main_Force_Track_v2_4_0807_18/NDI tracker/ATCtrakstar labview_kiwi/CWrapATC3DG.llb/getTransmitterAngleAlign.vi"/>
-			<Item Name="getFilterAlphaAdaptive.vi" Type="VI" URL="/C/Users/jiahuiz2/Documents/Micron Nerve Hook/Main_Force_Track_v2&amp;4_LV14-20220215T002333Z-001/Main_Force_Track_v2_4_LV14/Program/Main_Force_Track_v2_4_0807_18/NDI tracker/ATCtrakstar labview_kiwi/CWrapATC3DG.llb/getFilterAlphaAdaptive.vi"/>
-			<Item Name="getFilterDCAdaptive.vi" Type="VI" URL="/C/Users/jiahuiz2/Documents/Micron Nerve Hook/Main_Force_Track_v2&amp;4_LV14-20220215T002333Z-001/Main_Force_Track_v2_4_LV14/Program/Main_Force_Track_v2_4_0807_18/NDI tracker/ATCtrakstar labview_kiwi/CWrapATC3DG.llb/getFilterDCAdaptive.vi"/>
-			<Item Name="setFilterACNarrowNotch.vi" Type="VI" URL="/C/Users/jiahuiz2/Documents/Micron Nerve Hook/Main_Force_Track_v2&amp;4_LV14-20220215T002333Z-001/Main_Force_Track_v2_4_LV14/Program/Main_Force_Track_v2_4_0807_18/NDI tracker/ATCtrakstar labview_kiwi/CWrapATC3DG.llb/setFilterACNarrowNotch.vi"/>
-			<Item Name="getFilterACNarrowNotch.vi" Type="VI" URL="/C/Users/jiahuiz2/Documents/Micron Nerve Hook/Main_Force_Track_v2&amp;4_LV14-20220215T002333Z-001/Main_Force_Track_v2_4_LV14/Program/Main_Force_Track_v2_4_0807_18/NDI tracker/ATCtrakstar labview_kiwi/CWrapATC3DG.llb/getFilterACNarrowNotch.vi"/>
-			<Item Name="setFiterACWideNotch.vi" Type="VI" URL="/C/Users/jiahuiz2/Documents/Micron Nerve Hook/Main_Force_Track_v2&amp;4_LV14-20220215T002333Z-001/Main_Force_Track_v2_4_LV14/Program/Main_Force_Track_v2_4_0807_18/NDI tracker/ATCtrakstar labview_kiwi/CWrapATC3DG.llb/setFiterACWideNotch.vi"/>
-			<Item Name="getFilterACWideNotch.vi" Type="VI" URL="/C/Users/jiahuiz2/Documents/Micron Nerve Hook/Main_Force_Track_v2&amp;4_LV14-20220215T002333Z-001/Main_Force_Track_v2_4_LV14/Program/Main_Force_Track_v2_4_0807_18/NDI tracker/ATCtrakstar labview_kiwi/CWrapATC3DG.llb/getFilterACWideNotch.vi"/>
-			<Item Name="setSensorDataFormat.vi" Type="VI" URL="/C/Users/jiahuiz2/Documents/Micron Nerve Hook/Main_Force_Track_v2&amp;4_LV14-20220215T002333Z-001/Main_Force_Track_v2_4_LV14/Program/Main_Force_Track_v2_4_0807_18/NDI tracker/ATCtrakstar labview_kiwi/CWrapATC3DG.llb/setSensorDataFormat.vi"/>
+			<Item Name="CWrapATC3DG_Setting.vi" Type="VI" URL="../../../../../../../jiahuiz2/Documents/Micron Nerve Hook/Main_Force_Track_v2&amp;4_LV14-20220215T002333Z-001/Main_Force_Track_v2_4_LV14/Program/Main_Force_Track_v2_4_0807_18/NDI tracker/ATCtrakstar labview_kiwi/CWrapATC3DG_Setting.vi"/>
+			<Item Name="setSelectedTransmitter.vi" Type="VI" URL="../../../../../../../jiahuiz2/Documents/Micron Nerve Hook/Main_Force_Track_v2&amp;4_LV14-20220215T002333Z-001/Main_Force_Track_v2_4_LV14/Program/Main_Force_Track_v2_4_0807_18/NDI tracker/ATCtrakstar labview_kiwi/CWrapATC3DG.llb/setSelectedTransmitter.vi"/>
+			<Item Name="getAsynchronousSensorPositionAngles.vi" Type="VI" URL="../../../../../../../jiahuiz2/Documents/Micron Nerve Hook/Main_Force_Track_v2&amp;4_LV14-20220215T002333Z-001/Main_Force_Track_v2_4_LV14/Program/Main_Force_Track_v2_4_0807_18/NDI tracker/ATCtrakstar labview_kiwi/CWrapATC3DG.llb/getAsynchronousSensorPositionAngles.vi"/>
+			<Item Name="read_raw_record.vi" Type="VI" URL="../system/read_raw_record.vi"/>
 		</Item>
 		<Item Name="Build Specifications" Type="Build"/>
 	</Item>
