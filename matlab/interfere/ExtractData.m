@@ -94,9 +94,10 @@ function [result_all, data] = ExtractData(fileDirectory, op_ishigh)
         [motion, couplings] = read_cal_data(options);
         matrix_couplings(:,:,:,i) = couplings;
         
-        % Calculate coupling magnitude
+        % Calculate normalized coupling magnitude
         diff = abs(matrix_couplings(:,:,1,i)- matrix_couplings(:,:,:,i));
-        coupling_new = squeeze(sqrt(sum(sum(diff.^2))));
+        ref = sqrt(sum(sum((abs(matrix_couplings(:,:,1,i))).^2)));
+        coupling_new = squeeze(sqrt(sum(sum(diff.^2))))/ref;
         coupling = [coupling; coupling_new(2:size(coupling_new,1)-1)];
 
         % Solve pose for the metal
@@ -127,7 +128,7 @@ function [result_all, data] = ExtractData(fileDirectory, op_ishigh)
     % Create an empty table for validity check
     VM = table();
     % Loop through the resultArray to get the pose difference
-    while i <= (size(resultArray, 1) - step + 1) 
+    while i <= (size(resultArray, 1))% - step + 1) 
         step = num_data(j);
         diff = pose_difference(resultArray(i,:), resultArray((i + step - 1),:));
         
@@ -156,7 +157,7 @@ function [result_all, data] = ExtractData(fileDirectory, op_ishigh)
     % Display VM table
     disp(VM);
 
-    savefilename = 'example.xlsx';  
+    savefilename = fileDirectory+'/example.xlsx';  
     writetable(VM, savefilename);
     disp('Table has been written to Excel successfully.');
     %% Summary

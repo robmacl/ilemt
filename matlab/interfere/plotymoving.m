@@ -117,6 +117,9 @@ function ymoving_coupling(idx, data, step, input_param)
 % input_param:
 %   The struct of essential parameters. See input_params.m for more information
 
+    limit.x = 'auto';         
+    limit.y = [1e-5 2e-1];  
+    
     figure;
     for j = idx.Solid
         semilogy(input_param.y_axis, data((j-1)*step+1:j*step), '.-', 'MarkerSize', 8)
@@ -124,9 +127,11 @@ function ymoving_coupling(idx, data, step, input_param)
     end
     grid on
     title("Solid Metals "+string(idx.carrier)+" Carrier Effects Coupling Magnitude on x = "+string(input_param.x_axis(1))+" and Rotate "+string(input_param.deg)+" Degree")
-    ylabel('Coupling Magnitude') 
+    ylabel('Normalized Coupling Magnitude') 
     xlabel('Y Position(cm)') 
     legend(idx.name)   
+    xlim(limit.x);
+    ylim(limit.y);
     
     savefig(fullfile(input_param.directory, "Coupling_Solid_"+string(idx.carrier)+".fig"))    
 end

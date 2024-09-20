@@ -78,13 +78,13 @@ function plotHighLow(result_all, data, input_param)
     HLrot.Properties.VariableNames = {'MetalShape', 'High_Carrier', 'Low_Carrier','LowHigh_Ratio'};
     
     % Write error ratio (Low carrier/High carrier)
-    savefilename = 'transResult_Ratio.xlsx';
+    savefilename = input_param.directory+'/transResult_Ratio.xlsx';
+    writetable(HLtrans, savefilename);   
     fprintf('\nTranslational Table has been written to Excel successfully.\n')
-    writetable(HLtrans, savefilename);
 
-    savefilename = 'rotResult_Ratio.xlsx';
-    fprintf('Rotational Table has been written to Excel successfully.\n')
-    writetable(HLrot, savefilename);            
+    savefilename = input_param.directory+'/rotResult_Ratio.xlsx';
+    writetable(HLrot, savefilename);   
+    fprintf('Rotational Table has been written to Excel successfully.\n') 
 end 
 
 %% Sub-function for the scatter plot
