@@ -29,6 +29,7 @@
 		<Item Name="read_n_raw_records.vi" Type="VI" URL="../system/read_n_raw_records.vi"/>
 		<Item Name="read_raw_file.vi" Type="VI" URL="../system/read_raw_file.vi"/>
 		<Item Name="relative_and_absolute_ts.ctl" Type="VI" URL="../system/relative_and_absolute_ts.ctl"/>
+		<Item Name="log_raw_data.vi" Type="VI" URL="../testing/log_raw_data.vi"/>
 		<Item Name="Dependencies" Type="Dependencies">
 			<Item Name="vi.lib" Type="Folder">
 				<Item Name="BuildHelpPath.vi" Type="VI" URL="/&lt;vilib&gt;/Utility/error.llb/BuildHelpPath.vi"/>
@@ -83,6 +84,7 @@
 				<Item Name="Read From Spreadsheet File (string).vi" Type="VI" URL="/&lt;vilib&gt;/Utility/file.llb/Read From Spreadsheet File (string).vi"/>
 				<Item Name="Space Constant.vi" Type="VI" URL="/&lt;vilib&gt;/dlg_ctls.llb/Space Constant.vi"/>
 				<Item Name="Trim Whitespace One-Sided.vi" Type="VI" URL="/&lt;vilib&gt;/Utility/error.llb/Trim Whitespace One-Sided.vi"/>
+				<Item Name="Get File Extension.vi" Type="VI" URL="/&lt;vilib&gt;/Utility/libraryn.llb/Get File Extension.vi"/>
 			</Item>
 			<Item Name="apply_cal.vi" Type="VI" URL="../calibration/apply_cal.vi"/>
 			<Item Name="cal_error.vi" Type="VI" URL="../calibration/cal_error.vi"/>
@@ -131,7 +133,6 @@
 			<Item Name="get_input.vi" Type="VI" URL="../system/get_input.vi"/>
 			<Item Name="coupling_to_string.vi" Type="VI" URL="../calibration/coupling_to_string.vi"/>
 			<Item Name="complex_to_string.vi" Type="VI" URL="../calibration/complex_to_string.vi"/>
-			<Item Name="log_mode.ctl" Type="VI" URL="../calibration/log_mode.ctl"/>
 			<Item Name="phase_correct_coupling.vi" Type="VI" URL="../processing/phase_correct_coupling.vi"/>
 			<Item Name="trace_info.ctl" Type="VI" URL="../gui/trace_info.ctl"/>
 			<Item Name="extract_noise.vi" Type="VI" URL="../gui/extract_noise.vi"/>
