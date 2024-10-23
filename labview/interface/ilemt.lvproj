@@ -83,6 +83,7 @@
 				<Item Name="Read From Spreadsheet File (string).vi" Type="VI" URL="/&lt;vilib&gt;/Utility/file.llb/Read From Spreadsheet File (string).vi"/>
 				<Item Name="Space Constant.vi" Type="VI" URL="/&lt;vilib&gt;/dlg_ctls.llb/Space Constant.vi"/>
 				<Item Name="Trim Whitespace One-Sided.vi" Type="VI" URL="/&lt;vilib&gt;/Utility/error.llb/Trim Whitespace One-Sided.vi"/>
+				<Item Name="Get File Extension.vi" Type="VI" URL="/&lt;vilib&gt;/Utility/libraryn.llb/Get File Extension.vi"/>
 			</Item>
 			<Item Name="apply_cal.vi" Type="VI" URL="../calibration/apply_cal.vi"/>
 			<Item Name="cal_error.vi" Type="VI" URL="../calibration/cal_error.vi"/>
@@ -131,7 +132,6 @@
 			<Item Name="get_input.vi" Type="VI" URL="../system/get_input.vi"/>
 			<Item Name="coupling_to_string.vi" Type="VI" URL="../calibration/coupling_to_string.vi"/>
 			<Item Name="complex_to_string.vi" Type="VI" URL="../calibration/complex_to_string.vi"/>
-			<Item Name="log_mode.ctl" Type="VI" URL="../calibration/log_mode.ctl"/>
 			<Item Name="phase_correct_coupling.vi" Type="VI" URL="../processing/phase_correct_coupling.vi"/>
 			<Item Name="trace_info.ctl" Type="VI" URL="../gui/trace_info.ctl"/>
 			<Item Name="extract_noise.vi" Type="VI" URL="../gui/extract_noise.vi"/>
@@ -207,6 +207,10 @@
 			<Item Name="getSystemConfiguration.vi" Type="VI" URL="/C/Users/jiahuiz2/Documents/Micron Nerve Hook/Main_Force_Track_v2&amp;4_LV14-20220215T002333Z-001/Main_Force_Track_v2_4_LV14/NDI tracker/ATCtrakstar labview_kiwi/CWrapATC3DG.llb/getSystemConfiguration.vi"/>
 			<Item Name="resetOnInit.vi" Type="VI" URL="/C/Users/jiahuiz2/Documents/Micron Nerve Hook/Main_Force_Track_v2&amp;4_LV14-20220215T002333Z-001/Main_Force_Track_v2_4_LV14/NDI tracker/ATCtrakstar labview_kiwi/CWrapATC3DG.llb/resetOnInit.vi"/>
 			<Item Name="CWrapATC3DG.dll" Type="Document" URL="/C/Users/jiahuiz2/Documents/Micron Nerve Hook/Main_Force_Track_v2&amp;4_LV14-20220215T002333Z-001/Main_Force_Track_v2_4_LV14/NDI tracker/ATCtrakstar labview_kiwi/CWrapATC3DG-master/CWrapATC3DG-master/Release/CWrapATC3DG.dll"/>
+			<Item Name="6dof_calibration.ctl" Type="VI" URL="../calibration/6dof_calibration.ctl"/>
+			<Item Name="read_6dof_cal.vi" Type="VI" URL="../calibration/read_6dof_cal.vi"/>
+			<Item Name="read_matrix.vi" Type="VI" URL="../../utilities/read_matrix.vi"/>
+			<Item Name="log_raw_data.vi" Type="VI" URL="../testing/log_raw_data.vi"/>
 		</Item>
 		<Item Name="Build Specifications" Type="Build"/>
 	</Item>
