@@ -1,0 +1,70 @@
+ -- Test/debug raw logging integrated with stage_calibration logging. 
+
+
+Move toward realtime operation:
+ -- Get new windows box working
+ -- Integrate kim18 pose solution with ilemt_ui
+ -- Try labview on linux
+
+Proposal:
+ -- Preliminary EMI and MI tests?
+ -- Read suggested proposal, adjust?
+ -- Write the thing, gdocs "Tracker proposal notes"
+
+Research/implement new stuff:
+ -- EMI susceptibility tests
+ -- EMI rejection algorithms
+ -- Metal rejection: dual rate, phase shift test
+ -- Can we figure out derivative of forward model? Try chatgpt
+    ilemt/matlab/calibration/fk_coupling.m
+ -- EMT scaling laws.  Check existing and look at more tradeoffs.
+ 
+Resurrect/finish stuff:
+ -- Resurrect dual rate KF C++, tune it up.
+    https://github.com/Alecajuice/ilemt-dual-rate-ukf
+ -- What is the intermittent noise problem?  Seems to be happening on
+    the driver side since it shows up the the current sense.  Maybe a
+    bad driver or DAC board channel issue.  Conceivably also a FPGA
+    bug.
+
+Stuff needed for an open design someone might want use:
+ -- Port labview signal processing code to C++
+ -- Realtime pose solution (eg. via UKF, kim18, etc.)
+ -- Documentation
+ -- Revise and duplicate hardware. Software potentially useful w/o
+    hardware, but this is a minimal sanity check and opportunity to
+    document hardware construction.
+
+Publication:
+ -- Metal interference paper
+     - Data collection nearly done
+     - Write up using overleaf
+ -- EMI: about to start collecting some data here.  Really
+    should have something to show for ILEMT noise rejection.  More CPU
+    should re-enable the noise-adaptive KF based on guard channel
+    signal.  
+ -- Dual rate paper: some results with dual-rate KF. This is also a
+    place where we could put dynamics testing results, response time,
+    etc., since we will be describing the KF.
+     - Not a fully baked idea, but can also incorporate the idea of
+       using phase shift to detect metal interference and then guide
+       the KF eg. by adjusting the measurement noise.
+ -- System/hardware paper
+     - System description
+     - Can we make this a more narrowly hardware paper? Would be nice
+       not to drag in too much about dual rate
+
+Scaling laws:
+
+ -- What happens when sensor is smaller than source.
+ -- How does size scale with distance using constant SNR thermally
+    limited source?
+ -- Can we get at the 6DOF noise sensitivity analytically?  This
+    relates to the question of closed form derivatives.  Constant SNR
+    definitely doesn't mean constant resolution, and probably not
+    constant relative resolution.
+ -- Can we get at calibration error scaling analytically?  Deviations
+    from the dipole model are probably the main effect, IDK.  If
+    deviations have to do with the ratio of source size to sensor
+    distance then if we can use a smaller source as we scale up, then
+    the relative accuracy may improve.

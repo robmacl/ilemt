@@ -17,7 +17,6 @@
 			<Property Name="NI.SortType" Type="Int">0</Property>
 			<Item Name="averaged_ilemt_data.vi" Type="VI" URL="../calibration/averaged_ilemt_data.vi"/>
 			<Item Name="carrier_waveforms.vi" Type="VI" URL="../processing/carrier_waveforms.vi"/>
-			<Item Name="dac_test_pattern.vi" Type="VI" URL="../testing/dac_test_pattern.vi"/>
 			<Item Name="extract_carriers.vi" Type="VI" URL="../gui/extract_carriers.vi"/>
 			<Item Name="fft_demodulator.vi" Type="VI" URL="../processing/fft_demodulator.vi"/>
 			<Item Name="ilemt_globals.vi" Type="VI" URL="../main/ilemt_globals.vi"/>
@@ -26,10 +25,12 @@
 		<Item Name="ilemt_ui.vi" Type="VI" URL="../ilemt_ui.vi"/>
 		<Item Name="stage_calibration_todo demo.vi" Type="VI" URL="../../motion/client/stage_calibration_todo demo.vi"/>
 		<Item Name="ilemt_vars.lvlib" Type="Library" URL="../main/ilemt_vars.lvlib"/>
-		<Item Name="read_n_raw_records.vi" Type="VI" URL="../system/read_n_raw_records.vi"/>
 		<Item Name="read_raw_file.vi" Type="VI" URL="../system/read_raw_file.vi"/>
 		<Item Name="relative_and_absolute_ts.ctl" Type="VI" URL="../system/relative_and_absolute_ts.ctl"/>
-		<Item Name="log_raw_data.vi" Type="VI" URL="../testing/log_raw_data.vi"/>
+		<Item Name="read_6dof_cal.vi" Type="VI" URL="../calibration/read_6dof_cal.vi"/>
+		<Item Name="cal2kim18.vi" Type="VI" URL="../calibration/cal2kim18.vi"/>
+		<Item Name="kim18_calibration.ctl" Type="VI" URL="../calibration/kim18_calibration.ctl"/>
+		<Item Name="kim18_solution.vi" Type="VI" URL="../calibration/kim18_solution.vi"/>
 		<Item Name="Dependencies" Type="Dependencies">
 			<Item Name="vi.lib" Type="Folder">
 				<Item Name="BuildHelpPath.vi" Type="VI" URL="/&lt;vilib&gt;/Utility/error.llb/BuildHelpPath.vi"/>
@@ -188,6 +189,10 @@
 			<Item Name="setSelectedTransmitter.vi" Type="VI" URL="../../../../../../../jiahuiz2/Documents/Micron Nerve Hook/Main_Force_Track_v2&amp;4_LV14-20220215T002333Z-001/Main_Force_Track_v2_4_LV14/Program/Main_Force_Track_v2_4_0807_18/NDI tracker/ATCtrakstar labview_kiwi/CWrapATC3DG.llb/setSelectedTransmitter.vi"/>
 			<Item Name="getAsynchronousSensorPositionAngles.vi" Type="VI" URL="../../../../../../../jiahuiz2/Documents/Micron Nerve Hook/Main_Force_Track_v2&amp;4_LV14-20220215T002333Z-001/Main_Force_Track_v2_4_LV14/Program/Main_Force_Track_v2_4_0807_18/NDI tracker/ATCtrakstar labview_kiwi/CWrapATC3DG.llb/getAsynchronousSensorPositionAngles.vi"/>
 			<Item Name="read_raw_record.vi" Type="VI" URL="../system/read_raw_record.vi"/>
+			<Item Name="read_matrix.vi" Type="VI" URL="../../utilities/read_matrix.vi"/>
+			<Item Name="read_n_raw_records.vi" Type="VI" URL="../system/read_n_raw_records.vi"/>
+			<Item Name="6dof_calibration.ctl" Type="VI" URL="../calibration/6dof_calibration.ctl"/>
+			<Item Name="log_raw_data.vi" Type="VI" URL="../testing/log_raw_data.vi"/>
 		</Item>
 		<Item Name="Build Specifications" Type="Build"/>
 	</Item>

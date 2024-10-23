@@ -30,9 +30,9 @@ se_moment = calibration.d_sensor_moment;
 se_gains = sqrt(sum(se_moment.^2, 1));
 
 % Gains of our coupling matrix, before converting to unit vector N_.  Their S_
-% matrix is our coupling matrix, divided by coupling_gains, then
-% transposed.  This normalizes the measurement in the same way that we have
-% normalized the sensor moments.
+% matrix is our coupling matrix, divided by coupling_gains, then transposed.
+% Use these coupling_gains to normalize the measurement in the same way that
+% we have normalized the sensor moments:
 %    S_ = (coupling ./ kim_cal.coupling_gains)'
 %
 kim_cal.coupling_gains = repmat(se_gains, 3, 1);
