@@ -1,10 +1,23 @@
- -- Test/debug raw logging integrated with stage_calibration logging. 
+ -- Integrate kim18 pose solution with ilemt_ui
+ -- Test/debug raw logging integrated with stage_calibration logging.
+ -- Add support for raw log replay in ilemt_ui
 
+EMI rejection:
+ -- Resurrect distortion filtering on guard channels so we can estimate noise.
+ -- Look into low carrier EMI rejection.  Can be quite bad with motor
+    interference, and we are not doing anything.  Use info from high
+    carrier impulse detect?  Use higher order FFT window?  Use low
+    rate guard channels?
+ -- Look into ANC.  Are there any good ANC C codes available?
 
 Move toward realtime operation:
- -- Get new windows box working
- -- Integrate kim18 pose solution with ilemt_ui
+ -- Revise labview to decouple the user interface from the signal
+    processing and pose solution.  Decouple high rate processing from
+    low rate so that it can happen with lower latency.  For
+    eg. iotamotion we don't have to go all the way to single high rate
+    sample since we will be decimating to a much lower output.
  -- Try labview on linux
+ -- Either implement single-sample processing in Labview or move to C++
 
 Proposal:
  -- Preliminary EMI and MI tests?
@@ -13,7 +26,7 @@ Proposal:
 
 Research/implement new stuff:
  -- EMI susceptibility tests
- -- EMI rejection algorithms
+ -- EMI rejection algorithms: KF, ANC, adaptive channel selection.
  -- Metal rejection: dual rate, phase shift test
  -- Can we figure out derivative of forward model? Try chatgpt
     ilemt/matlab/calibration/fk_coupling.m
@@ -55,7 +68,6 @@ Publication:
        not to drag in too much about dual rate
 
 Scaling laws:
-
  -- What happens when sensor is smaller than source.
  -- How does size scale with distance using constant SNR thermally
     limited source?
@@ -68,3 +80,19 @@ Scaling laws:
     deviations have to do with the ratio of source size to sensor
     distance then if we can use a smaller source as we scale up, then
     the relative accuracy may improve.
+
+Parallelism in signal processing:
+ -- Across all the high rate channels we demodulate, 7 including guard
+    channels, *2 including current sense, *num_sensors.  With 1 sensor
+    this is 14.  Guard channels don't get all processing, in the
+    coupling KF up to pose solution we have 6.
+ -- ANC and other EMI rejection would be per channel, but probably
+    only on the sensor channels, not current sense.  So 3 way
+    basically, but DSP algorithms like ANC often are potentially
+    highly parallel.  ANC algorithms with a seperate interference
+    model update can run concurrently with the model application
+    using the previous model.
+ -- Low rate processing and user interface are also concurrent with
+    high rate.  Low rate processing includes the low rate KF update,
+    which is more expensive per iteration (though there are ~1K fewer
+    iterations). 

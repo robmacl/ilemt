@@ -193,6 +193,7 @@
 			<Item Name="read_n_raw_records.vi" Type="VI" URL="../system/read_n_raw_records.vi"/>
 			<Item Name="6dof_calibration.ctl" Type="VI" URL="../calibration/6dof_calibration.ctl"/>
 			<Item Name="log_raw_data.vi" Type="VI" URL="../testing/log_raw_data.vi"/>
+			<Item Name="make_trans_mat.vi" Type="VI" URL="../../utilities/make_trans_mat.vi"/>
 		</Item>
 		<Item Name="Build Specifications" Type="Build"/>
 	</Item>
