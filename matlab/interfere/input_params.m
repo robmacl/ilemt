@@ -31,10 +31,11 @@ function  [input_param] = input_params(fileDirectory, data, input_plot)
 %     - input_param.y_axis: double array of y positions
 
     % Input parameter from the original input of main_metal_interfere.m 
-    input_param.type = input_plot{1};
-    input_param.deg = input_plot{2};
-    input_param.skip_control = input_plot{3};
-    input_param.custom = input_plot{4};   
+    input_param.sensor = input_plot{1};
+    input_param.type = input_plot{2};
+    input_param.deg = input_plot{3};
+    input_param.skip_control = input_plot{4};
+    input_param.custom = input_plot{5};   
     input_param.directory = fileDirectory;
     
     % High-Low carriers plot requires the additional parameters of specific
@@ -68,6 +69,5 @@ function  [input_param] = input_params(fileDirectory, data, input_plot)
         data_all2 = dlmread(fileDirectory + "\" + string(data.FileName(1)));
         input_param.x_axis = data_all2(2:end-1,1);
         input_param.y_axis = data_all2(2:end-1,2);
-
     end
 end

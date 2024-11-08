@@ -33,15 +33,25 @@ function plotsheet(result_all, data, input_param)
     end
     
     %% Create the x-moving plot 
-    carrier_choice = {'High', 'Low'};
-    data_sheet = {subset_High_trans,subset_Low_trans, subset_High_rot,subset_Low_rot};
+    carrier_choice.ilemt = {'High', 'Low'};
+    data_sheet.ilemt = {subset_High_trans,subset_Low_trans, subset_High_rot,subset_Low_rot};   
+    carrier_choice.Guidance = {'High'};
+    data_sheet.Guidance = {subset_High_trans, subset_High_rot};      
+    
     
     % Loop for doing all plots    
-    for i = 1:2
-        idx.carrier = carrier_choice{i};
+ 
+    for i = 1:size(carrier_choice.(input_param.sensor),2)
+        idx.carrier = carrier_choice.(input_param.sensor){i};
         
-        sheet_errorPlot(idx, data_sheet{i}, data_sheet{i+2}, input_param)
-        sheet_coupling(idx, result_all.(carrier_choice{i}).coupling, step, input_param)
+        if input_param.sensor == 'ilemt'
+            sheet_errorPlot(idx, data_sheet.(input_param.sensor){i}, data_sheet.(input_param.sensor){i+2}, input_param)
+            sheet_coupling(idx, result_all.(carrier_choice.(input_param.sensor){i}).coupling, step, input_param)
+        else
+            sheet_errorPlot(idx, data_sheet.(input_param.sensor){i}, data_sheet.(input_param.sensor){i+1}, input_param)
+        end
+        
+        
     end     
     
 end
@@ -90,6 +100,15 @@ function sheet_errorPlot(idx, data_trans, data_rot, input_param)
         else
             data = data_rot;
         end
+        
+        if input_param.sensor == "ilemt"
+            title_detail = "Four Sheet Metals "+string(idx.carrier)+" Carrier Effects "+string(errorType{i})+" Error on X=["+string(input_param.x_axis(1))+"..."+string(input_param.x_axis(end))+"] and Rotate "+string(input_param.deg)+" Degree";
+            name_file = "TransRotError_sheet_"+string(idx.carrier)+".fig";
+        else
+            title_detail = "Four Sheet Metals "+string(errorType{i})+" Error on X=["+string(input_param.x_axis(1))+"..."+string(input_param.x_axis(end))+"] and Rotate "+string(input_param.deg)+" Degree";
+            name_file = "TransRotError_sheet.fig";
+        end
+ 
         subplot(2,1,i)  
         for j = idx.Sheet
             semilogy(input_param.x_axis, data{j}, '.-', 'MarkerSize', 8)
@@ -97,7 +116,7 @@ function sheet_errorPlot(idx, data_trans, data_rot, input_param)
         end
 
         grid on
-        title("Four Sheet Metals "+string(idx.carrier)+" Carrier Effects "+string(errorType{i})+" Error on X=["+string(input_param.x_axis(1))+"..."+string(input_param.x_axis(end))+"] and Rotate "+string(input_param.deg)+" Degree")
+        title(title_detail)
         ylabel(string(errorType{i})+' Error(m)') 
         xlabel('X Position(cm)') 
         legend(idx.name)
@@ -105,7 +124,7 @@ function sheet_errorPlot(idx, data_trans, data_rot, input_param)
         ylim(y_lim);
     end
     
-    savefig(fullfile(input_param.directory, "TransRotError_Sheet_"+string(idx.carrier)+".fig"))
+    savefig(fullfile(input_param.directory, name_file))
 end
 
 %% Sub-function for coupling magnitude plot
