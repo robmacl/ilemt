@@ -25,7 +25,7 @@ function plotymoving(result_all, data, input_param)
     
     % Assign index in the array of double if the control sample will be presented
     idx.test = 1:numel(subsets);
-    idx.name = (data.NavioParts(1:numel(subsets)));
+    idx.name = (data.Motor_Status(1:numel(subsets)));
     idx.orien = (data.Orientation(1:numel(subsets)));
     
     idx.label = {};
@@ -88,7 +88,7 @@ function ymoving_errorPlot(idx, data_trans, data_rot, input_param)
             hold on
         end
         grid on
-        title("Navio Handpiece Test "+string(idx.carrier)+" Carrier Effects "+string(error_unit{i})+" Error on x = "+string(input_param.x_axis(1))) 
+        title("Iotamotion Device Test "+string(idx.carrier)+" Carrier Effects "+string(error_unit{i})+" Error on x = "+string(input_param.x_axis(1))) 
         ylabel(string(error_unit{i})+' Error ('+error_unit{i+2}+')') 
         xlabel('Y Position(cm)') 
         legend(idx.label{1}) 
@@ -125,7 +125,7 @@ function ymoving_coupling(idx, data, step, input_param)
         hold on
     end
     grid on
-    title("Navio Handpiece Test "+string(idx.carrier)+" Carrier Effects Coupling Magnitude on x = "+string(input_param.x_axis(1)))
+    title("Iotamotion Device Test "+string(idx.carrier)+" Carrier Effects Coupling Magnitude on x = "+string(input_param.x_axis(1)))
     ylabel('Normalized Coupling Magnitude') 
     xlabel('Y Position(cm)') 
     legend(idx.label{1})   

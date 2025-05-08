@@ -72,7 +72,7 @@ function xmoving_errorPlot(idx, data_trans, data_rot, input_param)
     limit.y_rot = 'auto';         
     
     lim_axis = {limit.x_trans, limit.x_rot, limit.y_trans limit.y_rot};
-    errorType = {'Translation','Rotation'};
+    error_unit = {'Translation','Rotation','m','rad'};
     
     figure;
     % Loop for plotting translational and rotational errors
@@ -90,8 +90,8 @@ function xmoving_errorPlot(idx, data_trans, data_rot, input_param)
             hold on
         end
         grid on
-        title("Navio Handpiece Test " +string(idx.carrier)+" Carrier Effects "+string(errorType{i})+" Error on y = "+string(input_param.y_axis(1)))
-        ylabel(string(errorType{i})+' Error(m)') 
+        title("Navio Handpiece Test " +string(idx.carrier)+" Carrier Effects "+string(error_unit{i})+" Error on y = "+string(input_param.y_axis(1)))
+        ylabel(string(error_unit{i})+' Error ('+error_unit{i+2}+')') 
         xlabel('X Position(cm)') 
         legend(idx.label{1})
         xlim(x_lim);
