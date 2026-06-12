@@ -1,5 +1,6 @@
 ﻿<?xml version='1.0' encoding='UTF-8'?>
 <Project Type="Project" LVVersion="24008000">
+	<Property Name="NI.LV.All.SaveVersion" Type="Str">24.0</Property>
 	<Property Name="NI.LV.All.SourceOnly" Type="Bool">true</Property>
 	<Property Name="varPersistentID:{705F2019-9CCA-48A5-8669-8F6E919898EE}" Type="Ref">/My Computer/ilemt_vars.lvlib/Stop</Property>
 	<Item Name="My Computer" Type="My Computer">
@@ -30,6 +31,7 @@
 		<Item Name="read_raw_file.vi" Type="VI" URL="../system/read_raw_file.vi"/>
 		<Item Name="relative_and_absolute_ts.ctl" Type="VI" URL="../system/relative_and_absolute_ts.ctl"/>
 		<Item Name="levels_to_coupling.vi" Type="VI" URL="../processing/levels_to_coupling.vi"/>
+		<Item Name="trio_test.vi" Type="VI" URL="../../motion/server/trio_test.vi"/>
 		<Item Name="Dependencies" Type="Dependencies">
 			<Item Name="vi.lib" Type="Folder">
 				<Item Name="BuildHelpPath.vi" Type="VI" URL="/&lt;vilib&gt;/Utility/error.llb/BuildHelpPath.vi"/>
@@ -85,6 +87,25 @@
 				<Item Name="Space Constant.vi" Type="VI" URL="/&lt;vilib&gt;/dlg_ctls.llb/Space Constant.vi"/>
 				<Item Name="Trim Whitespace One-Sided.vi" Type="VI" URL="/&lt;vilib&gt;/Utility/error.llb/Trim Whitespace One-Sided.vi"/>
 				<Item Name="Get File Extension.vi" Type="VI" URL="/&lt;vilib&gt;/Utility/libraryn.llb/Get File Extension.vi"/>
+				<Item Name="subTimeDelay.vi" Type="VI" URL="/&lt;vilib&gt;/express/express execution control/TimeDelayBlock.llb/subTimeDelay.vi"/>
+			</Item>
+			<Item Name="instr.lib" Type="Folder">
+				<Item Name="Trio Motion Library.lvlib" Type="Library" URL="/&lt;instrlib&gt;/Trio Motion/Trio Motion Library.lvlib"/>
+				<Item Name="Controller Setup Servo.vi" Type="VI" URL="/&lt;instrlib&gt;/Trio Motion/Examples/Controller Setup Servo.vi"/>
+				<Item Name="Motion Demo Servo Open-Loop Tune.vi" Type="VI" URL="/&lt;instrlib&gt;/Trio Motion/Examples/Motion Demo Servo Open-Loop Tune.vi"/>
+				<Item Name="Motion Demo Servo Tune.vi" Type="VI" URL="/&lt;instrlib&gt;/Trio Motion/Examples/Motion Demo Servo Tune.vi"/>
+				<Item Name="Motion Demo Servo Home.vi" Type="VI" URL="/&lt;instrlib&gt;/Trio Motion/Examples/Motion Demo Servo Home.vi"/>
+				<Item Name="Jog Demo Servo.vi" Type="VI" URL="/&lt;instrlib&gt;/Trio Motion/Examples/Jog Demo Servo.vi"/>
+				<Item Name="Analog IO Demo.vi" Type="VI" URL="/&lt;instrlib&gt;/Trio Motion/Examples/Analog IO Demo.vi"/>
+				<Item Name="Controller Setup.vi" Type="VI" URL="/&lt;instrlib&gt;/Trio Motion/Examples/Controller Setup.vi"/>
+				<Item Name="Motion Demo Ratio Multi-axis.vi" Type="VI" URL="/&lt;instrlib&gt;/Trio Motion/Examples/Motion Demo Ratio Multi-axis.vi"/>
+				<Item Name="Jog Demo Multi-axis.vi" Type="VI" URL="/&lt;instrlib&gt;/Trio Motion/Examples/Jog Demo Multi-axis.vi"/>
+				<Item Name="Motion Demo Synchronous Multi-axis.vi" Type="VI" URL="/&lt;instrlib&gt;/Trio Motion/Examples/Motion Demo Synchronous Multi-axis.vi"/>
+				<Item Name="Motion Demo Home Multi-axis.vi" Type="VI" URL="/&lt;instrlib&gt;/Trio Motion/Examples/Motion Demo Home Multi-axis.vi"/>
+				<Item Name="Motion Demo Home.vi" Type="VI" URL="/&lt;instrlib&gt;/Trio Motion/Examples/Motion Demo Home.vi"/>
+				<Item Name="Jog Demo.vi" Type="VI" URL="/&lt;instrlib&gt;/Trio Motion/Examples/Jog Demo.vi"/>
+				<Item Name="Digital IO Demo.vi" Type="VI" URL="/&lt;instrlib&gt;/Trio Motion/Examples/Digital IO Demo.vi"/>
+				<Item Name="Basic Motion Demo.vi" Type="VI" URL="/&lt;instrlib&gt;/Trio Motion/Examples/Basic Motion Demo.vi"/>
 			</Item>
 			<Item Name="apply_cal.vi" Type="VI" URL="../calibration/apply_cal.vi"/>
 			<Item Name="cal_error.vi" Type="VI" URL="../calibration/cal_error.vi"/>
@@ -185,13 +206,33 @@
 			<Item Name="Motion status.vi" Type="VI" URL="../../motion/client/Motion status.vi"/>
 			<Item Name="averaged_asap_signals.vi" Type="VI" URL="../../micron/labview/calibration/averaged_asap_signals.vi"/>
 			<Item Name="read_raw_record.vi" Type="VI" URL="../system/read_raw_record.vi"/>
-			<Item Name="getAsynchronousSensorPositionAngles.vi" Type="VI" URL="../../../../../../../jiahuiz2/Documents/Micron Nerve Hook/Main_Force_Track_v2&amp;4_LV14-20220215T002333Z-001/Main_Force_Track_v2_4_LV14/NDI tracker/ATCtrakstar labview_kiwi/CWrapATC3DG.llb/getAsynchronousSensorPositionAngles.vi"/>
-			<Item Name="CWrapATC3DG_Setting.vi" Type="VI" URL="../../../../../../../jiahuiz2/Documents/Micron Nerve Hook/Main_Force_Track_v2&amp;4_LV14-20220215T002333Z-001/Main_Force_Track_v2_4_LV14/NDI tracker/ATCtrakstar labview_kiwi/CWrapATC3DG_Setting.vi"/>
-			<Item Name="setSelectedTransmitter.vi" Type="VI" URL="../../../../../../../jiahuiz2/Documents/Micron Nerve Hook/Main_Force_Track_v2&amp;4_LV14-20220215T002333Z-001/Main_Force_Track_v2_4_LV14/NDI tracker/ATCtrakstar labview_kiwi/CWrapATC3DG.llb/setSelectedTransmitter.vi"/>
 			<Item Name="6dof_calibration.ctl" Type="VI" URL="../calibration/6dof_calibration.ctl"/>
 			<Item Name="read_6dof_cal.vi" Type="VI" URL="../calibration/read_6dof_cal.vi"/>
 			<Item Name="read_matrix.vi" Type="VI" URL="../../utilities/read_matrix.vi"/>
 			<Item Name="log_raw_data.vi" Type="VI" URL="../testing/log_raw_data.vi"/>
+			<Item Name="CWrapATC3DG_Setting.vi" Type="VI" URL="../../../../../../Desktop/Micron Nerve Hook/Main_Force_Track_v2&amp;4_LV14-20220215T002333Z-001/Main_Force_Track_v2_4_LV14/NDI tracker/ATCtrakstar labview_kiwi/CWrapATC3DG_Setting.vi"/>
+			<Item Name="systemCfg.ctl" Type="VI" URL="../../../../../../Desktop/Micron Nerve Hook/Main_Force_Track_v2&amp;4_LV14-20220215T002333Z-001/Main_Force_Track_v2_4_LV14/NDI tracker/ATCtrakstar labview_kiwi/CWrapATC3DG.llb/systemCfg.ctl"/>
+			<Item Name="resetOnInit.vi" Type="VI" URL="../../../../../../Desktop/Micron Nerve Hook/Main_Force_Track_v2&amp;4_LV14-20220215T002333Z-001/Main_Force_Track_v2_4_LV14/NDI tracker/ATCtrakstar labview_kiwi/CWrapATC3DG.llb/resetOnInit.vi"/>
+			<Item Name="CWrapATC3DG.dll" Type="Document" URL="../../../../../../Desktop/Micron Nerve Hook/Main_Force_Track_v2&amp;4_LV14-20220215T002333Z-001/Main_Force_Track_v2_4_LV14/NDI tracker/ATCtrakstar labview_kiwi/CWrapATC3DG-master/CWrapATC3DG-master/Release/CWrapATC3DG.dll"/>
+			<Item Name="errorCode2errorBus.vi" Type="VI" URL="../../../../../../Desktop/Micron Nerve Hook/Main_Force_Track_v2&amp;4_LV14-20220215T002333Z-001/Main_Force_Track_v2_4_LV14/NDI tracker/ATCtrakstar labview_kiwi/ATC3DG.llb/errorCode2errorBus.vi"/>
+			<Item Name="initializeAscension.vi" Type="VI" URL="../../../../../../Desktop/Micron Nerve Hook/Main_Force_Track_v2&amp;4_LV14-20220215T002333Z-001/Main_Force_Track_v2_4_LV14/NDI tracker/ATCtrakstar labview_kiwi/CWrapATC3DG.llb/initializeAscension.vi"/>
+			<Item Name="setMetric.vi" Type="VI" URL="../../../../../../Desktop/Micron Nerve Hook/Main_Force_Track_v2&amp;4_LV14-20220215T002333Z-001/Main_Force_Track_v2_4_LV14/NDI tracker/ATCtrakstar labview_kiwi/CWrapATC3DG.llb/setMetric.vi"/>
+			<Item Name="setMeasurementRate.vi" Type="VI" URL="../../../../../../Desktop/Micron Nerve Hook/Main_Force_Track_v2&amp;4_LV14-20220215T002333Z-001/Main_Force_Track_v2_4_LV14/NDI tracker/ATCtrakstar labview_kiwi/CWrapATC3DG/setMeasurementRate.vi"/>
+			<Item Name="getSystemConfiguration.vi" Type="VI" URL="../../../../../../Desktop/Micron Nerve Hook/Main_Force_Track_v2&amp;4_LV14-20220215T002333Z-001/Main_Force_Track_v2_4_LV14/NDI tracker/ATCtrakstar labview_kiwi/CWrapATC3DG.llb/getSystemConfiguration.vi"/>
+			<Item Name="setSensorAngleAlign.vi" Type="VI" URL="../../../../../../Desktop/Micron Nerve Hook/Main_Force_Track_v2&amp;4_LV14-20220215T002333Z-001/Main_Force_Track_v2_4_LV14/NDI tracker/ATCtrakstar labview_kiwi/CWrapATC3DG.llb/setSensorAngleAlign.vi"/>
+			<Item Name="getSensorAngleAlign.vi" Type="VI" URL="../../../../../../Desktop/Micron Nerve Hook/Main_Force_Track_v2&amp;4_LV14-20220215T002333Z-001/Main_Force_Track_v2_4_LV14/NDI tracker/ATCtrakstar labview_kiwi/CWrapATC3DG.llb/getSensorAngleAlign.vi"/>
+			<Item Name="getSensorXYZOffset.vi" Type="VI" URL="../../../../../../Desktop/Micron Nerve Hook/Main_Force_Track_v2&amp;4_LV14-20220215T002333Z-001/Main_Force_Track_v2_4_LV14/NDI tracker/ATCtrakstar labview_kiwi/CWrapATC3DG.llb/getSensorXYZOffset.vi"/>
+			<Item Name="setTransmiterAngleAlign.vi" Type="VI" URL="../../../../../../Desktop/Micron Nerve Hook/Main_Force_Track_v2&amp;4_LV14-20220215T002333Z-001/Main_Force_Track_v2_4_LV14/NDI tracker/ATCtrakstar labview_kiwi/CWrapATC3DG.llb/setTransmiterAngleAlign.vi"/>
+			<Item Name="getTransmitterAngleAlign.vi" Type="VI" URL="../../../../../../Desktop/Micron Nerve Hook/Main_Force_Track_v2&amp;4_LV14-20220215T002333Z-001/Main_Force_Track_v2_4_LV14/NDI tracker/ATCtrakstar labview_kiwi/CWrapATC3DG.llb/getTransmitterAngleAlign.vi"/>
+			<Item Name="getFilterAlphaAdaptive.vi" Type="VI" URL="../../../../../../Desktop/Micron Nerve Hook/Main_Force_Track_v2&amp;4_LV14-20220215T002333Z-001/Main_Force_Track_v2_4_LV14/NDI tracker/ATCtrakstar labview_kiwi/CWrapATC3DG.llb/getFilterAlphaAdaptive.vi"/>
+			<Item Name="getFilterDCAdaptive.vi" Type="VI" URL="../../../../../../Desktop/Micron Nerve Hook/Main_Force_Track_v2&amp;4_LV14-20220215T002333Z-001/Main_Force_Track_v2_4_LV14/NDI tracker/ATCtrakstar labview_kiwi/CWrapATC3DG.llb/getFilterDCAdaptive.vi"/>
+			<Item Name="setFilterACNarrowNotch.vi" Type="VI" URL="../../../../../../Desktop/Micron Nerve Hook/Main_Force_Track_v2&amp;4_LV14-20220215T002333Z-001/Main_Force_Track_v2_4_LV14/NDI tracker/ATCtrakstar labview_kiwi/CWrapATC3DG.llb/setFilterACNarrowNotch.vi"/>
+			<Item Name="getFilterACNarrowNotch.vi" Type="VI" URL="../../../../../../Desktop/Micron Nerve Hook/Main_Force_Track_v2&amp;4_LV14-20220215T002333Z-001/Main_Force_Track_v2_4_LV14/NDI tracker/ATCtrakstar labview_kiwi/CWrapATC3DG.llb/getFilterACNarrowNotch.vi"/>
+			<Item Name="setFiterACWideNotch.vi" Type="VI" URL="../../../../../../Desktop/Micron Nerve Hook/Main_Force_Track_v2&amp;4_LV14-20220215T002333Z-001/Main_Force_Track_v2_4_LV14/NDI tracker/ATCtrakstar labview_kiwi/CWrapATC3DG.llb/setFiterACWideNotch.vi"/>
+			<Item Name="getFilterACWideNotch.vi" Type="VI" URL="../../../../../../Desktop/Micron Nerve Hook/Main_Force_Track_v2&amp;4_LV14-20220215T002333Z-001/Main_Force_Track_v2_4_LV14/NDI tracker/ATCtrakstar labview_kiwi/CWrapATC3DG.llb/getFilterACWideNotch.vi"/>
+			<Item Name="setSensorDataFormat.vi" Type="VI" URL="../../../../../../Desktop/Micron Nerve Hook/Main_Force_Track_v2&amp;4_LV14-20220215T002333Z-001/Main_Force_Track_v2_4_LV14/NDI tracker/ATCtrakstar labview_kiwi/CWrapATC3DG.llb/setSensorDataFormat.vi"/>
+			<Item Name="setSelectedTransmitter.vi" Type="VI" URL="../../../../../../Desktop/Micron Nerve Hook/Main_Force_Track_v2&amp;4_LV14-20220215T002333Z-001/Main_Force_Track_v2_4_LV14/NDI tracker/ATCtrakstar labview_kiwi/CWrapATC3DG.llb/setSelectedTransmitter.vi"/>
+			<Item Name="getAsynchronousSensorPositionAngles.vi" Type="VI" URL="../../../../../../Desktop/Micron Nerve Hook/Main_Force_Track_v2&amp;4_LV14-20220215T002333Z-001/Main_Force_Track_v2_4_LV14/NDI tracker/ATCtrakstar labview_kiwi/CWrapATC3DG.llb/getAsynchronousSensorPositionAngles.vi"/>
 		</Item>
 		<Item Name="Build Specifications" Type="Build"/>
 	</Item>

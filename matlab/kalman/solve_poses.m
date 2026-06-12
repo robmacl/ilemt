@@ -4,9 +4,10 @@ function [outfile] = solve_poses (trackfile)
   if (isempty(ext))
     ext = '.trace';
   end
+  disp([path name ext])
   data = read_track_file([path name ext]);
   options = track_options();
-  options.cal_file_base = '../cal_9_1_premo_rotated_dipole/output/XYZ';
+  options.cal_file_base = 'C:/Users/robertm2/Documents/Work/ilemt_cal_data/cal_9_15_premo_cmu/output/XYZ';
   options.hemisphere = 3;
 
   track = track_pose_solution(data, options);
