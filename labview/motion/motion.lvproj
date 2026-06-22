@@ -49,10 +49,15 @@
 		<Item Name="motion_server.vi" Type="VI" URL="../server/motion_server.vi"/>
 		<Item Name="motion_ui.vi" Type="VI" URL="../client/motion_ui.vi"/>
 		<Item Name="philtec_ui.vi" Type="VI" URL="../server/philtec_ui.vi"/>
-		<Item Name="trio_position.vi" Type="VI" URL="../server/trio_position.vi"/>
-		<Item Name="trio_read_axis.vi" Type="VI" URL="../../../../ilemt_cal_hw/stage/trio_read_axis.vi"/>
-		<Item Name="trio_stepper_axis.vi" Type="VI" URL="../server/trio_stepper_axis.vi"/>
-		<Item Name="trio_test.vi" Type="VI" URL="../server/trio_test.vi"/>
+		<Item Name="trio_home_status.vi" Type="VI" URL="../server/trio/trio_home_status.vi"/>
+		<Item Name="trio_move_test.vi" Type="VI" URL="../server/trio/trio_move_test.vi"/>
+		<Item Name="trio_position.vi" Type="VI" URL="../server/trio/trio_position.vi"/>
+		<Item Name="trio_read_axis.vi" Type="VI" URL="../server/trio/trio_read_axis.vi"/>
+		<Item Name="trio_read_limits.vi" Type="VI" URL="../server/trio/trio_read_limits.vi"/>
+		<Item Name="trio_setvr_float.vi" Type="VI" URL="../server/trio/trio_setvr_float.vi"/>
+		<Item Name="trio_stepper_axis.vi" Type="VI" URL="../server/trio/trio_stepper_axis.vi"/>
+		<Item Name="trio_test.vi" Type="VI" URL="../server/trio/trio_test.vi"/>
+		<Item Name="trio_wait_idle.vi" Type="VI" URL="../server/trio/trio_wait_idle.vi"/>
 		<Item Name="Dependencies" Type="Dependencies">
 			<Item Name="instr.lib" Type="Folder">
 				<Item Name="Analog IO Demo.vi" Type="VI" URL="/&lt;instrlib&gt;/Trio Motion/Examples/Analog IO Demo.vi"/>
@@ -155,8 +160,9 @@
 			<Item Name="spectral_measurement.vi" Type="VI" URL="../../micron/labview/testing/spectral_measurement.vi"/>
 			<Item Name="transform_axis_positions.vi" Type="VI" URL="../server/transform_axis_positions.vi"/>
 			<Item Name="transform_inverse.vi" Type="VI" URL="../../utilities/transform_inverse.vi"/>
-			<Item Name="trio_move.vi" Type="VI" URL="../server/trio_move.vi"/>
-			<Item Name="trio_open.vi" Type="VI" URL="../server/trio_open.vi"/>
+			<Item Name="trio_getvr.vi" Type="VI" URL="../server/trio/trio_getvr.vi"/>
+			<Item Name="trio_move.vi" Type="VI" URL="../server/trio/trio_move.vi"/>
+			<Item Name="trio_open.vi" Type="VI" URL="../server/trio/trio_open.vi"/>
 			<Item Name="vector_to_pose.vi" Type="VI" URL="../../utilities/vector_to_pose.vi"/>
 		</Item>
 		<Item Name="Build Specifications" Type="Build"/>
