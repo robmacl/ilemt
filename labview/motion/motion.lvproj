@@ -56,7 +56,7 @@
 		<Item Name="trio_read_limits.vi" Type="VI" URL="../server/trio/trio_read_limits.vi"/>
 		<Item Name="trio_setvr_float.vi" Type="VI" URL="../server/trio/trio_setvr_float.vi"/>
 		<Item Name="trio_stepper_axis.vi" Type="VI" URL="../server/trio/trio_stepper_axis.vi"/>
-		<Item Name="trio_test.vi" Type="VI" URL="../server/trio/trio_test.vi"/>
+		<Item Name="trio_test.vi" Type="VI" URL="../server/trio_test.vi"/>
 		<Item Name="trio_wait_idle.vi" Type="VI" URL="../server/trio/trio_wait_idle.vi"/>
 		<Item Name="Dependencies" Type="Dependencies">
 			<Item Name="instr.lib" Type="Folder">
@@ -163,6 +163,7 @@
 			<Item Name="trio_getvr.vi" Type="VI" URL="../server/trio/trio_getvr.vi"/>
 			<Item Name="trio_move.vi" Type="VI" URL="../server/trio/trio_move.vi"/>
 			<Item Name="trio_open.vi" Type="VI" URL="../server/trio/trio_open.vi"/>
+			<Item Name="trio_start_home.vi" Type="VI" URL="../server/trio/trio_start_home.vi"/>
 			<Item Name="vector_to_pose.vi" Type="VI" URL="../../utilities/vector_to_pose.vi"/>
 		</Item>
 		<Item Name="Build Specifications" Type="Build"/>
