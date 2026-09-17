@@ -4,20 +4,14 @@ Calibration data collection procedures:
 of fixture coordinate systems and notation, and what test patterns to
 collect.]
 
-Data collection checklist:  
+Data collection checklist:
+ - If there is a change in the source coil itself or the source drive
+   levels then see "frequency response calibration" below.
  - Warm up an hour or more.  
- - If source change, do frequency response. Turn on calibration/freq
-   response cal, then turn it off after it settles (3 seconds is
-   plenty). 
- - Check/update off axis compensation. With "card" set to "current",
-   then on levels tab, select "Carrier levels" "dB". Off diagonal
-   currents should be small (<-120 dB). This should happen
-   automatically after frequency response calibration, with <10 second
-   delay.    
  - Set input channel signs and coupling signs (see below)
  - With sensor in home pose,   
  - Go to home pose and reference calibrate, do "Calibration/Ref cal".  
- - Do "Set ref" to get sensible display after source) sensor change,
+ - Do "Set ref" to zero the output display after source or sensor change,
    may repeat as desired.  
  - check for any position drift over 15 minutes, warm up until stable
    at 10um or so.  
@@ -27,6 +21,7 @@ Data collection checklist:
 Input signs are sign flip errors in the sensor:  
  - CMU corner dipole sensor: -++  
  - Premo sensor: ++-
+ - Premo 3DV09 for EMOTO: +++
 
 Coupling signs have to do with source/sensor orientation in home pose.
 In the home pose the source mover is aligned with the source fixture
@@ -39,6 +34,7 @@ With CMU cube or non-rotated corner dipole source:
     Premo: +++  
 With rotated corner dipole source:  
     Premo: +++
+
 
 For each fixture:  
 Check source fixture orientation:
@@ -63,6 +59,40 @@ In ilemt_globals:
 Set defaults for:
     Reference amplitude
     Source frequency response
+
+
+Frequency response calibration:
+
+The frequency response calibration is used by the off-axis
+compensation in the source drive.  See carrier_waveforms.vi.  If the
+calibration is wrong then the off-axis calibration may not converge
+and can cause much higher off-axis currents and periodic glitch spikes
+in the measurement at ~1 Hz.
+
+ - If source change, do frequency response. Turn on calibration/freq
+   response cal, then turn it off after it settles (3 seconds is
+   plenty). 
+ - Check/update off axis compensation. With "card" set to "current",
+   then on levels tab, select "Carrier levels" "dB". Off diagonal
+   currents should be small (<-120 dB). This should happen
+   automatically after frequency response calibration, with <10 second
+   delay.
+ - If something is weird with the source output thru to current
+   feedback you will get "Comp fault" indication on the I/O setting
+   tab. The off axis compensation has adjusted the output too far from
+   what we expect according to the frequency response
+   calibration.  This will happen (for example) if you turn the driver
+   power off or the source coil is not plugged in.
+
+If you see glitching or the drive is visibly messed up, then you
+can just turn off "Coupling comp" in carrier_waveforms.vi to see if
+off-axis compensation is to blame.
+
+I no longer remember why I added the time/phase shift in
+carrier_waveforms.vi, but if you change it you need to recalibrate the
+frequency response.  Maybe I calibrated the time/phase shift with
+output voltage loopback so we could potentially measure the source
+impedance in physical units?
 
 
 Notes on Rz runout test:
@@ -156,7 +186,10 @@ Magnetically, for the source and sensor axes that are aligned
 (collinear, translated along the axis) then the coupling is positive,
 while for the other two axes (which are mutually parallel, but
 translated normal to the axis) the coupling is negative (and nominally
-1/2 as strong).
+1/2 as strong). If the source and sensor axes are aligned but the
+sensor is displaced along the X axis then we expect +-- coupling
+signs.  (For signs it doesn't matter whether the sensor is in the +X
+or -X hemisphere.)
 
 
 Concerning the steps of the above data collection checklist when
@@ -239,13 +272,18 @@ With new source or sensor hardware:
     sensor axis straight in line with each source axis.  If the ilemt_ui input
     signs and coupling signs are correct, then you should get a positive
     coupling in each case (on the aligned axes).  Pay at attention to *which*
-    axes are affected, not just the sign.  You might be confused about which
-    axis is which.
+    axes are affected, not just the sign.  You might be confused about
+    which axis is which.
+ -- Look at the low carrier phase w.r.t full scale.  The low
+    carrier phase is nearly unaffected by the source inductance since
+    the impedance is resistive dominated. The current sense will be
+    roughly in phase and the sensor phase for a positive coupling sign
+    should be approximately -90 degrees (since sensor is positive
+    while the current/field is increasing.)
 
-How to recover:
+How to recover data taken with the wrong signs:
  -- For a data problem with the signs or fixture identification, you can
     usually recover by fixing the file names, and by setting source_signs and
     sensor_signs in the local_cal_options.
  -- You can also retake the data correctly, or even fix your swapped wires in
     hardware.
- 
