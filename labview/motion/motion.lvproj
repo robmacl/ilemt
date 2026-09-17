@@ -48,16 +48,9 @@
 		</Item>
 		<Item Name="motion_server.vi" Type="VI" URL="../server/motion_server.vi"/>
 		<Item Name="motion_ui.vi" Type="VI" URL="../client/motion_ui.vi"/>
-		<Item Name="philtec_ui.vi" Type="VI" URL="../server/philtec_ui.vi"/>
 		<Item Name="trio_home_status.vi" Type="VI" URL="../server/trio/trio_home_status.vi"/>
 		<Item Name="trio_move_test.vi" Type="VI" URL="../server/trio/trio_move_test.vi"/>
-		<Item Name="trio_position.vi" Type="VI" URL="../server/trio/trio_position.vi"/>
-		<Item Name="trio_read_axis.vi" Type="VI" URL="../server/trio/trio_read_axis.vi"/>
-		<Item Name="trio_read_limits.vi" Type="VI" URL="../server/trio/trio_read_limits.vi"/>
-		<Item Name="trio_setvr_float.vi" Type="VI" URL="../server/trio/trio_setvr_float.vi"/>
-		<Item Name="trio_stepper_axis.vi" Type="VI" URL="../server/trio/trio_stepper_axis.vi"/>
 		<Item Name="trio_test.vi" Type="VI" URL="../server/trio_test.vi"/>
-		<Item Name="trio_wait_idle.vi" Type="VI" URL="../server/trio/trio_wait_idle.vi"/>
 		<Item Name="Dependencies" Type="Dependencies">
 			<Item Name="instr.lib" Type="Folder">
 				<Item Name="Analog IO Demo.vi" Type="VI" URL="/&lt;instrlib&gt;/Trio Motion/Examples/Analog IO Demo.vi"/>
@@ -84,15 +77,6 @@
 				<Item Name="Check Special Tags.vi" Type="VI" URL="/&lt;vilib&gt;/Utility/error.llb/Check Special Tags.vi"/>
 				<Item Name="Clear Errors.vi" Type="VI" URL="/&lt;vilib&gt;/Utility/error.llb/Clear Errors.vi"/>
 				<Item Name="Convert property node font to graphics font.vi" Type="VI" URL="/&lt;vilib&gt;/Utility/error.llb/Convert property node font to graphics font.vi"/>
-				<Item Name="DAQmx Clear Task.vi" Type="VI" URL="/&lt;vilib&gt;/DAQmx/configure/task.llb/DAQmx Clear Task.vi"/>
-				<Item Name="DAQmx Create Channel (AI-Voltage-Basic).vi" Type="VI" URL="/&lt;vilib&gt;/DAQmx/create/channels.llb/DAQmx Create Channel (AI-Voltage-Basic).vi"/>
-				<Item Name="DAQmx Create Virtual Channel.vi" Type="VI" URL="/&lt;vilib&gt;/DAQmx/create/channels.llb/DAQmx Create Virtual Channel.vi"/>
-				<Item Name="DAQmx Fill In Error Info.vi" Type="VI" URL="/&lt;vilib&gt;/DAQmx/miscellaneous.llb/DAQmx Fill In Error Info.vi"/>
-				<Item Name="DAQmx Read (Analog Wfm 1Chan NSamp).vi" Type="VI" URL="/&lt;vilib&gt;/DAQmx/read.llb/DAQmx Read (Analog Wfm 1Chan NSamp).vi"/>
-				<Item Name="DAQmx Read.vi" Type="VI" URL="/&lt;vilib&gt;/DAQmx/read.llb/DAQmx Read.vi"/>
-				<Item Name="DAQmx Start Task.vi" Type="VI" URL="/&lt;vilib&gt;/DAQmx/configure/task.llb/DAQmx Start Task.vi"/>
-				<Item Name="DAQmx Timing (Sample Clock).vi" Type="VI" URL="/&lt;vilib&gt;/DAQmx/configure/timing.llb/DAQmx Timing (Sample Clock).vi"/>
-				<Item Name="DAQmx Timing.vi" Type="VI" URL="/&lt;vilib&gt;/DAQmx/configure/timing.llb/DAQmx Timing.vi"/>
 				<Item Name="Details Display Dialog.vi" Type="VI" URL="/&lt;vilib&gt;/Utility/error.llb/Details Display Dialog.vi"/>
 				<Item Name="DialogType.ctl" Type="VI" URL="/&lt;vilib&gt;/Utility/error.llb/DialogType.ctl"/>
 				<Item Name="DialogTypeEnum.ctl" Type="VI" URL="/&lt;vilib&gt;/Utility/error.llb/DialogTypeEnum.ctl"/>
@@ -140,7 +124,6 @@
 			<Item Name="do_move.vi" Type="VI" URL="../server/do_move.vi"/>
 			<Item Name="euler_to_rotation.vi" Type="VI" URL="../../utilities/euler_to_rotation.vi"/>
 			<Item Name="inverse_kin_objective_fn.vi" Type="VI" URL="../server/inverse_kin_objective_fn.vi"/>
-			<Item Name="log_smoothing.vi" Type="VI" URL="../../micron/labview/testing/log_smoothing.vi"/>
 			<Item Name="lvanlys.dll" Type="Document" URL="/&lt;resource&gt;/lvanlys.dll"/>
 			<Item Name="make_trans_mat.vi" Type="VI" URL="../../utilities/make_trans_mat.vi"/>
 			<Item Name="Motion command.vi" Type="VI" URL="../client/Motion command.vi"/>
@@ -152,18 +135,20 @@
 			<Item Name="newmark_open.vi" Type="VI" URL="../server/newmark_open.vi"/>
 			<Item Name="newmark_set_position.vi" Type="VI" URL="../server/newmark_set_position.vi"/>
 			<Item Name="newmark_stop.vi" Type="VI" URL="../server/newmark_stop.vi"/>
-			<Item Name="nilvaiu.dll" Type="Document" URL="nilvaiu.dll">
-				<Property Name="NI.PreserveRelativePath" Type="Bool">true</Property>
-			</Item>
 			<Item Name="pose_to_vector.vi" Type="VI" URL="../../utilities/pose_to_vector.vi"/>
 			<Item Name="rotation_to_euler.vi" Type="VI" URL="../../utilities/rotation_to_euler.vi"/>
-			<Item Name="spectral_measurement.vi" Type="VI" URL="../../micron/labview/testing/spectral_measurement.vi"/>
 			<Item Name="transform_axis_positions.vi" Type="VI" URL="../server/transform_axis_positions.vi"/>
 			<Item Name="transform_inverse.vi" Type="VI" URL="../../utilities/transform_inverse.vi"/>
 			<Item Name="trio_getvr.vi" Type="VI" URL="../server/trio/trio_getvr.vi"/>
 			<Item Name="trio_move.vi" Type="VI" URL="../server/trio/trio_move.vi"/>
 			<Item Name="trio_open.vi" Type="VI" URL="../server/trio/trio_open.vi"/>
+			<Item Name="trio_position.vi" Type="VI" URL="../server/trio/trio_position.vi"/>
+			<Item Name="trio_read_axis.vi" Type="VI" URL="../server/trio/trio_read_axis.vi"/>
+			<Item Name="trio_read_limits.vi" Type="VI" URL="../server/trio/trio_read_limits.vi"/>
+			<Item Name="trio_setvr_float.vi" Type="VI" URL="../server/trio/trio_setvr_float.vi"/>
 			<Item Name="trio_start_home.vi" Type="VI" URL="../server/trio/trio_start_home.vi"/>
+			<Item Name="trio_stepper_axis.vi" Type="VI" URL="../server/trio/trio_stepper_axis.vi"/>
+			<Item Name="trio_wait_idle.vi" Type="VI" URL="../server/trio/trio_wait_idle.vi"/>
 			<Item Name="vector_to_pose.vi" Type="VI" URL="../../utilities/vector_to_pose.vi"/>
 		</Item>
 		<Item Name="Build Specifications" Type="Build"/>
