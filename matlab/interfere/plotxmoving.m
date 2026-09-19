@@ -35,12 +35,15 @@ function plotxmoving(result_all, data, input_param)
     end
     
     %% Create the x-moving plot  
-    shape_choice = {'Hollow', 'Solid'};       
+    shape_choice= {'Hollow', 'Solid'};    
+    % parameter for ilemt system
     carrier_choice.ilemt = {'High', 'Low'};
-    data_xmoving.ilemt = {subset_High_trans,subset_Low_trans,subset_High_rot,subset_Low_rot};    
+    data_xmoving.ilemt = {subset_High_trans,subset_Low_trans,subset_High_rot,subset_Low_rot}; 
+    % parameter for 3D Guidance system
     carrier_choice.Guidance = {'High'};  
     data_xmoving.Guidance = {subset_High_trans,subset_High_rot};
-
+    
+    % Loop for doing all plots
     for j = 1:size(carrier_choice.(input_param.sensor),2)
          for i = 1:size(shape_choice,2)
              % Identify shape and carrier types
@@ -91,19 +94,12 @@ function xmoving_errorPlot(idx, data_trans, data_rot, input_param)
     end
     
     lim_axis = {limit.x_trans, limit.x_rot, limit.y_trans limit.y_rot};
-    errorType = {'Translation','Rotation'};
+    error_unit = {'Translation','Rotation','m','rad'};
+    
     
     figure;
     % Loop for plotting translational and rotational errors
     for i = 1:2
-        if input_param.sensor == "ilemt"
-            title_detail = "All " +string(idx.shape)+ " Metals "+string(idx.carrier)+" Carrier Effects "+string(errorType{i})+" Error on y = "+string(input_param.y_axis(1))+" and Rotate "+string(input_param.deg)+" Degree";
-            name_file = "TransRotError_"+string(idx.shape)+"_"+string(idx.carrier)+".fig";
-        else
-            title_detail = "All " +string(idx.shape)+ " Metals of 3DGuidance trakSTAR with "+string(errorType{i})+" Error on y = "+string(input_param.y_axis(1))+" and Rotate "+string(input_param.deg)+" Degree";
-            name_file = "TransRotError_"+string(idx.shape)+".fig";
-        end
-        
         x_lim = lim_axis{i};
         y_lim = lim_axis{i+2}; 
         
@@ -112,20 +108,25 @@ function xmoving_errorPlot(idx, data_trans, data_rot, input_param)
         else
             data = data_rot;
         end
+        
+        % Assign title name ame file name for each ilemt and 3D Guidance systems separately
+        if input_param.sensor == "ilemt"
+            title_detail = "All " +string(idx.shape)+ " Metals "+string(idx.carrier)+" Carrier Effects "+string(error_unit{i})+" Error on y = "+string(input_param.y_axis(1))+" and Rotate "+string(input_param.deg)+" Degree";
+            name_file = "TransRotError_"+string(idx.shape)+"_"+string(idx.carrier)+".fig";
+        else
+            title_detail = "All " +string(idx.shape)+ " Metals of 3DGuidance trakSTAR with "+string(error_unit{i})+" Error on y = "+string(input_param.y_axis(1))+" and Rotate "+string(input_param.deg)+" Degree";
+            name_file = "TransRotError_"+string(idx.shape)+".fig";
+        end
+        
         subplot(2,1,i)
         for j = idx.(idx.shape)
-%             data{j}
-            if input_param.sensor == 'ilemt'
-                semilogy(input_param.x_axis, data{j}, '.-', 'MarkerSize', 8)
-            else
-                semilogy(input_param.x_axis, data{j}, '.-', 'MarkerSize', 8)
-            end
+            semilogy(input_param.x_axis, data{j}, '.-', 'MarkerSize', 8)
             hold on
         end
         grid on
         
         title(title_detail)
-        ylabel(string(errorType{i})+' Error(m)') 
+        ylabel(string(error_unit{i})+' Error ('+error_unit{i+2}+')') 
         xlabel('X Position(cm)') 
         legend(idx.name)
         xlim(x_lim);
@@ -133,7 +134,6 @@ function xmoving_errorPlot(idx, data_trans, data_rot, input_param)
     end
 
     savefig(fullfile(input_param.directory, name_file))
-%     savefig(fullfile(input_param.directory, "TransRotError_"+string(idx.shape)+"_"+string(idx.carrier)+".fig"))
 end
 
 %% Sub-function for coupling magnitude plot

@@ -10,7 +10,7 @@ function [kim_cal] = cal2kim18 (calibration)
 % 
 % Also, the way the system gain is distributed is different.  They notionally
 % assume that the source moments are in physical units, that the sensor coils
-% measure physical units, and that the gain us rolled into the 'mu'.  But this
+% measure physical units, and that the gain is rolled into the 'mu'.  But this
 % scaling, while physically pleasing, seems purely notational.  We can use any
 % unit, including an arbitrary one we made up for this particular calibration.
 % Mu appears only in the radial distance.

@@ -32,17 +32,25 @@ function plotymoving(result_all, data, input_param)
         idx.name = data.MetalName((2:numel(subsets)));
     end
 
-    %% Create the x-moving plot    
-    carrier_choice = {'High', 'Low'};
-    data_ymoving = {subset_High_trans,subset_Low_trans, subset_High_rot,subset_Low_rot};
+    %% Create the y-moving plot    
+    % parameter for ilemt system
+    carrier_choice.ilemt = {'High', 'Low'};
+    data_ymoving.ilemt = {subset_High_trans,subset_Low_trans, subset_High_rot,subset_Low_rot};
+    % parameter for 3D Guidance system    
+    carrier_choice.Guidance = {'High'};
+    data_ymoving.Guidance = {subset_High_trans, subset_High_rot};   
     
     % Loop for doing all plots
-    for i = 1:2
+    for i = 1:size(carrier_choice.(input_param.sensor),2)
         % Identify carrier types
-        idx.carrier = carrier_choice{i};
-        
-        ymoving_errorPlot(idx, data_ymoving{i}, data_ymoving{i+2}, input_param)
-        ymoving_coupling(idx, result_all.(carrier_choice{i}).coupling, step, input_param)
+        idx.carrier = carrier_choice.(input_param.sensor){i};
+ 
+        if input_param.sensor == "ilemt"        
+            ymoving_errorPlot(idx, data_ymoving.(input_param.sensor){i}, data_ymoving.(input_param.sensor){i+2}, input_param)
+            ymoving_coupling(idx, result_all.(idx.carrier).coupling, step, input_param)
+        else
+            ymoving_errorPlot(idx, data_ymoving.(input_param.sensor){i}, data_ymoving.(input_param.sensor){i+1}, input_param)
+        end
     end 
 end
 
@@ -70,34 +78,45 @@ function ymoving_errorPlot(idx, data_trans, data_rot, input_param)
     limit.x_rot = 'auto';
     limit.y_rot = 'auto';     
 
-    errorType = {'Translation','Rotation'};
-    lim_axis = {limit.x_trans, limit.x_rot, limit.y_trans limit.y_rot}; 
+    lim_axis = {limit.x_trans, limit.x_rot, limit.y_trans limit.y_rot};
+    error_unit = {'Translation','Rotation','m','rad'};    
     
     figure;
     % Loop for plotting translational and rotational errors
     for i = 1:2
         x_lim = lim_axis{i};
         y_lim = lim_axis{i+2};
+        
         if i == 1 
             data = data_trans;
         else
             data = data_rot;
         end
+        
+        % Assign title name ame file name for each ilemt and 3D Guidance systems separately        
+        if input_param.sensor == "ilemt"
+            title_detail = "Solid Metals "+string(idx.carrier)+" Carrier Effects "+string(error_unit{i})+" Error on x = "+string(input_param.x_axis(1))+" and Rotate "+string(input_param.deg)+" Degree";
+            name_file = "TransRotError_Solid_"+string(idx.carrier)+".fig";
+        else
+            title_detail = "Solid Metals of 3DGuidance trakSTAR with "+string(error_unit{i})+" Error on x = "+string(input_param.x_axis(1))+" and Rotate "+string(input_param.deg)+" Degree";
+            name_file = "TransRotError_Solid.fig";
+        end      
+        
         subplot(2,1,i)  
         for j = idx.Solid
             semilogy(input_param.y_axis, data{j}, '.-', 'MarkerSize', 8)
             hold on
         end
         grid on
-        title("Solid Metals "+string(idx.carrier)+" Carrier Effects "+string(errorType{i})+" Error on x = "+string(input_param.x_axis(1))+" and Rotate "+string(input_param.deg)+" Degree") 
-        ylabel(string(errorType{i})+' Error(m)') 
+        title(title_detail) 
+        ylabel(string(error_unit{i})+' Error ('+error_unit{i+2}+')') 
         xlabel('Y Position(cm)') 
         legend(idx.name) 
         xlim(x_lim);
         ylim(y_lim);
     end
     
-    savefig(fullfile(input_param.directory, "TransRotError_Solid_"+string(idx.carrier)+".fig"))
+    savefig(fullfile(input_param.directory, name_file))
 end
 
 function ymoving_coupling(idx, data, step, input_param)

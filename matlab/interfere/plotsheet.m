@@ -33,15 +33,17 @@ function plotsheet(result_all, data, input_param)
     end
     
     %% Create the x-moving plot 
+    % parameter for ilemt system    
     carrier_choice.ilemt = {'High', 'Low'};
-    data_sheet.ilemt = {subset_High_trans,subset_Low_trans, subset_High_rot,subset_Low_rot};   
+    data_sheet.ilemt = {subset_High_trans,subset_Low_trans, subset_High_rot,subset_Low_rot};
+    % parameter for 3D Guidance system    
     carrier_choice.Guidance = {'High'};
     data_sheet.Guidance = {subset_High_trans, subset_High_rot};      
     
     
     % Loop for doing all plots    
- 
     for i = 1:size(carrier_choice.(input_param.sensor),2)
+        % Identify carrier types
         idx.carrier = carrier_choice.(input_param.sensor){i};
         
         if input_param.sensor == 'ilemt'
@@ -88,24 +90,26 @@ function sheet_errorPlot(idx, data_trans, data_rot, input_param)
     end
     
     lim_axis = {limit.x_trans, limit.x_rot, limit.y_trans limit.y_rot};
-    errorType = {'Translation','Rotation'};
+    error_unit = {'Translation','Rotation','m','rad'};  
 
     figure;
     % Loop for plotting translational and rotational errors
     for i = 1:2
         x_lim = lim_axis{i};
         y_lim = lim_axis{i+2};
+        
         if i == 1 
             data = data_trans;
         else
             data = data_rot;
         end
         
+        % Assign title name ame file name for each ilemt and 3D Guidance systems separately
         if input_param.sensor == "ilemt"
-            title_detail = "Four Sheet Metals "+string(idx.carrier)+" Carrier Effects "+string(errorType{i})+" Error on X=["+string(input_param.x_axis(1))+"..."+string(input_param.x_axis(end))+"] and Rotate "+string(input_param.deg)+" Degree";
+            title_detail = "Four Sheet Metals "+string(idx.carrier)+" Carrier Effects "+string(error_unit{i})+" Error on X=["+string(input_param.x_axis(1))+"..."+string(input_param.x_axis(end))+"] and Rotate "+string(input_param.deg)+" Degree";
             name_file = "TransRotError_sheet_"+string(idx.carrier)+".fig";
         else
-            title_detail = "Four Sheet Metals "+string(errorType{i})+" Error on X=["+string(input_param.x_axis(1))+"..."+string(input_param.x_axis(end))+"] and Rotate "+string(input_param.deg)+" Degree";
+            title_detail = "Four Sheet Metals of 3DGuidance trakSTAR with "+string(error_unit{i})+" Error on X=["+string(input_param.x_axis(1))+"..."+string(input_param.x_axis(end))+"] and Rotate "+string(input_param.deg)+" Degree";
             name_file = "TransRotError_sheet.fig";
         end
  
@@ -117,7 +121,7 @@ function sheet_errorPlot(idx, data_trans, data_rot, input_param)
 
         grid on
         title(title_detail)
-        ylabel(string(errorType{i})+' Error(m)') 
+        ylabel(string(error_unit{i})+' Error ('+error_unit{i+2}+')') 
         xlabel('X Position(cm)') 
         legend(idx.name)
         xlim(x_lim);

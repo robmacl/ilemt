@@ -1,6 +1,6 @@
 function [result_all, data] = ExtractData(fileDirectory, op_ishigh)  
-% Extract data from output files from ilemt system and do the validity check of 
-% the first and last data points. 
+% Extract data from output files and do the validity check of the first and last 
+% data points. 
 % 
 % Input arguments:
 % fileDirectory:
@@ -29,36 +29,37 @@ function [result_all, data] = ExtractData(fileDirectory, op_ishigh)
     % Specify the directory where the DAT file is located
     files = dir(fullfile(fileDirectory, '*.dat'));
     % Create a mapping rule to map numbers to metal names
-    metalMap = containers.Map({0, 1, 2, 3, 4, 5, 6}, {'Control', 'LC Steel', '416 SS', '304 SS', '6061 Al', 'Ti Grade 5', 'Copper'});
+    partMap = containers.Map({'on','off'}, {'Device on', 'Device off'});
+
     % Create an empty table
     data = table();
     
     %% Find the first number after a word using regular expression
-    pattern = '(hollow|solid|sheet|x5y0)(\d+)';
+    pattern = '(on|off)_(deg)([-]?\d+(\.)?(\d+)?)'; %(\d+)';
     
     for i = 1:numel(files)
         fileName = files(i).name;
-        
         % Use regular expressions to match
         tokens = regexp(fileName, pattern, 'tokens');
-            
+   
         if ~isempty(tokens)
             % Extract matching keywords and numbers
             match = tokens{1};
             keyword = match{1};
-            numericPart = str2double(match{2});
-    
+            deg_orientation = int64(str2double(match{3}));
+
             % Convert numbers to metal names using mapping rules
-            metalName = metalMap(numericPart);
+            partDescribe = partMap(keyword);
             
             % Add data to table
-            newRow = {fileName, keyword, metalName};
+            newRow = {fileName, partDescribe, deg_orientation};
             data = [data; newRow];
+
         end
     end
-    
+
     % Add column names to the table
-    data.Properties.VariableNames = {'FileName', 'MetalShape', 'MetalName'};
+    data.Properties.VariableNames = {'FileName', 'Motor_Status', 'Orientation'};
     % Display table
     if op_ishigh
         fprintf('\n****************************************************\n')
@@ -121,6 +122,7 @@ function [result_all, data] = ExtractData(fileDirectory, op_ishigh)
     
     i = 1;
     j = 1;
+    step = num_data(1);
     % count of loop
     count = 1;
 
@@ -132,17 +134,16 @@ function [result_all, data] = ExtractData(fileDirectory, op_ishigh)
         diff = pose_difference(resultArray(i,:), resultArray((i + step - 1),:));
         
         i = i + step;
-
         transVM = sqrt(sum(diff(1,1:3).^2, 2));
         rotVM = sqrt(sum(diff(1,4:6).^2, 2));
     
-        metalShape = data.MetalShape{count};
-        metalNum = data.MetalName{count};
+        HandpiecePart = data.Motor_Status{count};
+        orientationDeg = data.Orientation(count);
 
         count = count +1;
-
+        
         % Add new validity check to table
-        newVM = {metalShape, metalNum, transVM, rotVM};
+        newVM = {HandpiecePart, orientationDeg, transVM, rotVM};
         VM = [VM; newVM];
        
         diffVMResult = [diffVMResult; diff];
@@ -152,16 +153,15 @@ function [result_all, data] = ExtractData(fileDirectory, op_ishigh)
     end
 
     % Add column names to the table
-    VM.Properties.VariableNames = {'MetalShape', 'MetalNumber', 'Validity_Check_Value_of_Translation_Error', 'Validity_Check_Value_of_Rotation_Error'};
+    VM.Properties.VariableNames = {'NavioParts', 'Orientation', 'Validity_Check_Value_of_Translation_Error', 'Validity_Check_Value_of_Rotation_Error'};
     % Display VM table
     disp(VM);
 
-    savefilename = fileDirectory+'/example.xlsx';  
+    savefilename = fileDirectory+'\example.xlsx';  
     writetable(VM, savefilename);
     disp('Table has been written to Excel successfully.');
     %% Summary
     validityCheckTable = table(data{:, 2}, data{:,3}, transVMResult, rotVMResult, 'VariableNames', {'MetalShape', 'MetalName', 'Validity_Check_Translation_Error_Value', 'Validity_Check_Rotation_Error_Value'});
-    
     maxTrans = max(transVMResult);
     medTrans = median(transVMResult);
     
