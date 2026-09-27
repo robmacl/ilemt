@@ -31,7 +31,109 @@
 		<Item Name="read_raw_file.vi" Type="VI" URL="../system/read_raw_file.vi"/>
 		<Item Name="relative_and_absolute_ts.ctl" Type="VI" URL="../system/relative_and_absolute_ts.ctl"/>
 		<Item Name="levels_to_coupling.vi" Type="VI" URL="../processing/levels_to_coupling.vi"/>
-		<Item Name="Dependencies" Type="Dependencies"/>
+		<Item Name="Dependencies" Type="Dependencies">
+			<Item Name="vi.lib" Type="Folder">
+				<Item Name="Trim Whitespace.vi" Type="VI" URL="/&lt;vilib&gt;/Utility/error.llb/Trim Whitespace.vi"/>
+				<Item Name="whitespace.ctl" Type="VI" URL="/&lt;vilib&gt;/Utility/error.llb/whitespace.ctl"/>
+				<Item Name="Trim Whitespace One-Sided.vi" Type="VI" URL="/&lt;vilib&gt;/Utility/error.llb/Trim Whitespace One-Sided.vi"/>
+				<Item Name="NI_AALPro.lvlib" Type="Library" URL="/&lt;vilib&gt;/Analysis/NI_AALPro.lvlib"/>
+				<Item Name="NI_MABase.lvlib" Type="Library" URL="/&lt;vilib&gt;/measure/NI_MABase.lvlib"/>
+				<Item Name="NI_AALBase.lvlib" Type="Library" URL="/&lt;vilib&gt;/Analysis/NI_AALBase.lvlib"/>
+				<Item Name="Space Constant.vi" Type="VI" URL="/&lt;vilib&gt;/dlg_ctls.llb/Space Constant.vi"/>
+				<Item Name="Check if File or Folder Exists.vi" Type="VI" URL="/&lt;vilib&gt;/Utility/libraryn.llb/Check if File or Folder Exists.vi"/>
+				<Item Name="NI_FileType.lvlib" Type="Library" URL="/&lt;vilib&gt;/Utility/lvfile.llb/NI_FileType.lvlib"/>
+				<Item Name="Error Cluster From Error Code.vi" Type="VI" URL="/&lt;vilib&gt;/Utility/error.llb/Error Cluster From Error Code.vi"/>
+				<Item Name="NI_PackedLibraryUtility.lvlib" Type="Library" URL="/&lt;vilib&gt;/Utility/LVLibp/NI_PackedLibraryUtility.lvlib"/>
+				<Item Name="Read From Spreadsheet File.vi" Type="VI" URL="/&lt;vilib&gt;/Utility/file.llb/Read From Spreadsheet File.vi"/>
+				<Item Name="Read From Spreadsheet File (DBL).vi" Type="VI" URL="/&lt;vilib&gt;/Utility/file.llb/Read From Spreadsheet File (DBL).vi"/>
+				<Item Name="Read Lines From File.vi" Type="VI" URL="/&lt;vilib&gt;/Utility/file.llb/Read Lines From File.vi"/>
+				<Item Name="DialogType.ctl" Type="VI" URL="/&lt;vilib&gt;/Utility/error.llb/DialogType.ctl"/>
+				<Item Name="Open File+.vi" Type="VI" URL="/&lt;vilib&gt;/Utility/file.llb/Open File+.vi"/>
+				<Item Name="Read File+ (string).vi" Type="VI" URL="/&lt;vilib&gt;/Utility/file.llb/Read File+ (string).vi"/>
+				<Item Name="compatReadText.vi" Type="VI" URL="/&lt;vilib&gt;/_oldvers/_oldvers.llb/compatReadText.vi"/>
+				<Item Name="Close File+.vi" Type="VI" URL="/&lt;vilib&gt;/Utility/file.llb/Close File+.vi"/>
+				<Item Name="Find First Error.vi" Type="VI" URL="/&lt;vilib&gt;/Utility/error.llb/Find First Error.vi"/>
+				<Item Name="General Error Handler.vi" Type="VI" URL="/&lt;vilib&gt;/Utility/error.llb/General Error Handler.vi"/>
+				<Item Name="DialogTypeEnum.ctl" Type="VI" URL="/&lt;vilib&gt;/Utility/error.llb/DialogTypeEnum.ctl"/>
+				<Item Name="General Error Handler Core CORE.vi" Type="VI" URL="/&lt;vilib&gt;/Utility/error.llb/General Error Handler Core CORE.vi"/>
+				<Item Name="Check Special Tags.vi" Type="VI" URL="/&lt;vilib&gt;/Utility/error.llb/Check Special Tags.vi"/>
+				<Item Name="TagReturnType.ctl" Type="VI" URL="/&lt;vilib&gt;/Utility/error.llb/TagReturnType.ctl"/>
+				<Item Name="Set String Value.vi" Type="VI" URL="/&lt;vilib&gt;/Utility/error.llb/Set String Value.vi"/>
+				<Item Name="GetRTHostConnectedProp.vi" Type="VI" URL="/&lt;vilib&gt;/Utility/error.llb/GetRTHostConnectedProp.vi"/>
+				<Item Name="Error Code Database.vi" Type="VI" URL="/&lt;vilib&gt;/Utility/error.llb/Error Code Database.vi"/>
+				<Item Name="Format Message String.vi" Type="VI" URL="/&lt;vilib&gt;/Utility/error.llb/Format Message String.vi"/>
+				<Item Name="Find Tag.vi" Type="VI" URL="/&lt;vilib&gt;/Utility/error.llb/Find Tag.vi"/>
+				<Item Name="Search and Replace Pattern.vi" Type="VI" URL="/&lt;vilib&gt;/Utility/error.llb/Search and Replace Pattern.vi"/>
+				<Item Name="Set Bold Text.vi" Type="VI" URL="/&lt;vilib&gt;/Utility/error.llb/Set Bold Text.vi"/>
+				<Item Name="Details Display Dialog.vi" Type="VI" URL="/&lt;vilib&gt;/Utility/error.llb/Details Display Dialog.vi"/>
+				<Item Name="ErrWarn.ctl" Type="VI" URL="/&lt;vilib&gt;/Utility/error.llb/ErrWarn.ctl"/>
+				<Item Name="eventvkey.ctl" Type="VI" URL="/&lt;vilib&gt;/event_ctls.llb/eventvkey.ctl"/>
+				<Item Name="Clear Errors.vi" Type="VI" URL="/&lt;vilib&gt;/Utility/error.llb/Clear Errors.vi"/>
+				<Item Name="Not Found Dialog.vi" Type="VI" URL="/&lt;vilib&gt;/Utility/error.llb/Not Found Dialog.vi"/>
+				<Item Name="Three Button Dialog.vi" Type="VI" URL="/&lt;vilib&gt;/Utility/error.llb/Three Button Dialog.vi"/>
+				<Item Name="Three Button Dialog CORE.vi" Type="VI" URL="/&lt;vilib&gt;/Utility/error.llb/Three Button Dialog CORE.vi"/>
+				<Item Name="LVRectTypeDef.ctl" Type="VI" URL="/&lt;vilib&gt;/Utility/miscctls.llb/LVRectTypeDef.ctl"/>
+				<Item Name="Longest Line Length in Pixels.vi" Type="VI" URL="/&lt;vilib&gt;/Utility/error.llb/Longest Line Length in Pixels.vi"/>
+				<Item Name="Convert property node font to graphics font.vi" Type="VI" URL="/&lt;vilib&gt;/Utility/error.llb/Convert property node font to graphics font.vi"/>
+				<Item Name="Get Text Rect.vi" Type="VI" URL="/&lt;vilib&gt;/picture/picture.llb/Get Text Rect.vi"/>
+				<Item Name="Get String Text Bounds.vi" Type="VI" URL="/&lt;vilib&gt;/Utility/error.llb/Get String Text Bounds.vi"/>
+				<Item Name="LVBoundsTypeDef.ctl" Type="VI" URL="/&lt;vilib&gt;/Utility/miscctls.llb/LVBoundsTypeDef.ctl"/>
+				<Item Name="BuildHelpPath.vi" Type="VI" URL="/&lt;vilib&gt;/Utility/error.llb/BuildHelpPath.vi"/>
+				<Item Name="GetHelpDir.vi" Type="VI" URL="/&lt;vilib&gt;/Utility/error.llb/GetHelpDir.vi"/>
+				<Item Name="Read From Spreadsheet File (I64).vi" Type="VI" URL="/&lt;vilib&gt;/Utility/file.llb/Read From Spreadsheet File (I64).vi"/>
+				<Item Name="Read From Spreadsheet File (string).vi" Type="VI" URL="/&lt;vilib&gt;/Utility/file.llb/Read From Spreadsheet File (string).vi"/>
+				<Item Name="Simple Error Handler.vi" Type="VI" URL="/&lt;vilib&gt;/Utility/error.llb/Simple Error Handler.vi"/>
+			</Item>
+			<Item Name="modulation_info.ctl" Type="VI" URL="../processing/modulation_info.ctl"/>
+			<Item Name="carrier_amplitudes.ctl" Type="VI" URL="../processing/carrier_amplitudes.ctl"/>
+			<Item Name="card_carrier_amplitudes.ctl" Type="VI" URL="../processing/card_carrier_amplitudes.ctl"/>
+			<Item Name="6dof_calibration.ctl" Type="VI" URL="../calibration/6dof_calibration.ctl"/>
+			<Item Name="logger_queue.vi" Type="VI" URL="../calibration/logger_queue.vi"/>
+			<Item Name="complex_to_string.vi" Type="VI" URL="../calibration/complex_to_string.vi"/>
+			<Item Name="lvanlys.dll" Type="Document" URL="/&lt;resource&gt;/lvanlys.dll"/>
+			<Item Name="ilemt_config.ctl" Type="VI" URL="../processing/ilemt_config.ctl"/>
+			<Item Name="IO_params.ctl" Type="VI" URL="../system/IO_params.ctl"/>
+			<Item Name="stft_params.ctl" Type="VI" URL="../processing/stft_params.ctl"/>
+			<Item Name="filter_params.ctl" Type="VI" URL="../processing/filter_params.ctl"/>
+			<Item Name="detrend_mode.ctl" Type="VI" URL="../processing/detrend_mode.ctl"/>
+			<Item Name="gen_carrier_channels.vi" Type="VI" URL="../processing/gen_carrier_channels.vi"/>
+			<Item Name="time_shift.vi" Type="VI" URL="../processing/time_shift.vi"/>
+			<Item Name="CWrapATC3DG_Setting.vi" Type="VI" URL="../../../../../../Desktop/Micron Nerve Hook/Main_Force_Track_v2&amp;4_LV14-20220215T002333Z-001/Main_Force_Track_v2_4_LV14/NDI tracker/ATCtrakstar labview_kiwi/CWrapATC3DG_Setting.vi"/>
+			<Item Name="systemCfg.ctl" Type="VI" URL="../../../../../../Desktop/Micron Nerve Hook/Main_Force_Track_v2&amp;4_LV14-20220215T002333Z-001/Main_Force_Track_v2_4_LV14/NDI tracker/ATCtrakstar labview_kiwi/CWrapATC3DG.llb/systemCfg.ctl"/>
+			<Item Name="resetOnInit.vi" Type="VI" URL="../../../../../../Desktop/Micron Nerve Hook/Main_Force_Track_v2&amp;4_LV14-20220215T002333Z-001/Main_Force_Track_v2_4_LV14/NDI tracker/ATCtrakstar labview_kiwi/CWrapATC3DG.llb/resetOnInit.vi"/>
+			<Item Name="CWrapATC3DG.dll" Type="Document" URL="../../../../../../Desktop/Micron Nerve Hook/Main_Force_Track_v2&amp;4_LV14-20220215T002333Z-001/Main_Force_Track_v2_4_LV14/NDI tracker/ATCtrakstar labview_kiwi/CWrapATC3DG-master/CWrapATC3DG-master/Release/CWrapATC3DG.dll"/>
+			<Item Name="errorCode2errorBus.vi" Type="VI" URL="../../../../../../Desktop/Micron Nerve Hook/Main_Force_Track_v2&amp;4_LV14-20220215T002333Z-001/Main_Force_Track_v2_4_LV14/NDI tracker/ATCtrakstar labview_kiwi/ATC3DG.llb/errorCode2errorBus.vi"/>
+			<Item Name="initializeAscension.vi" Type="VI" URL="../../../../../../Desktop/Micron Nerve Hook/Main_Force_Track_v2&amp;4_LV14-20220215T002333Z-001/Main_Force_Track_v2_4_LV14/NDI tracker/ATCtrakstar labview_kiwi/CWrapATC3DG.llb/initializeAscension.vi"/>
+			<Item Name="setMetric.vi" Type="VI" URL="../../../../../../Desktop/Micron Nerve Hook/Main_Force_Track_v2&amp;4_LV14-20220215T002333Z-001/Main_Force_Track_v2_4_LV14/NDI tracker/ATCtrakstar labview_kiwi/CWrapATC3DG.llb/setMetric.vi"/>
+			<Item Name="setMeasurementRate.vi" Type="VI" URL="../../../../../../Desktop/Micron Nerve Hook/Main_Force_Track_v2&amp;4_LV14-20220215T002333Z-001/Main_Force_Track_v2_4_LV14/NDI tracker/ATCtrakstar labview_kiwi/CWrapATC3DG/setMeasurementRate.vi"/>
+			<Item Name="getSystemConfiguration.vi" Type="VI" URL="../../../../../../Desktop/Micron Nerve Hook/Main_Force_Track_v2&amp;4_LV14-20220215T002333Z-001/Main_Force_Track_v2_4_LV14/NDI tracker/ATCtrakstar labview_kiwi/CWrapATC3DG.llb/getSystemConfiguration.vi"/>
+			<Item Name="setSensorAngleAlign.vi" Type="VI" URL="../../../../../../Desktop/Micron Nerve Hook/Main_Force_Track_v2&amp;4_LV14-20220215T002333Z-001/Main_Force_Track_v2_4_LV14/NDI tracker/ATCtrakstar labview_kiwi/CWrapATC3DG.llb/setSensorAngleAlign.vi"/>
+			<Item Name="getSensorAngleAlign.vi" Type="VI" URL="../../../../../../Desktop/Micron Nerve Hook/Main_Force_Track_v2&amp;4_LV14-20220215T002333Z-001/Main_Force_Track_v2_4_LV14/NDI tracker/ATCtrakstar labview_kiwi/CWrapATC3DG.llb/getSensorAngleAlign.vi"/>
+			<Item Name="getSensorXYZOffset.vi" Type="VI" URL="../../../../../../Desktop/Micron Nerve Hook/Main_Force_Track_v2&amp;4_LV14-20220215T002333Z-001/Main_Force_Track_v2_4_LV14/NDI tracker/ATCtrakstar labview_kiwi/CWrapATC3DG.llb/getSensorXYZOffset.vi"/>
+			<Item Name="setTransmiterAngleAlign.vi" Type="VI" URL="../../../../../../Desktop/Micron Nerve Hook/Main_Force_Track_v2&amp;4_LV14-20220215T002333Z-001/Main_Force_Track_v2_4_LV14/NDI tracker/ATCtrakstar labview_kiwi/CWrapATC3DG.llb/setTransmiterAngleAlign.vi"/>
+			<Item Name="getTransmitterAngleAlign.vi" Type="VI" URL="../../../../../../Desktop/Micron Nerve Hook/Main_Force_Track_v2&amp;4_LV14-20220215T002333Z-001/Main_Force_Track_v2_4_LV14/NDI tracker/ATCtrakstar labview_kiwi/CWrapATC3DG.llb/getTransmitterAngleAlign.vi"/>
+			<Item Name="getFilterAlphaAdaptive.vi" Type="VI" URL="../../../../../../Desktop/Micron Nerve Hook/Main_Force_Track_v2&amp;4_LV14-20220215T002333Z-001/Main_Force_Track_v2_4_LV14/NDI tracker/ATCtrakstar labview_kiwi/CWrapATC3DG.llb/getFilterAlphaAdaptive.vi"/>
+			<Item Name="getFilterDCAdaptive.vi" Type="VI" URL="../../../../../../Desktop/Micron Nerve Hook/Main_Force_Track_v2&amp;4_LV14-20220215T002333Z-001/Main_Force_Track_v2_4_LV14/NDI tracker/ATCtrakstar labview_kiwi/CWrapATC3DG.llb/getFilterDCAdaptive.vi"/>
+			<Item Name="setFilterACNarrowNotch.vi" Type="VI" URL="../../../../../../Desktop/Micron Nerve Hook/Main_Force_Track_v2&amp;4_LV14-20220215T002333Z-001/Main_Force_Track_v2_4_LV14/NDI tracker/ATCtrakstar labview_kiwi/CWrapATC3DG.llb/setFilterACNarrowNotch.vi"/>
+			<Item Name="getFilterACNarrowNotch.vi" Type="VI" URL="../../../../../../Desktop/Micron Nerve Hook/Main_Force_Track_v2&amp;4_LV14-20220215T002333Z-001/Main_Force_Track_v2_4_LV14/NDI tracker/ATCtrakstar labview_kiwi/CWrapATC3DG.llb/getFilterACNarrowNotch.vi"/>
+			<Item Name="setFiterACWideNotch.vi" Type="VI" URL="../../../../../../Desktop/Micron Nerve Hook/Main_Force_Track_v2&amp;4_LV14-20220215T002333Z-001/Main_Force_Track_v2_4_LV14/NDI tracker/ATCtrakstar labview_kiwi/CWrapATC3DG.llb/setFiterACWideNotch.vi"/>
+			<Item Name="getFilterACWideNotch.vi" Type="VI" URL="../../../../../../Desktop/Micron Nerve Hook/Main_Force_Track_v2&amp;4_LV14-20220215T002333Z-001/Main_Force_Track_v2_4_LV14/NDI tracker/ATCtrakstar labview_kiwi/CWrapATC3DG.llb/getFilterACWideNotch.vi"/>
+			<Item Name="setSensorDataFormat.vi" Type="VI" URL="../../../../../../Desktop/Micron Nerve Hook/Main_Force_Track_v2&amp;4_LV14-20220215T002333Z-001/Main_Force_Track_v2_4_LV14/NDI tracker/ATCtrakstar labview_kiwi/CWrapATC3DG.llb/setSensorDataFormat.vi"/>
+			<Item Name="setSelectedTransmitter.vi" Type="VI" URL="../../../../../../Desktop/Micron Nerve Hook/Main_Force_Track_v2&amp;4_LV14-20220215T002333Z-001/Main_Force_Track_v2_4_LV14/NDI tracker/ATCtrakstar labview_kiwi/CWrapATC3DG.llb/setSelectedTransmitter.vi"/>
+			<Item Name="move_to.vi" Type="VI" URL="../../motion/client/move_to.vi"/>
+			<Item Name="motion_command.ctl" Type="VI" URL="../../motion/server/motion_command.ctl"/>
+			<Item Name="Motion status.vi" Type="VI" URL="../../motion/client/Motion status.vi"/>
+			<Item Name="motion_status.ctl" Type="VI" URL="../../motion/motion_status.ctl"/>
+			<Item Name="motion_variables.vi" Type="VI" URL="../../motion/client/motion_variables.vi"/>
+			<Item Name="motion_variables.ctl" Type="VI" URL="../../motion/client/motion_variables.ctl"/>
+			<Item Name="Motion command.vi" Type="VI" URL="../../motion/client/Motion command.vi"/>
+			<Item Name="getAsynchronousSensorPositionAngles.vi" Type="VI" URL="../../../../../../Desktop/Micron Nerve Hook/Main_Force_Track_v2&amp;4_LV14-20220215T002333Z-001/Main_Force_Track_v2_4_LV14/NDI tracker/ATCtrakstar labview_kiwi/CWrapATC3DG.llb/getAsynchronousSensorPositionAngles.vi"/>
+			<Item Name="averaged_asap_signals.vi" Type="VI" URL="../../micron/labview/calibration/averaged_asap_signals.vi"/>
+			<Item Name="read_raw_record.vi" Type="VI" URL="../system/read_raw_record.vi"/>
+			<Item Name="high_carrier_amplitudes.ctl" Type="VI" URL="../processing/high_carrier_amplitudes.ctl"/>
+			<Item Name="on_axis_coupling.vi" Type="VI" URL="../processing/on_axis_coupling.vi"/>
+			<Item Name="phase_correct_coupling.vi" Type="VI" URL="../processing/phase_correct_coupling.vi"/>
+		</Item>
 		<Item Name="Build Specifications" Type="Build"/>
 	</Item>
 </Project>
