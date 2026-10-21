@@ -21,7 +21,9 @@ function [motions, couplings, file_map] = read_cal_data (options)
 %     motion).  The poses are in vector2tr format, units (mm, degree).  We can
 %     roll the sensor fixture motion into stage motion because we force the
 %     null pose of the XYZRz linkage to be identical to the null pose of the
-%     sensor fixture by the Rz alignment procedure in the stage setup.
+%     sensor fixture by the Rz alignment procedure in the stage setup.  The
+%     stage motion is vector2tr(stage) * vector2tr(sensor fixture), converted
+%     back to a vector.
 %
 % couplings(3, 3, n): 
 %     This is complex so that we can potentially remove hardware
@@ -60,7 +62,14 @@ for f_ix = 1:length(files)
   if (options.compensate_stage)
     stage_mo = compensate_stage(stage_mo);
   end
-  motions1(:, 7:12) = motions1(:, 7:12) + stage_mo;
+  % The sensor fixture is carried by the stage, so compose it after the stage
+  % motion.  This used to add the Euler angles, which is equivalent only when
+  % the stage rotation is Rz (the outermost Euler angle), and is wrong for Ry
+  % stage motion.
+  se_fix_tr = vector2tr(fix_motions(7:12));
+  for ix = 1:size(stage_mo, 1)
+    motions1(ix, 7:12) = tr2vector(vector2tr(stage_mo(ix, :)) * se_fix_tr)';
+  end
   motions1(:, 13:18) = stage_mo;
   motions_c{end+1} = motions1;
 

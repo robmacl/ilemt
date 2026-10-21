@@ -38,11 +38,23 @@ fprintf(1, '%.5f \n', cal.q_sensor_distance);
 end
 
 function [] = print_fix (wot, sf)
+% Print a fixture transform [x y z rotvec] as translation (mm) and rotation
+% angle (degrees) about a unit axis.  The rotation vector is canonicalized so
+% that the angle is in [0, 180].
   if (any(sf))
-    fprintf(1, '%s fix: [', wot);
-    for ix = 1:length(sf)
-      fprintf(1, '%.5f ', sf(ix));
+    angle = norm(sf(4:6));
+    if (angle < 1e-12)
+      axis = [0 0 0];
+    else
+      axis = sf(4:6) / angle;
     end
-    fprintf(1, ']\n');
+    angle = mod(angle, 2*pi);
+    % Tolerance so that an exact 180 degree rotation keeps its axis sign.
+    if (angle > pi + 1e-9)
+      angle = 2*pi - angle;
+      axis = -axis;
+    end
+    fprintf(1, '%-6s fix: trans [%8.3f %8.3f %8.3f] mm, rot %8.3f deg about [%7.4f %7.4f %7.4f]\n', ...
+            wot, sf(1:3) * 1e3, angle * 180/pi, axis);
   end
 end

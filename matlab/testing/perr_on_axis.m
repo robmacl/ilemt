@@ -48,9 +48,10 @@ function [res] = perr_on_axis (perr, options)
     XYZRz_mo = perr.motion_poses(ix, 13:18);
     % Stage motion composed with sensor fixture.
     stage_mo = perr.motion_poses(ix, 7:12);
-    % Sensor fixture motion only.  Inverse transforms vectors into the sensor
-    % fixture coordinates.
-    se_fix_tr_inv = inv(vector2tr(stage_mo - XYZRz_mo));
+    % Sensor fixture motion only (stage_mo is XYZRz_mo composed with it, see
+    % read_cal_data).  Inverse transforms vectors into the sensor fixture
+    % coordinates.
+    se_fix_tr_inv = inv(vector2tr(XYZRz_mo) \ vector2tr(stage_mo));
     XYZRz_po = trans2pose(vector2tr(XYZRz_mo));
     % rotate the rotation (vector) by the (fixture) rotation, also converting to
     % degrees/mm.

@@ -7,7 +7,7 @@ function make_ilemt_mesh (out_file, planes, spacing, rot_steps, rot_spacing, rot
 %
 % Optionally, the entire mesh may be repeated at several rotational
 % steps.  rot_steps (default 1), rot_spacing (degrees, default 45),
-% rot_axis 1..3 for Rx Ry Rx, default 3.
+% rot_axis 1..3 for Rx Ry Rz, default 3.
 %
 % for example:
 %    make_ilemt_mesh('foo.dat', 5, 20)
