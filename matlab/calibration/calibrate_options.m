@@ -307,7 +307,9 @@ if (isempty(options.in_files))
       end
     end
   end
-  if (isempty(ifiles))
+  % For check_poses() the test files may instead be set in
+  % local_check_options.m, so check_poses_options() does the check.
+  if (isempty(ifiles) && ~strcmp(options.cal_mode, 'check_poses'))
     error('No input files found?');
   end
   options.in_files = ifiles;

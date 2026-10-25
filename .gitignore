@@ -2,3 +2,4 @@
 /matlab/testing/*.txt~
 *.txt~
 /matlab/calibration/*.m~
+/tools/claude_bridge/exchange/

@@ -103,6 +103,13 @@ logged pose behaves as translation first, then `rotz*roty*rotx` (matching
 tilted Ry axis can't be represented and would show up as residue. Rz has a
 ~40 cm lever arm to the sensor and probably won't be used.
 
+`check_poses()` there uses `local_check_options.m`, which checks against the
+calibration data itself because there is no separate test data yet. Result:
+0.20 mm RMS / 0.50 mm max position, 6.5 mrad RMS / 15 mrad max orientation,
+with no linear correction. The `'check_poses'` cal_mode's file defaults
+(soYoutZup, 'ld') are for the old setup. If nothing matches,
+`options.in_files` must be set in local_check_options.m.
+
 In the data dir: `local_cal_options.m` and `bootstrap_smol.m`. The bootstrap
 builds `output/base_smol.mat` from that nominal geometry, then runs a
 concentric and then a dipole calibration. Call `bootstrap_smol()`, or
@@ -130,6 +137,24 @@ translation sign and the Ry sign). This data can't tell which sensor channel
 is wrong, so use the freehand sign test. For now, local_cal_options.m sets
 `source_signs` and `sensor_signs` to `[1 -1 1]` for `_smol.dat`. That undoes the
 mirror: all coil gains come out positive, with an identical residue.
+
+# Shared MATLAB session (preferred)
+
+When the user has run `claude_bridge_start` in their desktop MATLAB (see
+tools/claude_bridge/README.md), use `tools/claude_bridge/mlrun` to run commands in
+that session. Output is shared both ways, and so are the workspace, pool,
+figures and history. Use `mlrun -l` to see what the user has been doing.
+Check with `mlrun -t 5 '1;'`. Exit 2 with "still queued" means the bridge
+isn't running or MATLAB is busy.
+- Commands run in the user's base workspace and current directory: don't
+  `clear`, `cd`, or close their figures without saying so.
+- Use single-quoted strings (old code assumes char arrays).
+- For long runs use `-t` and run_in_background, or resume with `mlrun -r <id>`.
+- After editing a .m file from outside MATLAB, the session may keep running
+  the cached old version. `clear <function>` before rerunning (this happened
+  with calibrate_options).
+- The user normally has `dbstop if error` on. An error in a bridge command
+  then stops their MATLAB at `K>>`, and mlrun times out until they continue.
 
 # Running Matlab from the shell
 

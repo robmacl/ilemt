@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+# Run MATLAB code in the desktop session running claude_bridge_start, and
+# print its Command Window output.
+#
+#   mlrun [-t seconds] 'code'      run code (default wait 600 s)
+#   mlrun [-t seconds] - < file    code from stdin
+#   mlrun -r cmd_id [-t seconds]   keep waiting for an earlier command
+#   mlrun -l [lines]               tail the session log (default 40 lines)
+#
+# Exit status: 0 ok, 1 MATLAB error, 2 timed out (command still queued or
+# running; resume with -r).
+EX="${CLAUDE_BRIDGE_EX:-$(cd "$(dirname "$0")" && pwd)/exchange}"
+timeout=600
+id=""
+
+while getopts "t:r:l" opt; do
+  case $opt in
+    t) timeout=$OPTARG ;;
+    r) id=$OPTARG ;;
+    l) shift $((OPTIND - 1)); tail -n "${1:-40}" "$EX/session.log" | sed 's#</\?strong>##g'; exit 0 ;;
+    *) exit 64 ;;
+  esac
+done
+shift $((OPTIND - 1))
+
+if [ -z "$id" ]; then
+  if [ "$1" = "-" ]; then
+    code=$(cat)
+  else
+    code="$1"
+  fi
+  if [ -z "$code" ]; then
+    echo "mlrun: no code given" >&2
+    exit 64
+  fi
+  id="cmd_$(date +%Y%m%d_%H%M%S)_$(printf '%05d' $RANDOM)"
+  printf '%s\n' "$code" > "$EX/inbox/$id.tmp"
+  mv "$EX/inbox/$id.tmp" "$EX/inbox/$id.m"
+fi
+
+done_file="$EX/done/$id.txt"
+deadline=$((SECONDS + timeout))
+until [ -f "$done_file" ]; do
+  if [ $SECONDS -ge $deadline ]; then
+    if [ -f "$EX/inbox/$id.m" ]; then
+      echo "mlrun: $id still queued (is the bridge running and MATLAB idle?)" >&2
+    else
+      echo "mlrun: $id still running; resume with: mlrun -r $id" >&2
+    fi
+    exit 2
+  fi
+  sleep 0.3
+done
+
+read -r status start end elapsed < "$done_file"
+# The desktop logs bold table headers as <strong>...</strong>.
+tail -c +$((start + 1)) "$EX/session.log" | head -c $((end - start)) | sed 's#</\?strong>##g'
+[ "$status" = ok ]

@@ -135,6 +135,12 @@ function [options] = check_poses_options (cal_options, key_value)
     end
   end
 
+  if (isempty(options.in_files))
+    error(['No input files.  Either have files matching the ''check_poses'' ' ...
+           'cal_mode in calibrate_options(), or set options.in_files in ' ...
+           'local_check_options.m.']);
+  end
+
   global last_calibration;
 
   if (isempty(options.cal_file))
