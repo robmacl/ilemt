@@ -47,7 +47,8 @@ couplings_c = {};
 for f_ix = 1:length(files)
   file1 = files{f_ix};
   % Parse fixtures out of the file name
-  [tokens, ~] = regexp(file1, 'so(.*)_se(.*)_(.*)\.dat', 'tokens', 'match');
+  % Non-greedy, so the pattern part can contain '_' (eg. _ld_deux.dat).
+  [tokens, ~] = regexp(file1, 'so(.*?)_se(.*?)_(.*)\.dat', 'tokens', 'match');
   fix_motions = zeros(1, 12);
   if (~isempty(tokens))
     fix_motions(4:6) = fix_lookup(tokens{1}{1}, false);

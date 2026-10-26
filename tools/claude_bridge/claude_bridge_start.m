@@ -84,6 +84,11 @@ function tick (t, ~)
     evalin('base', cmd);
   catch err
     status = 'error';
+    % The command may have turned the diary off (eg. run_tests), so make
+    % sure the error report gets logged.
+    if (strcmp(get(0, 'Diary'), 'off'))
+      diary(st.session);
+    end
     % Drop the bridge and timer frames from the end of the stack trace.
     report = getReport(err, 'extended', 'hyperlinks', 'off');
     report = regexprep(report, '^Error using claude_bridge_start>tick \(line \d+\)', 'Error');
@@ -95,6 +100,9 @@ function tick (t, ~)
     fprintf(2, '%s\n', strtrim(report));
   end
   elapsed = toc(t0);
+  if (strcmp(get(0, 'Diary'), 'off'))
+    diary(st.session);
+  end
   fprintf(1, '[claude] done (%s, %.1f s)\n', status, elapsed);
   end_byte = take_diary(st.session);
 

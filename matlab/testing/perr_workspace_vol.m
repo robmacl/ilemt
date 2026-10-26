@@ -51,9 +51,15 @@ function perr_wv1 (perr, options, desired, errors, exaggerate, what, ...
         'LineWidth', 1);
   grid on;
   daspect([1,1,1]);
-  xlabel(sprintf('x (%s)', unit1));
-  ylabel(sprintf('y (%s)', unit1));
-  zlabel(sprintf('z (%s)', unit1));
+  % The axes are the desired pose (unit2), the error vectors are unit1.
+  % unit2 is empty in the translation-only plot.
+  pos_unit = unit2;
+  if (isempty(pos_unit))
+    pos_unit = unit1;
+  end
+  xlabel(sprintf('x (%s)', pos_unit));
+  ylabel(sprintf('y (%s)', pos_unit));
+  zlabel(sprintf('z (%s)', pos_unit));
   if (~isempty(unit2))
     title(sprintf('%s errors (%s/%s %dX)', what, unit1, unit2, exaggerate));
   end
