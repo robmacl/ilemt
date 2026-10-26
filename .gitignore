@@ -3,3 +3,6 @@
 *.txt~
 /matlab/calibration/*.m~
 /tools/claude_bridge/exchange/
+*.asv
+*.m~
+.*.UserState/
