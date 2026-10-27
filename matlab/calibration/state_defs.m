@@ -2,7 +2,7 @@
 %optimization state vector.
 
 %number of element in the state vector
-num_state = 82;
+num_state = 100;
 
 %dipole source position
 source_x_pos_slice = 1:3;
@@ -66,6 +66,27 @@ stage_fixture_orientation_slice = 79:81;
 % source Z moment is gain * [0 0 1]'
 source_z_gain = 82;
 
+% Stage rotation axis alignment wrt. the stage translation axes, a rotation
+% vector.  See motion_transforms().  The component about the rotation axis
+% itself is redundant with the sensor fixture, so freeze it (eg. y_ax_fix for
+% the Ry stage).
+axis_fixture_slice = 83:85;
+
+% Octupole (finite coil size) parameter s for each source and sensor coil
+% (X Y Z), in mm^2.  See forward_kinematics().
+oct_source_slice = 86:88;
+oct_sensor_slice = 89:91;
+
+% Stage translation scale errors for stage X Y Z, per mille.  See
+% motion_transforms().
+stage_scale_slice = 92:94;
+
+% Octupole transverse anisotropy t for each source and sensor coil, in mm^2:
+% the difference of the winding variances along the two transverse axes.
+% See forward_kinematics().
+aniso_source_slice = 95:97;
+aniso_sensor_slice = 98:100;
+
 
 % Cell array state_parts{n, 2}, a dictionary of state parts.  Each row is:
 %    {<string name> <state index vector>}
@@ -103,6 +124,23 @@ state_parts = {
     'x_se_fix' [sensor_fixture_pos_slice(1)]
     'y_se_fix' [sensor_fixture_pos_slice(2)]
     'z_se_fix' [sensor_fixture_pos_slice(3)]
+
+    'ax_fix' [axis_fixture_slice]
+    'x_ax_fix' [axis_fixture_slice(1)]
+    'y_ax_fix' [axis_fixture_slice(2)]
+    'z_ax_fix' [axis_fixture_slice(3)]
+
+    'st_scale' [stage_scale_slice]
+    'x_st_scale' [stage_scale_slice(1)]
+    'y_st_scale' [stage_scale_slice(2)]
+    'z_st_scale' [stage_scale_slice(3)]
+
+% Octupole (finite coil size), one parameter per coil:
+    'o_so' [oct_source_slice]
+    'o_se' [oct_sensor_slice]
+% Octupole transverse anisotropy, one parameter per coil:
+    'a_so' [aniso_source_slice]
+    'a_se' [aniso_sensor_slice]
 
 
 % Quadrupole:

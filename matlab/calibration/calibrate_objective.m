@@ -57,55 +57,46 @@ function [residue, pred_coupling] = calibrate_objective ...
   se_fixture = pose2trans([state(sensor_fixture_pos_slice), ...
                       state(sensor_fixture_orientation_slice)]);
 
-  % Preallocate results
-  residue = zeros(size(couplings));
-  pred_coupling = zeros(size(couplings));
+  % Calibration struct for the forward model, and the stage rotation axis
+  % alignment (see motion_transforms()).
+  calibration = state2calibration(state, options);
 
-  clear pc_cell;
-  parfor (ix = 1:npoints)
-    % Convert motion_poses(ix, :) to transform matrices.  Some of the
-    % motion is from manually positioned mechanical "fixtures".  This is
-    % part of the known motion, and must not be confused with our unknown
-    % "fixture transforms".  For clarity, I am using "motion" to describe
-    % the known motion, regardless of how it is mechanically created.
-    %
-    % Motion of the source via manual rotation
-    so_motion = vector2tr(motion_poses(ix, 1:6)); 
-    % Motion of the sensor via the stage and manual rotation.
-    se_motion = vector2tr(motion_poses(ix, 7:12)); 
+  % Convert motion_poses to transform matrices.  Some of the motion is from
+  % manually positioned mechanical "fixtures".  This is part of the known
+  % motion, and must not be confused with our unknown "fixture transforms".
+  % For clarity, I am using "motion" to describe the known motion, regardless
+  % of how it is mechanically created.  so_motion is the motion of the source
+  % via manual rotation, and se_motion is the motion of the sensor via the
+  % stage and manual rotation.
+  [so_motion, se_motion] = ...
+      motion_transforms(motion_poses, calibration.axis_fixture, ...
+                        calibration.stage_scale);
 
-    % P is the desired pose measurement of the tracker at this datapoint,
-    % expressed as the linear homogenous transform from the source to sensor
-    % coordinates.
-    % 
-    % so_motion and se_motion are known from the input data, while the
-    % optimization solves for the three XXX_fixture poses.
-    % 
-    % From the viewpoint of robotic manipulation, this is a sequential
-    % kinematic chain where some links (so_motion and se_motion) vary
-    % during calibration, but have known values, while the fixture poses are
-    % links with unknown kinematic transforms, but that are held constant
-    % across the input data.
-    P = so_fixture * so_motion * st_fixture * se_motion * se_fixture;
-    
-    % Calculation of coupling matrix predicted by state and pose.
-    calibration = state2calibration(state, options);
-    pc_cell{ix} = forward_kinematics(P, calibration);
-  end
-  
-  for (ix = 1:npoints)
-    pred_coupling(:,:,ix) = pc_cell{ix};
-  end
+  % P is the desired pose measurement of the tracker at each datapoint,
+  % expressed as the linear homogenous transform from the source to sensor
+  % coordinates:
+  %     P = so_fixture * so_motion * st_fixture * se_motion * se_fixture
+  % 
+  % so_motion and se_motion are known from the input data, while the
+  % optimization solves for the three XXX_fixture poses.
+  % 
+  % From the viewpoint of robotic manipulation, this is a sequential
+  % kinematic chain where some links (so_motion and se_motion) vary
+  % during calibration, but have known values, while the fixture poses are
+  % links with unknown kinematic transforms, but that are held constant
+  % across the input data.
+  P = pagemtimes(pagemtimes(pagemtimes(pagemtimes( ...
+      so_fixture, so_motion), st_fixture), se_motion), se_fixture);
 
+  % Coupling matrices predicted by state and pose.
+  pred_coupling = forward_kinematics(P, calibration);
+
+  % Mismatch between measured coupling and predicted coupling
   r_couplings = real_coupling(couplings);
-  for (ix = 1:npoints)
-    % Mismatch between measured coupling and predicted coupling
-    coupling1 = r_couplings(:, :, ix);
-    if (options.normalize)
-      da_norm = norm(coupling1);
-    else
-      da_norm = 1;
-    end
-    residue(:, :, ix) = (coupling1 - pred_coupling(:, :, ix)) / da_norm;
+  if (options.normalize)
+    da_norm = pagenorm(r_couplings);
+  else
+    da_norm = 1;
   end
+  residue = (r_couplings - pred_coupling) ./ da_norm;
 end

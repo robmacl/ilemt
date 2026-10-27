@@ -31,7 +31,7 @@ function [state_err, perr] = find_pose_errors_objective(state, perr_in, options)
 
   so_measured = perr.measured_source;
   so_desired = fk_pose_calculation(perr.motion_poses, perr.so_fix, ...
-                                   perr.st_fix, perr.se_fix);
+                                   perr.st_fix, perr.se_fix, perr.ax_fix, perr.st_scale);
 
   % Finding errors by perr.measured - perr.desired breaks down badly when
   % the total rotation is near 180 degrees, causing angle wrapping.  So

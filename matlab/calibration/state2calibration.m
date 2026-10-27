@@ -53,6 +53,20 @@ function [calibration] = state2calibration (state, options)
   calibration.sensor_fixture =...
       [state(sensor_fixture_pos_slice) state(sensor_fixture_orientation_slice)];
 
+  % Stage rotation axis alignment, see motion_transforms().
+  calibration.axis_fixture = state(axis_fixture_slice);
+
+  % Octupole parameter s (mm^2) for each source and sensor coil, see
+  % forward_kinematics().
+  calibration.o_source = state(oct_source_slice);
+  calibration.o_sensor = state(oct_sensor_slice);
+  % Octupole transverse anisotropy t (mm^2) for each coil.
+  calibration.a_source = state(aniso_source_slice);
+  calibration.a_sensor = state(aniso_sensor_slice);
+
+  % Stage translation scale errors (per mille), see motion_transforms().
+  calibration.stage_scale = state(stage_scale_slice);
+
 
   % QUADRUPOLE  
   calibration.q_source_pos = [...

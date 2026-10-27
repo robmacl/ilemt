@@ -36,6 +36,26 @@ function [state] = calibration2state (calibration)
     % sensor fixture
     state(sensor_fixture_pos_slice) = calibration.sensor_fixture(1:3);
     state(sensor_fixture_orientation_slice) = calibration.sensor_fixture(4:6);
+
+    % Newer parts of the state, zero for older calibrations:
+    % stage rotation axis alignment
+    if (isfield(calibration, 'axis_fixture'))
+      state(axis_fixture_slice) = calibration.axis_fixture;
+    end
+    % octupole
+    if (isfield(calibration, 'o_source'))
+      state(oct_source_slice) = calibration.o_source;
+      state(oct_sensor_slice) = calibration.o_sensor;
+    end
+    % octupole transverse anisotropy
+    if (isfield(calibration, 'a_source'))
+      state(aniso_source_slice) = calibration.a_source;
+      state(aniso_sensor_slice) = calibration.a_sensor;
+    end
+    % stage translation scale
+    if (isfield(calibration, 'stage_scale'))
+      state(stage_scale_slice) = calibration.stage_scale;
+    end
     
     %quadupole source position
     state(qp_source_x_pos_slice) = calibration.q_source_pos(:, 1)';

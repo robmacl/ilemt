@@ -26,6 +26,20 @@ end
 print_fix('Source', cal.source_fixture);
 print_fix('Stage', cal.stage_fixture);
 print_fix('Sensor', cal.sensor_fixture);
+if (isfield(cal, 'axis_fixture'))
+  print_fix('Axis', [0 0 0 cal.axis_fixture]);
+end
+if (isfield(cal, 'o_source') && any([cal.o_source cal.o_sensor]))
+  fprintf(1, 'Octupole s (mm^2): source [%s], sensor [%s]\n', ...
+          num2str(cal.o_source, ' %7.3f'), num2str(cal.o_sensor, ' %7.3f'));
+end
+if (isfield(cal, 'a_source') && any([cal.a_source cal.a_sensor]))
+  fprintf(1, 'Octupole anisotropy t (mm^2): source [%s], sensor [%s]\n', ...
+          num2str(cal.a_source, ' %7.3f'), num2str(cal.a_sensor, ' %7.3f'));
+end
+if (isfield(cal, 'stage_scale') && any(cal.stage_scale))
+  fprintf(1, 'Stage scale (per mille): [%s]\n', num2str(cal.stage_scale, ' %7.3f'));
+end
 
 %{
 fprintf(1, 'Quadrupole source distance: ')

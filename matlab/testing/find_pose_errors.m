@@ -38,13 +38,24 @@ function [perr] = find_pose_errors (calibration, options)
   perr.so_fix = calibration.source_fixture;
   perr.st_fix = calibration.stage_fixture;
   perr.se_fix = calibration.sensor_fixture;
+  if (isfield(calibration, 'axis_fixture'))
+    perr.ax_fix = calibration.axis_fixture;
+  else
+    perr.ax_fix = [];
+  end
+  if (isfield(calibration, 'stage_scale'))
+    perr.st_scale = calibration.stage_scale;
+  else
+    perr.st_scale = [];
+  end
   [motion_poses, couplings, file_map] = read_cal_data(options);
   perr.in_files = options.in_files;
 
   % The ground truth pose before any fixture optimization, assuming that the
   % fixtures are correct.  This can be used to influence the pose solution
   % via "hemisphere" and "initial" arguments.
-  desired_initial = fk_pose_calculation(motion_poses, perr.so_fix, perr.st_fix, perr.se_fix);
+  desired_initial = fk_pose_calculation(motion_poses, perr.so_fix, perr.st_fix, ...
+                                        perr.se_fix, perr.ax_fix, perr.st_scale);
   
   if (options.hemisphere == 0)
     % Find hemisphere for pose solutions.  We use the ground truth pose and pick
