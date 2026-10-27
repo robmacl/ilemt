@@ -221,6 +221,42 @@ Octupole (finite coil size) model, step 4, in `forward_kinematics`
   - Brute-force rectangular coil check: s + t is 20-50x closer than s
     alone. A 16.5 x 14.8 x 11.8 box leaves 1.2e-3 (higher order).
 
+Geometric (current sheet) source option (2026-10-27):
+- `options.source_geometric` (saved as `calibration.source_geometric`)
+  models each source coil as a stack of a x b rectangular loops over axial
+  length L. That is a current sheet on the sides of an a x b x L box.
+- Field is closed-form Biot-Savart per straight segment, 4 Gauss-Legendre
+  loops along the axis (`fk_coupling_geom.m`).
+- Parameters: part `g_so`, state 101:109, `calibration.g_source` [a; b; L]
+  mm per coil. The a/b axes follow the same cyclic convention as the
+  anisotropy.
+- Position and moment still come from `d_source_pos`/`d_source_moment`.
+  Source quadrupole and octupole terms are ignored; the sensor keeps its
+  component dipoles, s and t.
+- If `g_source` is zero, `calibrate_main` initializes it from the base
+  calibration's source s and t, with a 12 mm mean transverse size.
+- Check against brute-force distributed dipoles: 5e-5 to 1e-4, the brute
+  force's own grid limit, vs 1.2-1.4e-3 for s + t on 16.5 x 14.8 x 11.8 and
+  10 x 16 x 14 boxes. Cost is about 5 ms per 200 poses.
+- Fit on ld/ld_deux (`model_compare7.m`), with sensor o_se + a_se and free
+  Y scale, compared with the octupole source:
+  - Residue 1.83/1.81e-3 vs 1.91/1.90e-3.
+  - Test pos RMS/max: ld_deux 0.075/0.151 vs 0.089/0.184; ld 0.081/0.185
+    vs 0.093/0.213; smol 0.083-0.086/0.16 vs 0.093/0.17.
+  - Rotation RMS 0.12 vs 0.135 deg, but max 0.36 vs 0.26 deg.
+  - A cold start (12 mm cubes) reaches the same optimum.
+- But the fitted windings are unphysical:
+  - Coil X is 17 x 23 x 16 mm and coil Y 17 x 14 x 12, against a
+    16.5 x 14.8 x 11.8 body. Coil Z is about 10 x 10 x 9, poorly
+    determined, since a near-cube has s ~ 0.
+  - The sensor t goes to [9.0 -8.2 -1.6], past the 9.5 mm envelope bound
+    of about 7.5.
+  - This is the same source/sensor trade-off as free a_so + a_se. The extra
+    freedom fits something real (lateral X error 78 -> 64 um RMS), but not
+    as source geometry.
+  - Revisit with source fixture rotation data, which should separate the
+    source and sensor terms. Off by default; not in the smol run_tests.
+
 Anisotropy results (`model_compare5/6.m`), calibrated on ld, tested on
 ld_deux / smol. Columns are pos RMS/max mm and rot RMS/max deg; Ry-dep is
 the Ry-dependent part of the position error:
@@ -316,6 +352,39 @@ ld_deux / smol):
   about 4 per mille.
 - Abbe tilt was ruled out separately: the indicator read the same at the
   carriage as at 60 mm offset.
+
+The old `compensate_stage()` tables (2021, measured with the indicator on the
+pole) explain the free Y scale. They have on-axis X, Y and Z tables plus
+Z->X straightness. Over +/-20 mm the on-axis slopes are about X -0.2, Y
++2.9, Z -1.4 per mille (Y is +3.5 over +/-50). With oct + a_se, Y free and
+`compensate_stage` on (`model_compare8/9.m`, ld -> ld_deux / smol):
+
+| Tables on | Free Y scale | Residue | Test pos RMS/max |
+|---|---|---|---|
+| none | 3.49 | 1.913e-3 | 0.089/0.184, 0.093/0.170 |
+| Y on-axis only | 0.64 | 1.914e-3 | 0.089/0.185, 0.093/0.170 |
+| X, Y, Z on-axis | -0.18 | 1.925e-3 | 0.094/0.199, 0.099/0.188 |
+| all (with Z->X) | -0.16 | 2.18e-3 | 0.098/0.212, 0.104/0.205 |
+
+- The Y table's nonlinearity doesn't help beyond a linear scale.
+- The X/Z on-axis tables account for the rest of the relative scale but
+  slightly hurt.
+- The Z->X table clearly hurts: it is stale, or specific to the 2021 pole
+  setup.
+- So the 3.5 per mille the fit wants is the long-standing Y lead error.
+- The XYZ stage components are the same as in 2021 (user, 2026-10-27).
+- The tables were measured with gauge blocks at the end of the pole, so
+  pole runout/Abbe may confound them.
+- The Z->X table is mostly the pole's moment magnifying Z straightness, so
+  it doesn't apply here. Z is notably non-straight, though.
+- The stage has been moved since, and some optical encoder (US Digital E6)
+  bases were found loose, so they may be off-center. The E6 base is
+  centered with a cone tool; tolerance is 0.004 in eccentricity plus
+  radial play.
+- The lead is 5.08 mm, and the 10 mm grid steps are 1.97 rev. A
+  once-per-turn error is sampled at nearly the same phase at every grid
+  point, so the current patterns are nearly blind to it. Use multiples of
+  5.08 mm to make it a constant, or incommensurate/fine steps to measure it.
 
 Freeing X and Z stage scale with Y fixed at 2.05 gives X = Z = -1.5 (oct) or
 -3.6/-3.3 (dipole). That is the same solution as a free Y, so the coupling

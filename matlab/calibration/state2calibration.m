@@ -63,6 +63,8 @@ function [calibration] = state2calibration (state, options)
   % Octupole transverse anisotropy t (mm^2) for each coil.
   calibration.a_source = state(aniso_source_slice);
   calibration.a_sensor = state(aniso_sensor_slice);
+  % Geometric source winding dimensions [a; b; L] (mm), coils as columns.
+  calibration.g_source = reshape(state(geom_source_slice), 3, 3);
 
   % Stage translation scale errors (per mille), see motion_transforms().
   calibration.stage_scale = state(stage_scale_slice);
@@ -99,6 +101,8 @@ function [calibration] = state2calibration (state, options)
   % This is not part of the state, but is used in forward kinematics and
   % pose solution, when we only have a calibration.
   calibration.pin_quadrupole = options.pin_quadrupole;
+  calibration.source_geometric = isfield(options, 'source_geometric') ...
+      && options.source_geometric;
 
   % We save the options in the calibration for documentation.  Anything
   % that actually affects the forward kinematics should be explicitly at

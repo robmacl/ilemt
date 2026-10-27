@@ -52,6 +52,10 @@ function [state] = calibration2state (calibration)
       state(aniso_source_slice) = calibration.a_source;
       state(aniso_sensor_slice) = calibration.a_sensor;
     end
+    % geometric source winding dimensions
+    if (isfield(calibration, 'g_source'))
+      state(geom_source_slice) = calibration.g_source(:)';
+    end
     % stage translation scale
     if (isfield(calibration, 'stage_scale'))
       state(stage_scale_slice) = calibration.stage_scale;

@@ -109,6 +109,24 @@ elseif (strcmp(options.cal_mode, 'se_quadrupole'))
   end
 end
 
+% The geometric source model needs a nonzero winding size to start.  Take it
+% from the source octupole s and t if the base calibration has them, which is
+% the same model to leading order, with a 12 mm mean transverse size.
+if (options.source_geometric ...
+    && (~isfield(base_cal, 'g_source') || all(base_cal.g_source(:) == 0)))
+  s = zeros(1, 3);
+  t = zeros(1, 3);
+  if (isfield(base_cal, 'o_source'))
+    s = base_cal.o_source;
+  end
+  if (isfield(base_cal, 'a_source'))
+    t = base_cal.a_source;
+  end
+  % mean transverse variance (mm^2) of a 12 mm square
+  st2 = 12;
+  base_cal.g_source = sqrt(max([12*st2 + 6*t; 12*st2 - 6*t; 12*(s + st2)], 1));
+end
+
 % With concentric model, the dipole moments are forced to the origin.
 % Used for kim18 pose solution method.
 if (options.concentric)

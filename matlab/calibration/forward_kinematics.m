@@ -73,6 +73,12 @@ function [coupling] = forward_kinematics (P, calibration)
   so_mo = cat(3, calibration.d_source_moment, q_so_mo, -q_so_mo);
   se_mo = cat(3, calibration.d_sensor_moment, q_se_mo, -q_se_mo);
 
+  % With the geometric source model, the source is the winding geometry
+  % (fk_coupling_geom), and its dipole, quadrupole and octupole parameters
+  % other than position and moment are not used.
+  geometric = isfield(calibration, 'source_geometric') ...
+      && calibration.source_geometric;
+
   % Octupole (finite coil size) components, pages 4 and 5, and the transverse
   % anisotropy, pages 6 to 9.
   if (isfield(calibration, 'o_source'))
@@ -81,12 +87,21 @@ function [coupling] = forward_kinematics (P, calibration)
     else
       a_so = [0 0 0]; a_se = [0 0 0];
     end
-    [so_pos, so_mo] = add_octupole(so_pos, so_mo, calibration.d_source_pos, ...
-                                   calibration.d_source_moment, ...
-                                   calibration.o_source, a_so);
+    if (~geometric)
+      [so_pos, so_mo] = add_octupole(so_pos, so_mo, calibration.d_source_pos, ...
+                                     calibration.d_source_moment, ...
+                                     calibration.o_source, a_so);
+    end
     [se_pos, se_mo] = add_octupole(se_pos, se_mo, calibration.d_sensor_pos, ...
                                    calibration.d_sensor_moment, ...
                                    calibration.o_sensor, a_se);
+  end
+
+  if (geometric)
+    coupling = fk_coupling_geom(P, calibration.d_source_pos, ...
+                                calibration.d_source_moment, ...
+                                calibration.g_source, se_pos, se_mo) ./ 250;
+    return;
   end
 
   coupling = zeros(3, 3, size(P, 3));

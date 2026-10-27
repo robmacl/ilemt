@@ -55,6 +55,11 @@ options.normalize = true;
 % corresponding dipole position.
 options.pin_quadrupole = true;
 
+% If true, model each source coil as a rectangular current sheet winding
+% (state part 'g_so') instead of a dipole plus octupole.  See
+% fk_coupling_geom().
+options.source_geometric = false;
+
 % If true, the source and sensor dipole positions are forced to zero.  This
 % is an ideal concentric coil model.
 options.concentric = false;

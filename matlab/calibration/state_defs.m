@@ -2,7 +2,7 @@
 %optimization state vector.
 
 %number of element in the state vector
-num_state = 100;
+num_state = 109;
 
 %dipole source position
 source_x_pos_slice = 1:3;
@@ -87,6 +87,11 @@ stage_scale_slice = 92:94;
 aniso_source_slice = 95:97;
 aniso_sensor_slice = 98:100;
 
+% Geometric (current sheet) source winding dimensions, mm: [a b L] for
+% each source coil, used when options.source_geometric.  See
+% fk_coupling_geom().
+geom_source_slice = 101:109;
+
 
 % Cell array state_parts{n, 2}, a dictionary of state parts.  Each row is:
 %    {<string name> <state index vector>}
@@ -141,6 +146,8 @@ state_parts = {
 % Octupole transverse anisotropy, one parameter per coil:
     'a_so' [aniso_source_slice]
     'a_se' [aniso_sensor_slice]
+% Geometric source winding dimensions (with options.source_geometric):
+    'g_so' [geom_source_slice]
 
 
 % Quadrupole:
